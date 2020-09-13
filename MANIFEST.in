@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include mfi_customization *.css
+recursive-include mfi_customization *.csv
+recursive-include mfi_customization *.html
+recursive-include mfi_customization *.ico
+recursive-include mfi_customization *.js
+recursive-include mfi_customization *.json
+recursive-include mfi_customization *.md
+recursive-include mfi_customization *.png
+recursive-include mfi_customization *.py
+recursive-include mfi_customization *.svg
+recursive-include mfi_customization *.txt
+recursive-exclude mfi_customization *.pyc
