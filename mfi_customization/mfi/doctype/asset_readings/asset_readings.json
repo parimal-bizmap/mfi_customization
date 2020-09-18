@@ -1,40 +1,47 @@
 {
- "creation": "2020-09-18 16:03:35.761949",
+ "creation": "2020-09-18 23:30:42.091711",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "date",
   "type",
-  "reading",
-  "asset"
+  "asset",
+  "reading"
  ],
  "fields": [
+  {
+   "fieldname": "reading",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reading"
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date"
+  },
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Asset",
+   "options": "Asset"
+  },
   {
    "fieldname": "type",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
    "options": "\nBlack & White\nColour"
-  },
-  {
-   "fieldname": "reading",
-   "fieldtype": "Int",
-   "in_list_view": 1,
-   "label": "reading"
-  },
-  {
-   "fieldname": "asset",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "asset",
-   "options": "Asset"
   }
  ],
  "istable": 1,
- "modified": "2020-09-18 16:04:41.482373",
+ "modified": "2020-09-18 23:57:19.964455",
  "modified_by": "Administrator",
  "module": "mfi",
- "name": "Machine Reading",
+ "name": "Asset Readings",
  "owner": "Administrator",
  "permissions": [],
  "quick_entry": 1,
