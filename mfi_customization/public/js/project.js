@@ -30,8 +30,9 @@ frappe.ui.form.on('Project', {
 
 frappe.ui.form.on("Asset List", "asset", function(frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
-	frappe.db.get_value("Asset", {"name":d.asset},["asset_name"], function(r){
+	frappe.db.get_value("Asset", {"name":d.asset},["asset_name","location"], function(r){
 		d.asset_name=r.asset_name
+		d.location=r.location
 		refresh_field("asset_list");
 	})
 });
@@ -43,16 +44,3 @@ frappe.ui.form.on("Asset Readings", "asset", function(frm, cdt, cdn) {
 		refresh_field("asset_list");
 	})
 });
-
-// frm.set_query('document_type', () => {
-// 	let invalid_doctypes = frappe.model.core_doctypes_list;
-// 	invalid_doctypes.push('Accounting Dimension', 'Project',
-// 		'Cost Center', 'Accounting Dimension Detail');
-
-// 	return {
-// 		filters: {
-// 			name: ['not in', invalid_doctypes]
-// 		}
-// 	};
-// });
-

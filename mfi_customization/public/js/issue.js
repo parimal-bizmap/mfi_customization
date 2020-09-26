@@ -13,6 +13,16 @@ frappe.ui.form.on('Issue', {
 				}
 			}
 		});
+		frm.set_query("asset", function() {
+			if (frm.doc.project) {
+				return {
+					query: 'mfi_customization.mfi.doctype.issue.get_asset_list',
+					filters: {
+						"project": frm.doc.project
+					}
+				};
+			}
+		});
 	},
 	refresh: function (frm) {
 		if (frm.doc.status !== "Closed" && frm.doc.agreement_fulfilled === "Ongoing") {
