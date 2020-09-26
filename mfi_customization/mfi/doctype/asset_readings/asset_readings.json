@@ -7,14 +7,15 @@
   "date",
   "type",
   "asset",
-  "reading"
+  "reading",
+  "reading_2"
  ],
  "fields": [
   {
    "fieldname": "reading",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Reading"
+   "label": "Reading "
   },
   {
    "fieldname": "date",
@@ -35,10 +36,16 @@
    "in_list_view": 1,
    "label": "Type",
    "options": "\nBlack & White\nColour"
+  },
+  {
+   "fieldname": "reading_2",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Reading 2"
   }
  ],
  "istable": 1,
- "modified": "2020-09-18 23:57:19.964455",
+ "modified": "2020-09-27 00:18:42.562565",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Readings",
