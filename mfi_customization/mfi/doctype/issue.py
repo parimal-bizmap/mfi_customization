@@ -35,7 +35,6 @@ def make_task(source_name, target_doc=None):
 	}, target_doc,set_missing_values)
 
 @frappe.whitelist()
-@frappe.validate_and_sanitize_search_inputs
 def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql("""select asset,asset_name
 		from `tabAsset List` 
