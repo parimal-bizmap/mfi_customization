@@ -27,6 +27,7 @@ frappe.ui.form.on('Project', {
 		});
 	},
 	maintenance_team(frm){
+		if (frm.doc.maintenance_team){
 		frm.set_value('maintainance_manager','')
 		frm.set_value('manager_name','')
 		frm.set_value('maintenance_team_member',[])
@@ -47,6 +48,7 @@ frappe.ui.form.on('Project', {
 					cur_frm.refresh_field("maintenance_team_member")
 				}
 			})
+		}
 	}
 })
 

@@ -42,9 +42,8 @@ def validate(doc,method):
 				ar.repair_status='Completed'
 				ar.save()
 				ar.submit()
-		print('@@@@@@@@@@@@')
+
 		if not doc.get("__islocal") and doc.status!='Completed' and doc.name not in task_list:
-			print('$$$$$$$$$$$$$$$$$$$$$$$$$')
 			asset_doc = frappe.new_doc("Asset Repair")
 			asset_doc.task=doc.name
 			asset_doc.asset_name=doc.asset

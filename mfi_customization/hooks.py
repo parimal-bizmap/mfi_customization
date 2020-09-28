@@ -30,6 +30,7 @@ doctype_js = {
 				"Project":"public/js/project.js",
                 "Issue":"public/js/issue.js",
                 "Task":"public/js/task.js",
+                "Asset Maintenance":"public/js/asset_maintenance.js"
 }	
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -88,6 +89,9 @@ doc_events = {
         "validate":"mfi_customization.mfi.doctype.task.validate",
         "after_insert":"mfi_customization.mfi.doctype.task.after_insert",
         "on_trash":"mfi_customization.mfi.doctype.task.after_delete"
+    },
+    "Project":{
+        "validate":"mfi_customization.mfi.doctype.project.validate"
     }
 }
 
