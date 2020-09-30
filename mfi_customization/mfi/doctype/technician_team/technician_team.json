@@ -1,0 +1,34 @@
+{
+ "permissions": [],
+ "sort_field": "modified",
+ "creation": "2020-09-30 20:22:32.918728",
+ "track_changes": 1,
+ "module": "mfi",
+ "quick_entry": 1,
+ "field_order": [
+  "technician",
+  "technician_name"
+ ],
+ "engine": "InnoDB",
+ "doctype": "DocType",
+ "sort_order": "DESC",
+ "modified": "2020-09-30 20:22:32.918728",
+ "istable": 1,
+ "editable_grid": 1,
+ "owner": "Administrator",
+ "modified_by": "Administrator",
+ "fields": [
+  {
+   "label": "Technician ",
+   "fieldname": "technician",
+   "fieldtype": "Link",
+   "options": "User"
+  },
+  {
+   "label": "Technician Name",
+   "fieldname": "technician_name",
+   "fieldtype": "Data"
+  }
+ ],
+ "name": "Technician Team"
+}
