@@ -84,7 +84,7 @@ def get_columns(filters=None):
 
 def prepare_data(filters):
 	data=[]
-	for i in frappe.get_all('Issue',fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","mins_to_first_response","resolution_date","time_resolution"]):
+	for i in frappe.get_all('Issue',fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","mins_to_first_response","resolution_date"]):
 		# row={
 		# 	"ticket":t.issue,
 		# 	"call_assigned":t.completed_by,
