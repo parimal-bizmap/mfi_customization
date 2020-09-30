@@ -69,7 +69,7 @@ def after_insert(doc,method):
 		if doc.status!='Completed' and doc.name not in task_list:
 			asset_doc = frappe.new_doc("Asset Repair")
 			asset_doc.task=doc.name
-			asset_doc.asset_name=doc.asset_
+			asset_doc.asset_name=doc.asset
 			asset_doc.project=doc.project
 			asset_doc.assign_to=doc.completed_by
 			asset_doc.description=doc.description
