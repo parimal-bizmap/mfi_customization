@@ -16,25 +16,25 @@ def get_columns(filters=None):
 	"label": "Ticket no",
 	"fieldtype": "Data",
 	"fieldname": "ticket",
-	'width':90
+	'width':120
 	},
 	{
-	"label": "Call assigned by ",
+	"label": "Call assigned to",
 	"fieldtype": "Data",
 	"fieldname": "call_assigned",
-	'width':90
+	'width':160
 	},
 	{
 	"label": "ML - Number",
 	"fieldtype": "Data",
 	"fieldname": "ml_number",
-	'width':90
+	'width':110
 	},
 	{
 	"label": "Location",
 	"fieldtype": "Data",
 	"fieldname": "location",
-	'width':90
+	'width':110
 	},
 	{
 	"label": "Nature of complaint",
@@ -43,78 +43,75 @@ def get_columns(filters=None):
 	'width':100
 	},
 	{
-	"label": "Serial No",
+	"label": "Model",
 	"fieldtype": "Data",
-	"fieldname": "customer_name",
+	"fieldname": "model",
 	'width':100
 	},
 	{
-	"label": "Counter Mono",
+	"label": "Serial No",
 	"fieldtype": "Data",
-	"fieldname": "customer_group",
+	"fieldname": "sr_no",
+	'width':100
+	},
+	{
+	"label": "Counter Black & White",
+	"fieldtype": "Data",
+	"fieldname": "counter_bw",
 	'width':120
 	},
 	{
 	"label": "Counter color",
 	"fieldtype": "Data",
-	"fieldname": "second_customer_group",
+	"fieldname": "counter_color",
 	'width':150
 	},
 	{
 	"label": "Total Counter",
-	"fieldtype": "Link",
-	"fieldname": "customer",
-	"options": "Customer",
+	"fieldtype": "Data",
+	"fieldname": "total_counter",
 	'width':150
 	},
 	{
-	"label": "Time Response",
+	"label": "Area Manager",
 	"fieldtype": "Data",
-	"fieldname":"time_response",
-	'width':90
+	"fieldname": "manager",
+	'width':150
 	},
 	{
-	"label": "Time Resolution",
+	"label": "Status",
 	"fieldtype": "Data",
-	"fieldname": "time_resolution",
-	'width':90
+	"fieldname": "status",
+	'width':150
 	},
 	{
-	"label": "Time Closed",
+	"label": "Description",
 	"fieldtype": "Data",
-	"fieldname": "Time Close",
-	'width':90
+	"fieldname": "description",
+	'width':150
 	},
-	{
-	"label": "Total Time consumed",
-	"fieldtype": "Data",
-	"fieldname": "time_consumed",
-	'width':90
-	},
-	{
-	"label": "Same day fix",
-	"fieldtype": "Data",
-	"fieldname": "same_day",
-	'width':90
-	},
-	{
-	"label": "Comment",
-	"fieldtype": "Data",
-	"fieldname": "comment",
-	'width':90
-	},
-	{
-	"label": "Remark",
-	"fieldtype": "Data",
-	"fieldname": "remark",
-	'width':100
-	}
 ]
 
 def prepare_data(filters):
 	data=[]
-	# for i in frappe.get_all('Issue',fields=['name','']):
-		
+	for t in frappe.get_all('Task',fields=['name','issue','completed_by','asset','location','issue_type','project']):
+		row={
+			"ticket":t.issue,
+			"call_assigned":t.completed_by,
+			"ml_number":t.asset,
+			"location":t.location,
+			"complaint":t.issue_type
+		}
+		if t.asset:
+			row.update({'model':frappe.db.get_value('Asset',t.asset,'model')})
+			row.update({'sr_no':frappe.db.get_value('Asset',t.asset,'serial_no')})
+		if t.project:
+			row.update({'manager':frappe.db.get_value('Project',t.project,'manager_name')})
+		for i in frappe.get_all('Issue',filters={'name':t.issue},fields=['status','description']):
+			row.update(i)
+		for a in frappe.get_all('Asset Readings',filters={'parent':t.name,'asset':t.asset},fields=['reading','reading_2']):
+			row.update({'counter_bw':a.reading or '-','counter_color':a.reading_2 or '-','total_counter':int(a.reading or 0)+ int(a.reading_2 or 0)})
+		data.append(row)
 	return data
 
 
