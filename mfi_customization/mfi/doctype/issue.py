@@ -36,9 +36,19 @@ def make_task(source_name, target_doc=None):
 
 @frappe.whitelist()
 def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
+	location=''
+	if filters.get('location'):
+		location="and location='{0}'".format(filters.get('location'))
+
 	return frappe.db.sql("""select asset,asset_name
 		from `tabAsset List` 
 		where
-			parent='{project}'"""
-		.format(project = filters.get("project")
+			parent='{project}' {location}"""
+		.format(project = filters.get("project") , location=location
 		))
+
+def validate(doc,method):
+	if doc.status=="Closed":
+		for t in frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']):
+			if t.status != 'Completed':
+				frappe.throw("Please Complete <b>Issue '{0}'</b>".format(t.name))
