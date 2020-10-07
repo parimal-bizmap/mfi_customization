@@ -92,6 +92,9 @@ doc_events = {
     },
     "Project":{
         "validate":"mfi_customization.mfi.doctype.project.validate"
+    },
+    "Issue":{
+        "validate":"mfi_customization.mfi.doctype.issue.validate"
     }
 }
 
