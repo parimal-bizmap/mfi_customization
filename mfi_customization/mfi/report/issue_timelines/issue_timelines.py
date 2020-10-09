@@ -41,7 +41,7 @@ def get_columns(filters=None):
 	{
 	"label": "Failure Date",
 	"fieldtype": "Data",
-	"fieldname": "failure_date",
+	"fieldname": "failure_date_and_time",
 	'width':100
 	},
 	{
@@ -63,12 +63,6 @@ def get_columns(filters=None):
 	'width':120
 	},
 	{
-	"label": "Mins to First Response",
-	"fieldtype": "Data",
-	"fieldname": "mins_to_first_response",
-	'width':150
-	},
-	{
 	"label": "Closing Date",
 	"fieldtype": "Data",
 	"fieldname": "resolution_date",
@@ -84,7 +78,7 @@ def get_columns(filters=None):
 
 def prepare_data(filters):
 	data=[]
-	for i in frappe.get_all('Issue',fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","mins_to_first_response","resolution_date"]):
+	for i in frappe.get_all('Issue',fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","resolution_date"]):
 		# row={
 		# 	"ticket":t.issue,
 		# 	"call_assigned":t.completed_by,

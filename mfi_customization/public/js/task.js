@@ -18,3 +18,11 @@ refresh:function(frm){
         )
 }
 })
+cur_frm.dashboard.add_transactions([
+	{
+		'items': [
+			'Material Request'
+		],
+		'label': 'Others'
+	},
+]);

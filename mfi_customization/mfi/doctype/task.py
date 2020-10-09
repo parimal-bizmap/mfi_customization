@@ -4,20 +4,20 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe.utils.data import getdate
+from frappe.utils.data import getdate,today
 from frappe.model.mapper import get_mapped_doc
 
 def validate(doc,method):
 	if doc.issue_type in ['Toner Request','Break Down'] and doc.project:
 		pro_doc=frappe.get_doc('Project',doc.project)
-		doc.set('older__reading',[])
-		for d in pro_doc.get('machine_readings'):
-			doc.append("older__reading", {
-			"date" : d.get('date'),
-			"type" : d.get('type'),
-			"asset":d.get('asset'),
-			"reading":d.get('reading')
-			})
+		# doc.set('older__reading',[])
+		# for d in pro_doc.get('machine_readings'):
+		# 	doc.append("older__reading", {
+		# 	"date" : d.get('date'),
+		# 	"type" : d.get('type'),
+		# 	"asset":d.get('asset'),
+		# 	"reading":d.get('reading')
+		# 	})
 		if doc.status=='Completed' and doc.project:
 			duplicate=[]
 			for d in doc.get('current_reading'):
@@ -34,17 +34,16 @@ def validate(doc,method):
 					}) 
 			pro_doc.save()
 
-		task_list=[]
-		for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
-			task_list.append(t.name)
-		if doc.status=='Completed' and doc.name in task_list:
+
+		if doc.status=='Completed' :
 			for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
 				ar=frappe.get_doc('Asset Repair',t.name)
 				ar.repair_status='Completed'
+				ar.completion_date=today()
 				ar.save()
 				ar.submit()
 
-		if not doc.get("__islocal") and doc.status!='Completed' and doc.name not in task_list:
+		if doc.status!='Completed' and len(frappe.get_all('Asset Repair',filters={'task':doc.name}))==0:
 			asset_doc = frappe.new_doc("Asset Repair")
 			asset_doc.task=doc.name
 			asset_doc.asset_name=doc.asset
@@ -113,6 +112,7 @@ def set_item_from_material_req(doc,method):
 							"warehouse": d.get('warehouse'),
 							"qty": d.get('qty')
 						})
+		task.material_request=doc.name
 		task.save()
 
 		
