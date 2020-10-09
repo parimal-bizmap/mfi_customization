@@ -51,7 +51,7 @@ def validate(doc,method):
 			asset_doc.project=doc.project
 			asset_doc.assign_to=doc.completed_by
 			asset_doc.description=doc.description
-			asset_doc.failure_date=doc.failure_date
+			asset_doc.failure_date=doc.failure_date_and_time
 			for d in doc.get('current_reading'):
 				asset_doc.append("repair_on_reading", {
 					"date" : d.get('date'),
@@ -76,7 +76,7 @@ def after_insert(doc,method):
 			asset_doc.project=doc.project
 			asset_doc.assign_to=doc.completed_by
 			asset_doc.description=doc.description
-			asset_doc.failure_date=doc.failure_date
+			asset_doc.failure_date=doc.failure_date_and_time
 			for d in doc.get('current_reading'):
 				asset_doc.append("repair_on_reading", {
 					"date" : d.get('date'),
