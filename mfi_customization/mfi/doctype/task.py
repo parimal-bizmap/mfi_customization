@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.utils.data import getdate
+from frappe.model.mapper import get_mapped_doc
 
 def validate(doc,method):
 	if doc.issue_type in ['Toner Request','Break Down'] and doc.project:
@@ -59,6 +60,8 @@ def validate(doc,method):
 					"reading":d.get('reading')
 					}) 
 			asset_doc.save()
+	if doc.get('issue'):
+		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
 		
 
 def after_insert(doc,method):
@@ -86,6 +89,32 @@ def after_insert(doc,method):
 def after_delete(doc,method):
 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
 		frappe.delete_doc('Asset Repair',t.name)
+
+@frappe.whitelist()
+def make_material_req(source_name, target_doc=None):
+	doclist = get_mapped_doc("Task", source_name, {
+		"Task": {
+			"doctype": "Material Request"
+		}
+	}, target_doc )
+
+	return doclist
+
+def set_item_from_material_req(doc,method):
+	if doc.get('task_') :
+		task=frappe.get_doc('Task',doc.get('task_'))
+		items=[]
+		for t in task.get('refilled__items'):
+			items.append(t.item)
+		for d in doc.get('items'):
+			if d.get('item_code') not in items:
+				task.append("refilled__items", {
+							"item": d.get('item_code'),
+							"warehouse": d.get('warehouse'),
+							"qty": d.get('qty')
+						})
+		task.save()
+
 		
 
 
