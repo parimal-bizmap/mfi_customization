@@ -101,7 +101,7 @@ def make_material_req(source_name, target_doc=None):
 	return doclist
 
 def set_item_from_material_req(doc,method):
-	if doc.get('task_') :
+	if doc.get('task_') and doc.status=="Issued":
 		task=frappe.get_doc('Task',doc.get('task_'))
 		items=[]
 		for t in task.get('refilled__items'):
