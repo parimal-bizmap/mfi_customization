@@ -6,7 +6,9 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "serial_no"
+  "serial_no",
+  "asset",
+  "location"
  ],
  "fields": [
   {
@@ -17,9 +19,21 @@
    "label": "Serial No",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "label": "Asset ",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Location"
   }
  ],
- "modified": "2020-10-07 11:46:13.189626",
+ "modified": "2020-10-14 17:37:42.552714",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Serial No",
