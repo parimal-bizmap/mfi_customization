@@ -43,22 +43,8 @@ def validate(doc,method):
 				ar.save()
 				ar.submit()
 
-		if doc.status!='Completed' and len(frappe.get_all('Asset Repair',filters={'task':doc.name}))==0:
-			asset_doc = frappe.new_doc("Asset Repair")
-			asset_doc.task=doc.name
-			asset_doc.asset_name=doc.asset
-			asset_doc.project=doc.project
-			asset_doc.assign_to=doc.completed_by
-			asset_doc.description=doc.description
-			asset_doc.failure_date=doc.failure_date_and_time
-			for d in doc.get('current_reading'):
-				asset_doc.append("repair_on_reading", {
-					"date" : d.get('date'),
-					"type" : d.get('type'),
-					"asset":d.get('asset'),
-					"reading":d.get('reading')
-					}) 
-			asset_doc.save()
+
+
 	if doc.get('issue'):
 		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
 		
