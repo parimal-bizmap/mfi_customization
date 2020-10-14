@@ -1,9 +1,10 @@
 frappe.ui.form.on('Issue', {
 	asset:function(frm){
-		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name','location'])
+		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name','location','serial_no'])
 		.then(({ message }) => {
 			frm.set_value('asset_name',message.asset_name);
 			frm.set_value('location',message.location);
+			frm.set_value('serial_no',message.serial_no);
 		});                                                                                  
 	},
 	setup:function(frm){
@@ -39,8 +40,10 @@ frappe.ui.form.on('Issue', {
 	}
 })
 
-frappe.ui.form.on("Asset Readings", "date", function(frm, cdt, cdn) {
+frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
-	d.asset=frm.doc.asset
+	if (d.type=='Black & White'){
+	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','none')
+	}
 	refresh_field("asset", d.name, d.parentfield);
 });
