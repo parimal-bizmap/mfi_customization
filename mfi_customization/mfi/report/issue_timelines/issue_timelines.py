@@ -78,14 +78,13 @@ def get_columns(filters=None):
 
 def prepare_data(filters):
 	data=[]
+	from datetime import datetime as dt
 	for i in frappe.get_all('Issue',fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","resolution_date"]):
-		# row={
-		# 	"ticket":t.issue,
-		# 	"call_assigned":t.completed_by,
-		# 	"ml_number":t.asset,
-		# 	"location":t.location,
-		# 	"complaint":t.issue_type
-		# }
+		import datetime
+		t = i.resolution_date
+		if i.resolution_date:
+			time_resolution=datetime.timedelta(hours=int(t.strftime('%H')),minutes=int(t.strftime('%M')), seconds=int(t.strftime('%S')))-i.opening_time
+			i.update({'time_resolution':str(time_resolution)})
 		data.append(i)
 	return data
 

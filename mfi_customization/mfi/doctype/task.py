@@ -8,16 +8,8 @@ from frappe.utils.data import getdate,today
 from frappe.model.mapper import get_mapped_doc
 
 def validate(doc,method):
-	if doc.issue_type in ['Toner Request','Break Down'] and doc.project:
+	if doc.issue_type in ['Toner Request','Machine Issue'] and doc.project:
 		pro_doc=frappe.get_doc('Project',doc.project)
-		# doc.set('older__reading',[])
-		# for d in pro_doc.get('machine_readings'):
-		# 	doc.append("older__reading", {
-		# 	"date" : d.get('date'),
-		# 	"type" : d.get('type'),
-		# 	"asset":d.get('asset'),
-		# 	"reading":d.get('reading')
-		# 	})
 		if doc.status=='Completed' and doc.project:
 			duplicate=[]
 			for d in doc.get('current_reading'):
@@ -50,7 +42,7 @@ def validate(doc,method):
 		
 
 def after_insert(doc,method):
-	if doc.issue_type in ['Toner Request','Break Down'] and doc.project:
+	if doc.issue_type in ['Toner Request','Machine Issue'] and doc.project:
 		task_list=[]
 		for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
 			task_list.append(t.name)
