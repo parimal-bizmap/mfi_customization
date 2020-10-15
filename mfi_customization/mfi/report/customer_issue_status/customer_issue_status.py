@@ -51,7 +51,7 @@ def get_columns(filters=None):
 	{
 	"label": "Serial No",
 	"fieldtype": "Data",
-	"fieldname": "sr_no",
+	"fieldname": "serial_no",
 	'width':100
 	},
 	{
