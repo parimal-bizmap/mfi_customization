@@ -23,8 +23,26 @@ def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql("""select asset,asset_name
 		from `tabAsset List` 
 		where
-			parent='{project}' {location}"""
+			project='{project}' {location}"""
 		.format(project = filters.get("project") , location=location
+		))
+
+
+@frappe.whitelist()
+def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
+	location=''
+	asset=''
+	if filters.get('location'):
+		location=" where location='{0}'".format(filters.get('location'))
+	if filters.get('asset'):
+		if not filters.get('location'):
+			location=" where location='{0}'".format(filters.get('asset'))
+		else:
+			location="and asset='{0}'".format(filters.get('asset'))
+	return frappe.db.sql("""select name
+		from `tabAsset Serial No` {location} {asset}
+		"""
+		.format(location = location, asset=asset
 		))
 
 def validate(doc,method):

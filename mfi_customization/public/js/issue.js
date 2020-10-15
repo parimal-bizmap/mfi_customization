@@ -26,6 +26,15 @@ frappe.ui.form.on('Issue', {
 				};
 			}
 		});
+		frm.set_query("serial_no", function() {
+				return {
+					query: 'mfi_customization.mfi.doctype.issue.get_serial_no_list',
+					filters: {
+						"location":frm.doc.location,
+						"asset":frm.doc.asset
+					}
+				};
+		});
 	},
 	refresh: function (frm) {
 		if (frm.doc.status !== "Closed" && frm.doc.agreement_fulfilled === "Ongoing") {
