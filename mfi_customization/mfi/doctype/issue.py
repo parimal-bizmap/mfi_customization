@@ -23,7 +23,7 @@ def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 	return frappe.db.sql("""select asset,asset_name
 		from `tabAsset List` 
 		where
-			project='{project}' {location}"""
+			parent='{project}' {location}"""
 		.format(project = filters.get("project") , location=location
 		))
 
