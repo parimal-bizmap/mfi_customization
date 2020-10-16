@@ -51,7 +51,7 @@ def get_columns(filters=None):
 	{
 	"label": "Serial No",
 	"fieldtype": "Data",
-	"fieldname": "sr_no",
+	"fieldname": "serial_no",
 	'width':100
 	},
 	{
@@ -117,15 +117,15 @@ def prepare_data(filters):
 		row={}
 		row.update(i)
 		row.update({"ticket":i.name,"location":i.location,"complaint":i.issue_type,"ml_number":i.asset,})
-		if i.asset:
-			row.update({'model':frappe.db.get_value('Asset',i.asset,'model')})
+# 		if i.asset:
+# 			row.update({'model':frappe.db.get_value('Asset',i.asset,'model')})
 			# row.update({'sr_no':frappe.db.get_value('Asset',i.asset,'serial_no')})
 		if i.project:
 			row.update({'manager':frappe.db.get_value('Project',i.project,'manager_name')})
 		for t in frappe.get_all('Task',filters={'issue':i.name},fields=['name','issue','completed_by','asset','location','issue_type','project']):
 			row.update({"call_assigned":t.completed_by})
-			for a in frappe.get_all('Asset Readings',filters={'parent':t.name,'asset':t.asset},fields=['reading','reading_2']):
-				row.update({'counter_bw':a.reading or '-','counter_color':a.reading_2 or '-','total_counter':int(a.reading or 0)+ int(a.reading_2 or 0)})
+			for a in frappe.get_all('Asset Readings',filters={'parent':t.name,'asset':t.asset},fields=['reading','reading_2','type']):
+				row.update({'counter_bw':a.reading or '-','model':a.type,'counter_color':a.reading_2 or '-','total_counter':int(a.reading or 0)+ int(a.reading_2 or 0)})
 		data.append(row)
 	return data
 
