@@ -37,6 +37,10 @@ frappe.ui.form.on('Issue', {
 		});
 	},
 	refresh: function (frm) {
+		$("[data-doctype='Task']").hide();
+		frm.add_custom_button(__('Task'), function() {
+			frappe.set_route('List', 'Task', {issue: frm.doc.name});
+		},__("View"));
 		if (frm.doc.status !== "Closed" && frm.doc.agreement_fulfilled === "Ongoing") {
 			frm.remove_custom_button("Task", 'Make')
 			frm.add_custom_button(__("Task"), function () {
