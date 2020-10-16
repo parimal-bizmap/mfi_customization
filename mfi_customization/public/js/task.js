@@ -16,6 +16,15 @@ refresh:function(frm){
         },
         __('Make')
         )
+},
+setup:function(frm){
+    frm.set_query("asset", "current_reading", function() {
+        return {
+            filters: {
+                "name": frm.doc.asset
+            }
+        }
+    });
 }
 })
 cur_frm.dashboard.add_transactions([
