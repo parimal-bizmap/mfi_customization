@@ -50,3 +50,14 @@ def validate(doc,method):
 		for t in frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']):
 			if t.status != 'Completed':
 				frappe.throw("Please Complete <b>Issue '{0}'</b>".format(t.name))
+		if len(frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']))==0:
+			if len(doc.get('current_reading'))==0:
+				frappe.throw("Please add Asset readings before closing issue")
+	# if doc.status=='Open' and doc.get('__islocal'):
+	# 	import datetime
+	# 	import pytz
+	# 	tz = pytz.timezone('Africa/Nairobi')
+	# 	ct = datetime.datetime.now(tz=tz)
+	# 	print(type(ct))
+	# 	doc.opening_date_=ct.isoformat()
+		
