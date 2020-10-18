@@ -98,7 +98,10 @@ doc_events = {
     },
     "Material Request":{
         "on_change":"mfi_customization.mfi.doctype.task.set_item_from_material_req"
-    }
+    },
+    "Comment":{
+		"validate":"mfi_customization.mfi.doctype.comment.comment"
+	},
 }
 
 # Scheduled Tasks
