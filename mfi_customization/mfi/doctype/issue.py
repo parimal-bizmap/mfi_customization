@@ -20,8 +20,8 @@ def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 	if filters.get('location'):
 		location="where location='{0}'".format(filters.get('location'))
 
-	return frappe.db.sql("""select asset,asset_name
-		from `tabAsset List`  {location}"""
+	return frappe.db.sql("""select name,asset_name
+		from `tabAsset`  {location}"""
 		.format(location=location))
 
 
