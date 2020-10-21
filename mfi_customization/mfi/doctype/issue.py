@@ -18,14 +18,11 @@ def make_task(source_name, target_doc=None):
 def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 	location=''
 	if filters.get('location'):
-		location="and location='{0}'".format(filters.get('location'))
+		location="where location='{0}'".format(filters.get('location'))
 
 	return frappe.db.sql("""select asset,asset_name
-		from `tabAsset List` 
-		where
-			parent='{project}' {location}"""
-		.format(project = filters.get("project") , location=location
-		))
+		from `tabAsset List`  {location}"""
+		.format(location=location))
 
 
 @frappe.whitelist()

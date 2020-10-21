@@ -20,7 +20,6 @@ frappe.ui.form.on('Issue', {
 				return {
 					query: 'mfi_customization.mfi.doctype.issue.get_asset_list',
 					filters: {
-						"project": frm.doc.project,
 						"location":frm.doc.location
 					}
 				};
