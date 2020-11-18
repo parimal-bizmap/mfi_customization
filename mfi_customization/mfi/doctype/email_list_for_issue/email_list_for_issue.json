@@ -1,0 +1,28 @@
+{
+ "creation": "2020-11-18 20:29:07.308297",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "email"
+ ],
+ "fields": [
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email"
+  }
+ ],
+ "istable": 1,
+ "modified": "2020-11-18 20:29:13.985694",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Email List for Issue",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -1,0 +1,33 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "",
+ "creation": "2020-10-21 22:20:06.016599",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Issue",
+ "enabled": 0,
+ "event": "New",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "Your issue has been recorded, details given below,<br>\nTicket No:{{doc.name}}<br>\nSubject:{{doc.subject}}<br>\nissue Type:{{doc.issue_type}}<br>\nLocation:{{doc.location}}<br>\nAsset:{{doc.asset}}<br>\nSerial No:{{doc.serial_no}}<br>\nError Code:{{doc.error_code}}<br>\nFailure Date:{{doc.failure_date_and_time}}<br>\nDescription:{{doc.description}}<br>\nwe will try to sort it in time. for updates please visit on portal<br>",
+ "modified": "2020-11-13 11:36:42.323057",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Customer Toner Request",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "cc": "",
+   "email_by_document_field": "raised_by",
+   "email_by_role": "Customer"
+  },
+  {
+   "email_by_role": "Support Team"
+  }
+ ],
+ "sender": "Notifications",
+ "sender_email": "notifications@groupmfi.com",
+ "subject": "Your Issue has been raised"
+}
