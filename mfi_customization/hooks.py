@@ -24,6 +24,7 @@ app_license = "MIT"
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
+email_append_to = ["Job Applicant", "Lead", "Opportunity", "Issue"]
 
 # include js in doctype views
 doctype_js = {
@@ -102,6 +103,12 @@ doc_events = {
     "Comment":{
 		"validate":"mfi_customization.mfi.doctype.comment.comment"
 	},
+    "Communication":{
+        "after_insert":"mfi_customization.mfi.doctype.communication.after_insert"
+    },
+    "File":{
+        "after_insert":"mfi_customization.mfi.doctype.communication.after_insert_file"
+    }
 }
 
 # Scheduled Tasks
