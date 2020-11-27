@@ -1,19 +1,22 @@
 {
+ "autoname": "EM.-RUL.-.",
  "creation": "2020-11-17 15:18:15.283400",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "customer",
+  "group_by",
   "domain",
-  "group_by"
+  "email_list_for_issue"
  ],
  "fields": [
   {
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "reqd": 1
   },
   {
    "fieldname": "domain",
@@ -28,9 +31,15 @@
    "label": "Group By",
    "options": "\nDomain\nEmails",
    "reqd": 1
+  },
+  {
+   "fieldname": "email_list_for_issue",
+   "fieldtype": "Table",
+   "label": "Email List for Issue",
+   "options": "Email List for Issue"
   }
  ],
- "modified": "2020-11-18 20:28:24.813203",
+ "modified": "2020-11-27 07:01:31.346942",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Email Rules for Issue",
@@ -49,7 +58,6 @@
    "write": 1
   }
  ],
- "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "track_changes": 1
