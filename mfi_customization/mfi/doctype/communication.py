@@ -7,6 +7,7 @@ def after_insert(doc,method):
         issue=frappe.new_doc("Issue")
         issue.subject=doc.subject
         issue.description=doc.content
+        issue.raised_by=doc.sender
         issue.customer=domain_rule.get('customer') if domain_rule.get('is_true') else  email_rule.get('customer')
         issue.flags.ignore_mandatory=True
         issue.save()
