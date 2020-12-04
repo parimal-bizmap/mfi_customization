@@ -3,7 +3,7 @@ import frappe
 def after_insert(doc,method):
     domain_rule=email_rules_true_for_domain(doc.sender)
     email_rule=email_rules_true_for_emails_table(doc.sender)
-    if domain_rule.get('is_true') or email_rule.get('is_true'):
+    if (domain_rule.get('is_true') or email_rule.get('is_true')) and doc.sent_or_received=='Received':
         issue=frappe.new_doc("Issue")
         issue.subject=doc.subject
         issue.description=doc.content
