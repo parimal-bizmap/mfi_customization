@@ -10,6 +10,7 @@ def after_insert(doc,method):
         issue.raised_by=doc.sender
         issue.customer=domain_rule.get('customer') if domain_rule.get('is_true') else  email_rule.get('customer')
         issue.flags.ignore_mandatory=True
+        issue.company=domain_rule.get('company') if domain_rule.get('is_true') else  email_rule.get('company')
         issue.save()
 
 def after_insert_file(doc,method):
@@ -27,22 +28,28 @@ def after_insert_file(doc,method):
             file_doc.save()
 
 def email_rules_true_for_domain(sender):
-    resp={'is_ture':False,'customer':''}
+    resp={'is_ture':False,'customer':'','company':''}
     for d in frappe.get_all('Email Rules for Issue',{'group_by':'Domain'},['name','domain','customer']):
         if '@' in sender and d.get('domain').lower() in sender.split('@')[1]:
+            customer=frappe.get_doc('Customer',d.customer)
             resp.update({'is_true':True,'customer':d.customer})
+            for cu in customer.get('accounts'):
+                resp.update({'company':cu.company})
             return resp
     return resp
 
 def email_rules_true_for_emails_table(sender):
-    resp={'is_ture':False,'customer':''}
+    resp={'is_ture':False,'customer':'','company':''}
     for d in frappe.get_all('Email Rules for Issue',{'group_by':'Emails'}):
         rules=frappe.get_doc('Email Rules for Issue',d.name)
         emails=[]
         for tb in rules.get('email_list_for_issue'):
             emails.append(tb.get('email'))
         if sender in emails:
+            customer=frappe.get_doc('Customer',d.customer)
             resp.update({'is_true':True,'customer':d.customer})
+            for cu in customer.get('accounts'):
+                resp.update({'company':cu.company})
             return resp
     return resp
 
