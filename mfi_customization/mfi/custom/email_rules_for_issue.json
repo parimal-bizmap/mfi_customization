@@ -1,0 +1,31 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Email Rules for Issue",
+ "property_setters": [
+  {
+   "_assign": null,
+   "_comments": null,
+   "_liked_by": null,
+   "_user_tags": null,
+   "creation": "2020-11-28 10:34:30.631008",
+   "default_value": null,
+   "doc_type": "Email Rules for Issue",
+   "docstatus": 0,
+   "doctype_or_field": "DocField",
+   "field_name": "domain",
+   "idx": 0,
+   "modified": "2020-11-28 10:34:30.631008",
+   "modified_by": "Administrator",
+   "name": "Email Rules for Issue-domain-options",
+   "owner": "Administrator",
+   "parent": null,
+   "parentfield": null,
+   "parenttype": null,
+   "property": "options",
+   "property_type": "Text",
+   "value": "\ncourt.go.ke"
+  }
+ ],
+ "sync_on_migrate": 1
+}

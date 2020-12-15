@@ -1,0 +1,29 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.customer==\"The Judiciary - The High Court of Kenya\" and doc.company==\"MFI MAROC SARL\"",
+ "creation": "2020-12-14 13:51:37.125765",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Issue",
+ "enabled": 1,
+ "event": "New",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "Your issue has been recorded, details given below,<br>\nTicket No:{{doc.name}}<br>\nwe will try to sort it in time. for updates please visit on portal<br>\nhttp://supportke.groupmfi.com",
+ "modified": "2020-12-14 13:51:37.125765",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Issue has been raised",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "cc": "",
+   "email_by_document_field": "raised_by"
+  }
+ ],
+ "sender": "Notifications",
+ "sender_email": "notifications@groupmfi.com",
+ "subject": "Your Issue has been raised"
+}
