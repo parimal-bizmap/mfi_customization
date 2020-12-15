@@ -1,5 +1,7 @@
 frappe.ui.form.on('Issue', {
 	asset:function(frm){
+		frm.set_value('asset_name','');
+		frm.set_value('serial_no','');
 		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name','location','serial_no'])
 		.then(({ message }) => {
 			frm.set_value('asset_name',message.asset_name);

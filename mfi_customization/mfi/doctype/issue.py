@@ -27,20 +27,17 @@ def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 
 @frappe.whitelist()
 def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
-	location=''
-	asset=''
-	if filters.get('location'):
-		location=" where location='{0}'".format(filters.get('location'))
-	if filters.get('asset'):
-		if not filters.get('location'):
-			location=" where location='{0}'".format(filters.get('asset'))
+	cond=''
+	for i,d in enumerate(filters.keys()):
+		if i==0:
+			cond+="where {0}='{1}'".format(d,filters.get(d))
+
 		else:
-			location="and asset='{0}'".format(filters.get('asset'))
+			cond+="and {0}='{1}'".format(d,filters.get(d))
+		
 	return frappe.db.sql("""select name
-		from `tabAsset Serial No` {location} {asset}
-		"""
-		.format(location = location, asset=asset
-		))
+		from `tabAsset Serial No` {condition}
+		""".format(condition=cond))
 
 def validate(doc,method):
 	if doc.status=="Closed":
