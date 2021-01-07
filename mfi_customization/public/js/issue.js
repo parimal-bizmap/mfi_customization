@@ -1,13 +1,28 @@
 frappe.ui.form.on('Issue', {
-	asset:function(frm){
+	serial_no:function(frm){
+		frm.set_value('asset','');
 		frm.set_value('asset_name','');
-		frm.set_value('serial_no','');
-		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name','location','serial_no'])
+		frm.set_value('location','');
+		frappe.db.get_value('Asset Serial No',{'name':frm.doc.serial_no},['asset','location'])
+		.then(({ message }) => {
+			if (!frm.doc.asset){
+			frm.set_value('asset',message.asset);
+			}
+			if (!frm.doc.location){
+			frm.set_value('location',message.location);
+			}
+		});                                                                                  
+	},
+	asset:function(frm){
+		if (frm.doc.asset){
+		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name'])
 		.then(({ message }) => {
 			frm.set_value('asset_name',message.asset_name);
-			frm.set_value('location',message.location);
-			frm.set_value('serial_no',message.serial_no);
-		});                                                                                  
+		});    
+	} 
+		if (!frm.doc.asset){
+			frm.set_value('asset_name','');
+		}                                                                             
 	},
 	setup:function(frm){
 		frm.set_query("asset", "current_reading", function() {
