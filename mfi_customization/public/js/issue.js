@@ -15,14 +15,23 @@ frappe.ui.form.on('Issue', {
 	},
 	asset:function(frm){
 		if (frm.doc.asset){
-		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name'])
+		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name','company'])
 		.then(({ message }) => {
 			frm.set_value('asset_name',message.asset_name);
+			frm.set_value('company',message.company);
 		});    
 	} 
 		if (!frm.doc.asset){
 			frm.set_value('asset_name','');
-		}                                                                             
+		}  
+	},
+	location:function(frm){
+		if (frm.doc.location){
+			frappe.db.get_value('Location',{'name':frm.doc.location},['company'])
+			.then(({ message }) => {
+				frm.set_value('company',message.company);
+			});    
+		} 
 	},
 	setup:function(frm){
 		frm.set_query("asset", "current_reading", function() {
