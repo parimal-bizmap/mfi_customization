@@ -3,6 +3,8 @@ import frappe
 def after_insert(doc,method):
     domain_rule=email_rules_true_for_domain(doc.sender)
     email_rule=email_rules_true_for_emails_table(doc.sender)
+    print('************************************************')
+    print(domain_rule, email_rule)
     if (domain_rule.get('is_true') or email_rule.get('is_true')) and doc.sent_or_received=='Received':
         issue=frappe.new_doc("Issue")
         issue.subject=doc.subject
@@ -40,7 +42,7 @@ def email_rules_true_for_domain(sender):
 
 def email_rules_true_for_emails_table(sender):
     resp={'is_ture':False,'customer':'','company':''}
-    for d in frappe.get_all('Email Rules for Issue',{'group_by':'Emails'}):
+    for d in frappe.get_all('Email Rules for Issue',{'group_by':'Emails'},['name','customer']):
         rules=frappe.get_doc('Email Rules for Issue',d.name)
         emails=[]
         for tb in rules.get('email_list_for_issue'):
