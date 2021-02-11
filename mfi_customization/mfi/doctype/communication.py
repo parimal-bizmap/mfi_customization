@@ -38,8 +38,8 @@ def after_insert_file(doc,method):
 
 def email_rules_true_for_domain(sender):
     resp={'is_ture':False,'customer':'','company':''}
-    for d in frappe.get_all('Email Rules for Issue',{'group_by':'Domain'},['name','domain','customer']):
-        if '@' in sender and d.get('domain').lower() in sender.split('@')[1]:
+    for d in frappe.get_all('Email Rules for Issue',{'group_by':'Domain'},['name','domain_name','customer']):
+        if '@' in sender and d.get('domain_name').lower() in sender.split('@')[1]:
             customer=frappe.get_doc('Customer',d.customer)
             resp.update({'is_true':True,'customer':d.customer})
             for cu in customer.get('accounts'):
