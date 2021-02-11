@@ -7,7 +7,7 @@
  "field_order": [
   "customer",
   "group_by",
-  "domain",
+  "domain_name",
   "email_list_for_issue"
  ],
  "fields": [
@@ -17,12 +17,6 @@
    "label": "Customer",
    "options": "Customer",
    "reqd": 1
-  },
-  {
-   "fieldname": "domain",
-   "fieldtype": "Select",
-   "label": "Domain",
-   "options": "\nBizmap.in\ngroupmfi.com"
   },
   {
    "fieldname": "group_by",
@@ -37,9 +31,15 @@
    "fieldtype": "Table",
    "label": "Email List for Issue",
    "options": "Email List for Issue"
+  },
+  {
+   "fieldname": "domain_name",
+   "fieldtype": "Link",
+   "label": "Domain Name",
+   "options": "Email Domain name"
   }
  ],
- "modified": "2020-11-27 07:01:31.346942",
+ "modified": "2021-02-10 22:36:26.906059",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Email Rules for Issue",
