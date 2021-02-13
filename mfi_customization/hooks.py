@@ -103,9 +103,9 @@ doc_events = {
     "Comment":{
 		"validate":"mfi_customization.mfi.doctype.comment.comment"
 	},
-    # "Communication":{
-    #     "after_insert":"mfi_customization.mfi.doctype.communication.after_insert"
-    # },
+    "Communication":{
+        "after_insert":"mfi_customization.mfi.doctype.communication.after_insert"
+    },
     "File":{
         "after_insert":"mfi_customization.mfi.doctype.communication.after_insert_file"
     }
