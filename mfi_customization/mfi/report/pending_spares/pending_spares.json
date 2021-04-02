@@ -1,0 +1,24 @@
+{
+ "add_total_row": 0,
+ "creation": "2021-03-08 10:59:27.384851",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "idx": 0,
+ "is_standard": "Yes",
+ "modified": "2021-03-08 10:59:27.384851",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Pending Spares",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Task",
+ "report_name": "Pending Spares",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Projects User"
+  }
+ ]
+}

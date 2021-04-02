@@ -47,6 +47,7 @@ def validate(doc,method):
 		if len(frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']))==0:
 			if len(doc.get('current_reading'))==0:
 				frappe.throw("Please add Asset readings before closing issue")
+	
 	# if doc.status=='Open' and doc.get('__islocal'):
 	# 	import datetime
 	# 	import pytz
