@@ -75,7 +75,22 @@ frappe.ui.form.on('Issue', {
 				});
 			}, __("Make"));
 		}
+	},validate:function(frm){
+		console.log(frm.doc.asset)
+		if(!frm.response_date_time){
+			frappe.db.get_value('Task',{'issue':frm.doc.name},['attended_date_time'],(val) =>
+			{
+				console.log(val.attended_date_time)
+				frm.set_value('response_date_time',val.attended_date_time);
+			});
+			
+
+		}
+
+
 	}
+
+
 })
 
 frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
