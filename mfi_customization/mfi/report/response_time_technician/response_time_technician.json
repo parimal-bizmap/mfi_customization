@@ -7,7 +7,7 @@
  "doctype": "Report",
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-03-29 18:49:59.069350",
+ "modified": "2021-04-08 17:48:56.136001",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Response Time Technician",
@@ -21,10 +21,7 @@
    "role": "Support Team"
   },
   {
-   "role": "Customer"
-  },
-  {
-   "role": "System Manager"
+   "role": "Kenya Support Team"
   },
   {
    "role": "Morocco Support"

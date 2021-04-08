@@ -7,7 +7,7 @@
  "doctype": "Report",
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-03-26 08:25:16.973699",
+ "modified": "2021-04-08 17:48:51.859328",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Response Time Client",
@@ -16,5 +16,15 @@
  "ref_doctype": "Issue",
  "report_name": "Response Time Client",
  "report_type": "Script Report",
- "roles": []
+ "roles": [
+  {
+   "role": "Support Team"
+  },
+  {
+   "role": "Kenya Support Team"
+  },
+  {
+   "role": "Morocco Support"
+  }
+ ]
 }

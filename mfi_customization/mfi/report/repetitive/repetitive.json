@@ -7,7 +7,7 @@
  "doctype": "Report",
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-03-23 08:49:31.758851",
+ "modified": "2021-04-08 17:55:54.893843",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Repetitive",
@@ -21,13 +21,10 @@
    "role": "Support Team"
   },
   {
-   "role": "Customer"
-  },
-  {
-   "role": "System Manager"
-  },
-  {
    "role": "Morocco Support"
+  },
+  {
+   "role": "Kenya Support Team"
   }
  ]
 }
