@@ -7,7 +7,7 @@
  "doctype": "Report",
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-03-08 10:59:27.384851",
+ "modified": "2021-04-08 17:50:22.426503",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Pending Spares",
@@ -18,7 +18,13 @@
  "report_type": "Script Report",
  "roles": [
   {
-   "role": "Projects User"
+   "role": "Support Team"
+  },
+  {
+   "role": "Kenya Support Team"
+  },
+  {
+   "role": "Morocco Support"
   }
  ]
 }
