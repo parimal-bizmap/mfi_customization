@@ -78,8 +78,7 @@ def make_material_req(source_name, target_doc=None):
 	return doclist
 @frappe.whitelist()
 def set_readings(project,asset,target_doc=None):
-	print("$$$$$$$$$$")
-	print(asset)
+	
 	reading_list=[]
 	for d in frappe.get_all('Asset Readings',filters={'parent':project,'asset':asset,'parenttype':'Project'},fields=['date','type','asset','reading','reading_2']):
 		
@@ -90,7 +89,7 @@ def set_readings(project,asset,target_doc=None):
 			'black_white':d.get("reading"),
 			'colour':d.get("reading_2")
 		})
-	print(reading_list)
+	
 	return reading_list
 
 

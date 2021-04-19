@@ -94,10 +94,32 @@ def get_columns(filters=None):
 
 def prepare_data(filters):
 	data=[]
+	# for t in frappe.get_all('Task',fields=['name','issue','completed_by','asset','location','issue_type','project']):
+	# 	row={
+	# 		"ticket":t.issue,
+	# 		"call_assigned":t.completed_by,
+	# 		"ml_number":t.asset,
+	# 		"location":t.location,
+	# 		"complaint":t.issue_type
+	# 	}
+	# 	if t.asset:
+	# 		row.update({'model':frappe.db.get_value('Asset',t.asset,'model')})
+	# 		row.update({'sr_no':frappe.db.get_value('Asset',t.asset,'serial_no')})
+	# 	if t.project:
+	# 		row.update({'manager':frappe.db.get_value('Project',t.project,'manager_name')})
+	# 	for i in frappe.get_all('Issue',filters={'name':t.issue},fields=['status','description']):
+	# 		row.update(i)
+	# 	for a in frappe.get_all('Asset Readings',filters={'parent':t.name,'asset':t.asset},fields=['reading','reading_2']):
+	# 		row.update({'counter_bw':a.reading or '-','counter_color':a.reading_2 or '-','total_counter':int(a.reading or 0)+ int(a.reading_2 or 0)})
+	# 	data.append(row)
+	
 	for i in frappe.get_all('Issue',fields=['name','status','description','asset','project','location','serial_no','issue_type']):
 		row={}
 		row.update(i)
 		row.update({"ticket":i.name,"location":i.location,"complaint":i.issue_type,"ml_number":i.asset,})
+# 		if i.asset:
+# 			row.update({'model':frappe.db.get_value('Asset',i.asset,'model')})
+			# row.update({'sr_no':frappe.db.get_value('Asset',i.asset,'serial_no')})
 		if i.project:
 			row.update({'manager':frappe.db.get_value('Project',i.project,'manager_name')})
 		for t in frappe.get_all('Task',filters={'issue':i.name},fields=['name','issue','completed_by','asset','location','issue_type','project']):

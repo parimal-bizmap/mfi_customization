@@ -31,8 +31,7 @@ validate:function(frm){
     
     if (frm.doc.completed_by && frm.doc.assign_date == null){
         frm.set_value("assign_date",frappe.datetime.now_datetime());
-        // console.log(frm.doc.modified);
-        // console.log(frm.doc.completed_by);
+       
     };
     if (frm.doc.status == 'Working' && frm.doc.attended_date_time == null){
         frm.set_value("attended_date_time", frappe.datetime.now_datetime());
