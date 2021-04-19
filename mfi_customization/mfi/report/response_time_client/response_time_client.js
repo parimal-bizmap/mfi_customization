@@ -7,7 +7,7 @@ frappe.query_reports["Response Time Client"] = {
 				"label":"Response Time (hours)",
 				"fieldname":"response_time",
 				"fieldtype":"Select",
-				"options":"\n>4\n<4\n>8\n>48"	
+				"options":"\n>1\n<1\n>2\n<2\n>4\n<4\n>8\n>48"	
 
 			},{
 				"label":"Client Name",

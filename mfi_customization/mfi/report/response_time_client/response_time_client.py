@@ -12,10 +12,20 @@ def execute(filters=None):
 
 def get_columns(filters = None):
 	
-	return[
+	return[	{
+			"label":"Task",
+			"fieldname":"name",
+			"fieldtype":"Data"	
+
+		},
 			{
 			"label":"Response Time (hours)",
 			"fieldname":"response_time",
+			"fieldtype":"Data"	
+
+		},{
+			"label":"Call Logging",
+			"fieldname":"creation",
 			"fieldtype":"Data"	
 
 		},{
@@ -24,6 +34,12 @@ def get_columns(filters = None):
 			"fieldtype":"Data"	
 
 		},{
+			"label":"Call Attended",
+			"fieldname":"call_attended",
+			"fieldtype":"Data"	
+
+		},
+		{
 			"label":"Call Resolved Date Time",
 			"fieldname":"call_resolution_date",
 			"fieldtype":"Data"	
@@ -48,7 +64,17 @@ def get_columns(filters = None):
 			"fieldname":"nature_of_prob",
 			"fieldtype":"Data"	
 
-		},
+		},{
+			"label":"Call To Fix",
+			"fieldname":"call_to_fix",
+			"fieldtype":"Data"	
+
+		},{
+			"label":"Resolution time",
+			"fieldname":"call_resolution_time",
+			"fieldtype":"Data"	
+
+		}
 		]
 
 def get_data(filters):
@@ -65,6 +91,7 @@ def get_data(filters):
 		fltr = filters.get("response_time")
 		lgc_value = fltr[0]
 		digit = fltr[1:]
+	
 		
 	if filters.get("client_name"):
 		fltr2.update({"customer":filters.get("client_name")})
@@ -72,51 +99,105 @@ def get_data(filters):
 		fltr2.update({"company":filters.get("c_name")})
 
 	for i in frappe.get_all('Issue',fltr2,['name','company','failure_date_and_time','response_date_time','resolution_date','customer','asset','serial_no','issue_type']):
-		#Calculating the diff and converting time in fours
-		if i.get('response_date_time') and i.get('failure_date_and_time'):
-			
-			response_time_diff = (i.get('response_date_time')- i.get("failure_date_and_time")) 
-			hrs = ((response_time_diff.seconds//60)%60)/60
-			response_time = round(((response_time_diff.days * 24) + (((response_time_diff.seconds//3600)) + hrs)),2)			
 		
-		else:
-			response_time = None
-		#applying filters according to condition set
-		if i.get('response_date_time') != None:
-			call_assign_date = (i.get('response_date_time')).strftime("%d/%m/%Y")
-		if lgc_value == '>' and  int(digit) <= response_time:
+		for tk in frappe.db.get_all('Task',{'issue':i.get("name")},['completion_date_time','issue','name','creation','assign_date','attended_date_time']):
+			resolution_date =0
+			attended_date= 0
+			call_to_fix = 0
+			call_resolution_time=0
+			if tk.get('completion_date_time'):
+				resolution_date =  tk.get('completion_date_time')
+				resolution_date = resolution_date.strftime("%m/%d/%Y, %H:%M:%S")
+			if tk.get('attended_date_time'):
+				attended_date =  tk.get('attended_date_time')
+				attended_date = attended_date.strftime("%m/%d/%Y, %H:%M:%S")
+			if tk.get('creation') :
+				logging = tk.get('creation')
+				logging = logging.strftime("%m/%d/%Y, %H:%M:%S")
+				
+			
+			#Calculating the diff and converting time in fours			
+			if tk.get('creation') and tk.get('attended_date_time'):
+				response_time_diff = (tk.get('attended_date_time')- tk.get("creation"))
+				hrs1 = ((response_time_diff.seconds//60)%60)/60
+				response_time = round(((response_time_diff.days * 24) + (((response_time_diff.seconds//3600)) + hrs1)),2)
+			
+			else:
+				response_time = 0
+			if tk.get('completion_date_time') and tk.get('creation'):
+				call_to_fix_diff = (tk.get('completion_date_time')- tk.get("creation"))
+				hrs2 = ((call_to_fix_diff.seconds//60)%60)/60
+				call_to_fix = round(((call_to_fix_diff.days * 24) + (((call_to_fix_diff.seconds//3600)) + hrs2)),2)	
+			else:
+				call_to_fix = 0
+
+			if tk.get('completion_date_time') and tk.get('attended_date_time'):
+				call_res_time_diff = (tk.get('completion_date_time')- tk.get('attended_date_time'))
+				hrs3 = ((call_res_time_diff.seconds//60)%60)/60
+				call_resolution_time = round(((call_res_time_diff.days * 24) + (((call_res_time_diff.seconds//3600)) + hrs3)),2)
+			else:
+				call_resolution_time = 0
+
+			#applying filters according to condition set
+			if tk.get('attended_date_time') != None:
+				call_assign_date = (tk.get('attended_date_time')).strftime("%d/%m/%Y")
+			if lgc_value == '>' and  int(digit) <= response_time:
 				row = {
-			'response_time': response_time,
-			'call_assign_date':call_assign_date ,
-			'call_resolution_date': i.get("resolution_date"),
-			'client_name':i.get("customer"),
-			'machine_model':i.get("asset"),
-			'serial_no':i.get("serial_no"),
-			'nature_of_prob': i.get("issue_type")
-					}
-		elif lgc_value == '<' and  int(digit) >= response_time:
+				'name': tk.get('name'),
+				'response_time': response_time,
+				'creation':logging,
+				'call_assign_date':call_assign_date ,
+				'call_attended': attended_date,
+				'call_resolution_date': resolution_date,
+				'client_name':i.get("customer"),
+				'machine_model':i.get("asset"),
+				'serial_no':i.get("serial_no"),
+				'nature_of_prob': i.get("issue_type"),
+				'call_to_fix':call_to_fix,
+				'call_resolution_time':call_resolution_time
+						}
+				data.append(row)
+			elif lgc_value == '<' and  int(digit) >= response_time and response_time >= 0 and call_to_fix >= 0 and call_resolution_time >=0 :
+				# print("in < ")
+				# print("Logging "+str(tk.get('creation'))+" Attended Time "+str(tk.get('attended_date_time'))+" res time "+str(response_time)+" name "+tk.get("name"))
+
 				row = {
-			'response_time': response_time,
-			'call_assign_date':call_assign_date ,
-			'call_resolution_date': i.get("resolution_date"),
-			'client_name':i.get("customer"),
-			'machine_model':i.get("asset"),
-			'serial_no':i.get("serial_no"),
-			'nature_of_prob': i.get("issue_type")
-					}
-		#if no condition filter is applied
-		elif lgc_value == '':
+				'name': tk.get('name'),
+				'response_time': response_time,
+				'creation':logging,
+				'call_assign_date':call_assign_date ,
+				'call_attended': attended_date,
+				'call_resolution_date':resolution_date,
+				'client_name':i.get("customer"),
+				'machine_model':i.get("asset"),
+				'serial_no':i.get("serial_no"),
+				'nature_of_prob': i.get("issue_type"),
+				'call_to_fix':call_to_fix,
+				'call_resolution_time':call_resolution_time
+						}
+				data.append(row)
+			#if no condition filter is applied
+			elif lgc_value == '' and response_time >= 0 and call_to_fix >= 0 and call_resolution_time >=0:
+				# print("in no para")
+				# print("Logging "+str(tk.get('creation'))+" Attended Time "+str(tk.get('attended_date_time'))+" res time "+str(response_time)+" name "+tk.get("name"))
+
 				row = {
-			'response_time': response_time,
-			'call_assign_date':call_assign_date ,
-			'call_resolution_date': i.get("resolution_date"),
-			'client_name':i.get("customer"),
-			'machine_model':i.get("asset"),
-			'serial_no':i.get("serial_no"),
-			'nature_of_prob': i.get("issue_type")
-					}
-		data.append(row)
-	
+				'name': tk.get('name'),
+				'response_time': response_time,
+				'creation':logging,
+				'call_assign_date':call_assign_date ,
+				'call_attended': attended_date,
+				'call_resolution_date': resolution_date,
+				'client_name':i.get("customer"),
+				'machine_model':i.get("asset"),
+				'serial_no':i.get("serial_no"),
+				'nature_of_prob': i.get("issue_type"),
+				'call_to_fix':call_to_fix,
+				'call_resolution_time':call_resolution_time
+						}
+				data.append(row)
+			
+			
 		
 		
 

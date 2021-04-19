@@ -76,6 +76,23 @@ def make_material_req(source_name, target_doc=None):
 	}, target_doc )
 
 	return doclist
+@frappe.whitelist()
+def set_readings(project,asset,target_doc=None):
+	print("$$$$$$$$$$")
+	print(asset)
+	reading_list=[]
+	for d in frappe.get_all('Asset Readings',filters={'parent':project,'asset':asset,'parenttype':'Project'},fields=['date','type','asset','reading','reading_2']):
+		
+		reading_list.append({
+			'date':d.date,
+			'type':d.type,
+			'asset':d.asset,
+			'black_white':d.get("reading"),
+			'colour':d.get("reading_2")
+		})
+	print(reading_list)
+	return reading_list
+
 
 def set_item_from_material_req(doc,method):
 	if doc.get('task_') and doc.status=="Issued":

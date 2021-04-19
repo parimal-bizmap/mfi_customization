@@ -28,7 +28,7 @@ setup:function(frm){
 },
 validate:function(frm){
     // Assigning time on start and on complete
-    console.log(frm.doc.assign_date);
+    
     if (frm.doc.completed_by && frm.doc.assign_date == null){
         frm.set_value("assign_date",frappe.datetime.now_datetime());
         // console.log(frm.doc.modified);
@@ -41,6 +41,28 @@ validate:function(frm){
     if (frm.doc.status == 'Completed'){
         frm.set_value("completion_date_time", frm.doc.modified);
     };
+    frappe.call({
+        method:
+        "mfi_customization.mfi.doctype.task.set_readings",
+        args: {
+            project: frm.doc.project,
+            asset : frm.doc.asset
+        },
+        callback: (r) => {
+            if(r.message) {
+   
+                cur_frm.clear_table("last_readings");
+                r.message.forEach(function(element) {
+                var c = cur_frm.add_child("last_readings");
+                c.date = element.date;
+                c.type = element.type;
+                c.asset = element.asset;
+                c.reading = element.black_white;
+                c.reading_2 = element.colour;
+            });
+            refresh_field("last_readings"); 
+}}
+    })
     
 
 

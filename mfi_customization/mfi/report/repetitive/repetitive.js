@@ -16,12 +16,6 @@ frappe.query_reports["Repetitive"] = {
 			"fieldtype":"Link",
 			'options':'Customer'	
 
-		},{
-			"label":"Company",
-			"fieldname":"c_name",
-			"fieldtype":"Link",
-			'options':'Company'	
-
 		},
 		{
 			"fieldname": "from_date",

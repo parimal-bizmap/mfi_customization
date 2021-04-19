@@ -88,6 +88,32 @@ frappe.ui.form.on('Issue', {
 		}
 
 
+	},
+	validate:function(frm){
+		frappe.call({
+			method:
+			"mfi_customization.mfi.doctype.task.set_readings",
+			args: {
+				project: frm.doc.project
+			},
+			callback: (r) => {
+				if(r.message) {
+	   
+					cur_frm.clear_table("last_readings");
+					r.message.forEach(function(element) {
+					var c = cur_frm.add_child("last_readings");
+					c.date = element.date;
+					c.type = element.type;
+					c.asset = element.asset;
+					c.reading = element.black_white;
+					c.reading_2 = element.colour;
+				});
+				refresh_field("last_readings"); 
+	}}
+		})
+		
+	
+	
 	}
 
 
