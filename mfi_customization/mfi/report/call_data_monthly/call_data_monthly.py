@@ -23,8 +23,12 @@ def get_columns(filters = None):
 			"fieldname":"support_tech",
 			"fieldtype":"Data"	
 
-		},
-			{
+		},{
+			"label":"Productivity",
+			"fieldname":"productivity",
+			"fieldtype":"Data"	
+
+		},{
 			"label":"Number of calls",
 			"fieldname":"no_of_calls",
 			"fieldtype":"Data"	
@@ -84,9 +88,12 @@ def get_data(filters):
 		unassign_issue_cnt = total_issue_cnt - assign_issue_cnt
 
 		
-		data.append({'helpdesk': unassign_issue_cnt})		
+		data.append({'helpdesk': unassign_issue_cnt})
+
+		waitage = frappe.db.get_value("Productive Waitage",filters.get("type_of_call"),'waitage')
 		
-	
+		
+		
 		for usr in frappe.get_all("User",fltr,["first_name","last_name","email"]):
 				row = {}
 				cnt = 0
@@ -99,12 +106,21 @@ def get_data(filters):
 				avg_on_call_cnt = 0
 				avg_time_on_call = 0
 				prod_per_day = 0
+				productivity_by_wtg = 0
+				response_time_diff = 0
 				fltr2.update({"completed_by":usr.get("email")})
+				fltr2.update({'type_of_waitage':filters.get("type_of_call")})
 				no_of_day_productivity = date_diff(filters.get("to_date"),filters.get("from_date"))
+				type_of_call = len(frappe.get_all("Task",{'type_of_waitage':filters.get("type_of_call")}))
 				
-
-				for tk2 in frappe.get_all('Task',fltr2,['completed_by','assign_date','attended_date_time','status','completion_date_time']):
-					total_calls_cnt += 1 
+				for tk2 in frappe.get_all('Task',fltr2,['completed_by','"completion_date_time"','attended_date_time','status','completion_date_time']):
+					total_calls_cnt += 1
+					
+					if tk2.get('completion_date_time') and tk2.get('attended_date_time'):
+						response_time_diff = (tk2.get("completion_date_time") - tk2.get('attended_date_time')) 
+						hrs = ((response_time_diff.seconds//60)%60)/60
+						response_time = round(((response_time_diff.days * 24) + (((response_time_diff.seconds//3600)) + hrs)),2) 
+						productivity_by_wtg = round((float(response_time) * float(type_of_call) * float(waitage)),2)
 					if tk2.get("attended_date_time") and tk2.get("assign_date"):
 						cnt += 1
 						avg_wt +=  date_diff(tk2.get("attended_date_time"), tk2.get("assign_date"))
@@ -115,7 +131,7 @@ def get_data(filters):
 						resolved_call_cnt += 1
 					if tk2.get("status") in ['Open','Pending Review','Overdue','Working']:
 						pending_calls_cnt += 1
-				
+					
 				if no_of_day_productivity != 0:
 					prod_per_day = round(((resolved_call_cnt/no_of_day_productivity) * 100),2)
 					
@@ -131,7 +147,8 @@ def get_data(filters):
 					'resolved': resolved_call_cnt,
 					'pending_calls': pending_calls_cnt,
 					'prod_per_day': prod_per_day,
-					'average_time_on_call': avg_time_on_call
+					'average_time_on_call': avg_time_on_call,
+					'productivity':productivity_by_wtg
 
 				})
 				
@@ -141,44 +158,3 @@ def get_data(filters):
 		return data
 
 
-
-		# for usr in frappe.get_all('User',)
-		# for usr in frappe.get_all("User",fltr,["first_name","last_name","email"]):
-		# 		# no_calls= len(frappe.get_all("Task",{"completed_by":usr.get("email")}))
-		# 		avg_wait_time = 0
-		# 		avg_wt = 0
-		# 		cnt = 0
-		# 		for tk in frappe.get_all('Task',{"completed_by":usr.get("email")},["completed_by","assign_date","attended_date_time"]):
-		# 			if tk.get("attended_date_time") and tk.get("assign_date"):
-		# 				print(tk.get("attended_date_time"))
-		# 				print(tk.get("assign_date"))
-		# 				cnt += 1
-		# 				avg_wt +=  date_diff(tk.get("attended_date_time"), tk.get("assign_date"))
-		# 				print(str(avg_wt)+"avgwt")
-		# 		print(cnt)	
-		# 		if cnt != 0:
-		# 			avg_wait_time = (avg_wt/cnt)
-
-		# 		data.append({
-		# 				'no_of_calls':cnt,
-		# 				'support_tech': usr.get("first_name"),
-		# 				'avg_wait_time': avg_wait_time,
-		# 				'email':usr.get("email")
-
-		# 		})
-
-
-
-	
-		# for tk in frappe.get_all('Task',fltr,["completed_by","assign_date","attended_date_time"]):
-		# 	for usr in frappe.get_all("User",{"email":tk.get("completed_by")},["first_name","last_name","email"]):
-		# 		no_calls= len(frappe.get_all("Task",{"completed_by":usr.get("email")}))
-		# 		avg_wait_time =  date_diff(tk.get("attended_date_time"), tk.get("assign_date"))
-		# 		print(avg_wait_time)
-		# 		data.append({
-		# 				'no_of_calls':no_calls,
-		# 				'support_tech': usr.get("first_name"),
-		# 				'avg_wait_time':avg_wait_time,
-		# 				'email':usr.get("email")
-
-		# 		})

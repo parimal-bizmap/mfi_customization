@@ -17,6 +17,13 @@ frappe.query_reports["Call Data Monthly"] = {
 			"options":"Company"	
 
 		},{
+			"label":"Type of Calls",
+			"fieldname":"type_of_call",
+			"fieldtype":"Link",
+			"options":"Productive Waitage",
+			"reqd": 1	
+
+		},{
 			"fieldname": "from_date",
 			"label": __("Assign Date From"),
 			"fieldtype": "Date",

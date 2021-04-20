@@ -1,7 +1,7 @@
 # Copyright (c) 2013, bizmap technologies and contributors
 # For license information, please see license.txt
 from __future__ import unicode_literals
-
+from frappe.utils import  getdate
 import frappe
 
 
@@ -10,10 +10,15 @@ def execute(filters=None):
 	data	 = get_data(filters)
 	return columns, data
 def get_column(filters = None):
-	return[
+	return[{
+			"label":"Task",
+			"fieldname":"tk",
+			"fieldtype":"Data"	
+
+		},
 			{
 			"label":"Client Name",
-			"fieldname":"client_name",
+			"fieldname":"customer",
 			"fieldtype":"Data"	
 
 		},{
@@ -45,90 +50,45 @@ def get_column(filters = None):
 
 
 def get_data(filters):
-	condition = ""
-	fltr={}
-	if filters.get('from_date') and filters.get('to_date') :
-			fltr.update({'failure_date_and_time':['between',(filters.get('from_date'),filters.get('to_date'))]})
-			condition+=" where failure_date_and_time between '{0}' and '{1}'".format(filters.get('from_date'),filters.get('to_date'))
-	if filters.get('serial_no'):
-			condition+=" and serial_no ='{0}'".format(filters.get('serial_no'))	
-	if filters.get('client_name'):
-			condition+=" and customer ='{0}'".format(filters.get('client_name'))	
-	if filters.get('c_name'):
-			condition+=" and company ='{0}'".format(filters.get('c_name'))
-	issue_list = frappe.db.sql("""select 
-    	    customer as client_name,
-        	serial_no,
-         	asset_name as machine_model,
-			DATE_FORMAT(resolution_date, "%b") as call_date
-    	    from 
-			`tabIssue` {0} """.format(condition),as_dict=1)
-	data=[]
-	for d in issue_list:
-		fltr.update({'serial_no':d.serial_no})
-		data.append(d.update({'calls':len(frappe.get_all("Issue",fltr))}))
+	data = []
+	fltr1 = {}
+	fltr2 = {}
+	if filters.get("serial_no"):
+			fltr1.update({'serial_no':filters.get("serial_no")})
+	if filters.get("client_name"):
+			fltr1.update({'customer':filters.get("client_name")})
+			print(fltr1)
+	if filters.get("from_date") and filters.get("to_date"):
+		fltr2.update({'failure_date_and_time':['between',(filters.get('from_date'),filters.get('to_date'))]})
+	for tk in frappe.get_all("Task",fltr2,['failure_date_and_time','asset','name']):
+		print(fltr1)
+		fltr1.update({'name':tk.get('asset')})
+		
+		for ast in frappe.get_all("Asset",fltr1,['customer','serial_no','item_code']):
+			data.append({
+					"tk":tk.name,
+					"customer":ast.get('customer'),
+					"serial_no":ast.get('serial_no'),
+					"machine_model":tk.get('asset'),
+					"call_date": tk.get("failure_date_and_time").strftime("%d-%m-%Y"),
+					"calls":get_count(tk.name,tk.asset,ast.item_code)
+			})
+	
 	return data
 
+def get_count(name,asset,item_code):
+	count=0
+	for cu_rd in frappe.get_all("Asset Readings",{"parenttype":"Task","parentfield":"current_reading","parent":name},['asset','date','reading_2','reading']):
+		for ls_rd in frappe.get_all("Asset Readings",filters={"parenttype":"Task","parentfield":"last_readings","parent":name,"asset":cu_rd.asset},fields=['asset','date','reading_2','reading'],order_by="date desc",limit=1):
+			days_diff=(getdate(cu_rd.date)-getdate(ls_rd.date)).days
+			reading_diff=int(cu_rd.reading or 0)-int(ls_rd.reading or 0)
+			reading2_diff=int(cu_rd.reading_2 or 0)-int(ls_rd.reading_2 or 0)
 
-
-# def get_data(filters):
-# 	print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-# 	data = []
-# 	fltr_1 = {}
-# 	fltr_2 = {}
-# 	fltr_3 = {}
-# 	s_no = ''
-		
-# 	if filters:
-# 		for i,d in enumerate(filters):
-# 			if d=='serial_no':
-# 				fltr_1.update({d:filters.get(d)})
-# 				print(s_no)
-# 			elif d=='from_date':
-# 				# fltr_2.update({d:filters.get(d)})
-# 				frm_date = filters.get(d)
-# 				print(frm_date)
-# 			elif d=='to_date':
-# 				#fltr_3.update({d:filters.get(d)})
-# 				to_date = filters.get(d)
-# 				print(to_date)
-					
-# 			print(i,d)
-# 	for ti in frappe.get_all('Issue',fltr_1,['name','subject','customer','issue_type','asset_name','failure_date_and_time','serial_no']):
-# 		if ti.failure_date_and_time != None:
-# 			call_date = ti.failure_date_and_time.strftime("%d-%m-%Y")
-# 			print()
-# 			if frm_date <= call_date and call_date <= to_date:
-# 				row = {
-# 				"call_date":call_date,
-# 				"client_name":ti.customer,
-# 				"serial_no":ti.serial_no,
-# 				"machine_model":ti.asset_name
-# 				}
-# 				print("$$$$$$$$$$$$$$$$$")
-# 				print(ti)
-
-
-# 			# count = 0
-# 			# for s_no in frappe.get_all('Issue',['serial_no']):
-# 			# 	if s_no.serial_no == ti.serial_no:
-# 			# 		count+=1
-# 			# 	row['calls']=count
-# 				data.append(row)
-# 	return data
-	
-
-		
-		
-		
+			if days_diff >= 1 and days_diff <= 30 and frappe.db.get_value("Item",item_code,'avg_duty_cycle')>reading2_diff or frappe.db.get_value("Item",item_code,'avg_duty_cycle')>reading_diff:
+				count+=1
+	return count
+				
 	
 	
-	# if filters:
-	# 	for i,d in enumerate(filters):
-	# 		if i==0:
-	# 			condition+="Where pr.{0}='{1}'".format(d,filters.get(d))
-	# 			print(d,filters.get(d),condition)
-	# 		elif i==1:
-	# 			condition+=" and so.{0}='{1}'".format(d,filters.get(d))
-	# 			print(print(d,filters.get(d),condition))
-	# 		print(i,d)
+	
+	
