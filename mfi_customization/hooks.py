@@ -94,6 +94,11 @@ doc_events = {
     "Project":{
         "validate":"mfi_customization.mfi.doctype.project.validate"
     },
+    "Asset":{
+        "after_insert":"mfi_customization.mfi.doctype.Asset.after_insert",
+        "on_cancel":"mfi_customization.mfi.doctype.Asset.on_cancel",
+        "on_update":"mfi_customization.mfi.doctype.Asset.on_update"
+    },
     "Issue":{
         "validate":"mfi_customization.mfi.doctype.issue.validate"
     },
