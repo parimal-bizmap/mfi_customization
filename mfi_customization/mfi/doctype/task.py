@@ -62,6 +62,23 @@ def after_insert(doc,method):
 					"reading":d.get('reading')
 					}) 
 			asset_doc.save()
+	
+
+	# Share Task with user respectively
+	docshare = frappe.new_doc("DocShare")
+	print(doc.name,"*************",doc.completed_by)
+	docshare.update({
+		"user": doc.completed_by,
+		"share_doctype": 'Task',
+		"share_name": doc.name,
+		"read": 1,
+		"write": 1
+	})
+
+	docshare.save(ignore_permissions=True)
+			
+			
+	
 
 def after_delete(doc,method):
 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
@@ -111,8 +128,8 @@ def set_item_from_material_req(doc,method):
 
 		
 
+	
 
-				
 			
 
 
