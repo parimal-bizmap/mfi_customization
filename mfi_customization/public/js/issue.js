@@ -1,18 +1,46 @@
 frappe.ui.form.on('Issue', {
+	// serial_no:function(frm){
+	// 	if (frm.doc.serial_no){
+	// 	frm.set_value('asset','');
+	// 	frm.set_value('asset_name','');
+	// 	frm.set_value('location','');
+	// 	frappe.db.get_value('Asset Serial No',{'name':frm.doc.serial_no},['asset','location'])
+	// 	.then(({ message }) => {
+	// 		if (!frm.doc.asset){
+	// 		frm.set_value('asset',message.asset);
+	// 		}
+	// 		if (!frm.doc.location){
+	// 		frm.set_value('location',message.location);
+	// 		}
+	// 	}); 
+	// }                                                                                 
+	// },
 	serial_no:function(frm){
+		if(frm.doc.serial_no){
 		frm.set_value('asset','');
 		frm.set_value('asset_name','');
 		frm.set_value('location','');
+		frm.set_value('customer','');
+		
+		frappe.db.get_value('Asset',{'serial_no':frm.doc.serial_no},['name','location','customer'])
+		.then(({ message }) => {
+			
+			if (!frm.doc.customer){
+				frm.set_value('customer',message.customer);
+				}
+		});
 		frappe.db.get_value('Asset Serial No',{'name':frm.doc.serial_no},['asset','location'])
 		.then(({ message }) => {
+			
 			if (!frm.doc.asset){
-			frm.set_value('asset',message.asset);
-			}
+					frm.set_value('asset',message.asset);
+				}
+
 			if (!frm.doc.location){
-			frm.set_value('location',message.location);
-			}
+					frm.set_value('location',message.location);
+				}
 		});                                                                                  
-	},
+	}},
 	asset:function(frm){
 		if (frm.doc.asset){
 		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name','company'])
@@ -51,12 +79,23 @@ frappe.ui.form.on('Issue', {
 				};
 			}
 		});
+		frm.set_query("asset", function() {
+			if (frm.doc.customer && frm.doc.location) {
+				return {
+					query: 'mfi_customization.mfi.doctype.issue.get_asset_list',
+					filters: {
+						"location":frm.doc.location,
+						"customer":frm.doc.customer
+					}
+				};
+			}
+		});
 		frm.set_query("serial_no", function() {
 				return {
 					query: 'mfi_customization.mfi.doctype.issue.get_serial_no_list',
 					filters: {
-						"location":frm.doc.location,
-						"asset":frm.doc.asset
+						"location":frm.doc.location
+						,"asset":frm.doc.asset
 					}
 				};
 		});
@@ -88,33 +127,38 @@ frappe.ui.form.on('Issue', {
 		}
 
 
-	},
-	validate:function(frm){
-		frappe.call({
-			method:
-			"mfi_customization.mfi.doctype.task.set_readings",
-			args: {
-				project: frm.doc.project
-			},
-			callback: (r) => {
-				if(r.message) {
+	}
+	// validate:function(frm){
+	// 	if(!frm.doc.project){
+	// 		frappe.throw("Please Enter Project in Reference")
+		
+	// 	}
+	// 	frappe.call({
+	// 		method:
+	// 		"mfi_customization.mfi.doctype.task.set_readings",
+	// 		args: {
+	// 			project: frm.doc.project,
+	// 			asset:frm.doc.asset
+	// 		},
+	// 		callback: (r) => {
+	// 			if(r.message) {
 	   
-					cur_frm.clear_table("last_readings");
-					r.message.forEach(function(element) {
-					var c = cur_frm.add_child("last_readings");
-					c.date = element.date;
-					c.type = element.type;
-					c.asset = element.asset;
-					c.reading = element.black_white;
-					c.reading_2 = element.colour;
-				});
-				refresh_field("last_readings"); 
-	}}
-		})
+	// 				cur_frm.clear_table("last_readings");
+	// 				r.message.forEach(function(element) {
+	// 				var c = cur_frm.add_child("last_readings");
+	// 				c.date = element.date;
+	// 				c.type = element.type;
+	// 				c.asset = element.asset;
+	// 				c.reading = element.black_white;
+	// 				c.reading_2 = element.colour;
+	// 			});
+	// 			refresh_field("last_readings"); 
+	// }}
+	// 	})
 		
 	
 	
-	}
+	// }
 
 
 })
