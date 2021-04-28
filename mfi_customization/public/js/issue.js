@@ -102,7 +102,6 @@ frappe.ui.form.on('Issue', {
 		});
 	},
 	refresh: function (frm) {
-		$("[data-doctype='Task']").hide();
 		frm.add_custom_button(__('Task'), function() {
 			frappe.set_route('List', 'Task', {issue: frm.doc.name});
 		},__("View"));
@@ -115,8 +114,8 @@ frappe.ui.form.on('Issue', {
 				});
 			}, __("Make"));
 		}
-	},validate:function(frm){
-		console.log(frm.doc.asset)
+	},
+	validate:function(frm){
 		if(!frm.response_date_time){
 			frappe.db.get_value('Task',{'issue':frm.doc.name},['attended_date_time'],(val) =>
 			{
@@ -129,6 +128,10 @@ frappe.ui.form.on('Issue', {
 
 
 	}
+	// ,onload:function(frm){
+	// 	$("[data-doctype='Task']").hide();
+
+	// }
 	
 })
 

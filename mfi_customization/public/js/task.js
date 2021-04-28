@@ -40,6 +40,17 @@ validate:function(frm){
     if (frm.doc.status == 'Completed'){
         frm.set_value("completion_date_time", frm.doc.modified);
     };
+    // Validation for working and completion time
+    if(!frm.doc.attended_date_time && frm.doc.status == 'Completed'){
+        frm.set_value("completion_date_time","");
+        frappe.throw("Status Cannot be complete before working")
+    }
+    if(frm.doc.attended_date_time > frm.doc.completion_date_time){
+        frappe.throw("Attended time cannot be greater than Completion time")
+
+    } 
+    
+
     frappe.call({
         method:
         "mfi_customization.mfi.doctype.task.set_readings",
