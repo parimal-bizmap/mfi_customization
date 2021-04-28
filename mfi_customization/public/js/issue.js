@@ -1,20 +1,5 @@
 frappe.ui.form.on('Issue', {
-	// serial_no:function(frm){
-	// 	if (frm.doc.serial_no){
-	// 	frm.set_value('asset','');
-	// 	frm.set_value('asset_name','');
-	// 	frm.set_value('location','');
-	// 	frappe.db.get_value('Asset Serial No',{'name':frm.doc.serial_no},['asset','location'])
-	// 	.then(({ message }) => {
-	// 		if (!frm.doc.asset){
-	// 		frm.set_value('asset',message.asset);
-	// 		}
-	// 		if (!frm.doc.location){
-	// 		frm.set_value('location',message.location);
-	// 		}
-	// 	}); 
-	// }                                                                                 
-	// },
+
 	serial_no:function(frm){
 		if(frm.doc.serial_no){
 		frm.set_value('asset','');
@@ -22,15 +7,6 @@ frappe.ui.form.on('Issue', {
 		frm.set_value('location','');
 		frm.set_value('customer','');
 		
-		// frappe.db.get_value('Asset',{'serial_no':frm.doc.serial_no},['customer'])
-		// .then(({ message }) => {
-			
-		// 	if (!frm.doc.customer){
-		// 		console.log("********")
-		// 		frm.set_value('customer',message.customer);
-		// 		}
-			
-		// });
 		frappe.call({
 			method: "mfi_customization.mfi.doctype.issue.get_customer",
 			args: {
@@ -39,7 +15,6 @@ frappe.ui.form.on('Issue', {
 			},
 			callback: function(r) {
 			
-					console.log(r.message);
 					frm.set_value('customer',r.message);				
 				}
 	
@@ -95,6 +70,16 @@ frappe.ui.form.on('Issue', {
 				};
 			}
 		});
+		frm.set_query("location", function() {
+			if (frm.doc.customer) {
+				return {
+					query: 'mfi_customization.mfi.doctype.issue.get_location',
+					filters: {
+						"customer":frm.doc.customer
+					}
+				};
+			}
+		});
 		frm.set_query("asset", function() {
 			if (frm.doc.customer && frm.doc.location) {
 				return {
@@ -144,39 +129,7 @@ frappe.ui.form.on('Issue', {
 
 
 	}
-	// validate:function(frm){
-	// 	if(!frm.doc.project){
-	// 		frappe.throw("Please Enter Project in Reference")
-		
-	// 	}
-	// 	frappe.call({
-	// 		method:
-	// 		"mfi_customization.mfi.doctype.task.set_readings",
-	// 		args: {
-	// 			project: frm.doc.project,
-	// 			asset:frm.doc.asset
-	// 		},
-	// 		callback: (r) => {
-	// 			if(r.message) {
-	   
-	// 				cur_frm.clear_table("last_readings");
-	// 				r.message.forEach(function(element) {
-	// 				var c = cur_frm.add_child("last_readings");
-	// 				c.date = element.date;
-	// 				c.type = element.type;
-	// 				c.asset = element.asset;
-	// 				c.reading = element.black_white;
-	// 				c.reading_2 = element.colour;
-	// 			});
-	// 			refresh_field("last_readings"); 
-	// }}
-	// 	})
-		
 	
-	
-	// }
-
-
 })
 
 frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {

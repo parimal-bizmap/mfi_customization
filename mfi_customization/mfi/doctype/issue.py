@@ -41,19 +41,7 @@ def get_asset_in_issue(doctype, txt, searchfield, start, page_len, filters):
 	print(data)
 	return data
 
-# @frappe.whitelist()
-# def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
-# 	cond=''
-# 	for i,d in enumerate(filters.keys()):
-# 		if i==0:
-# 			cond+="where {0}='{1}'".format(d,filters.get(d))
 
-# 		else:
-# 			cond+="and {0}='{1}'".format(d,filters.get(d))
-		
-# 	return frappe.db.sql("""select name
-# 		from `tabAsset Serial No` {condition}
-# 		""".format(condition=cond))
 @frappe.whitelist()
 def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
  	if txt:
@@ -74,3 +62,17 @@ def get_customer(serial_no,asset):
 	customer = frappe.db.get_value('Project',{'name':project},'customer')
 	name =  frappe.db.get_value('Customer',{'name':customer},'name')
 	return name
+
+@frappe.whitelist()
+def get_location(doctype, txt, searchfield, start, page_len, filters):
+	lst = []
+	fltr = {}
+	if txt:
+			fltr.update({"location": ("like", "{0}%".format(txt))})
+	for i in frappe.get_all('Project',filters,['name']):
+		fltr.update({'project':i.get('name')})
+		for a in frappe.get_all('Asset',fltr,['location']):
+			if a.location not in lst:
+				lst.append(a.location)
+	return [(d,) for d in lst]	
+		
