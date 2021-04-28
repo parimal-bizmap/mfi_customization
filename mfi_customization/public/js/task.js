@@ -45,10 +45,7 @@ validate:function(frm){
         frm.set_value("completion_date_time","");
         frappe.throw("Status Cannot be complete before working")
     }
-    if(frm.doc.attended_date_time > frm.doc.completion_date_time){
-        frappe.throw("Attended time cannot be greater than Completion time")
 
-    } 
     
 
     frappe.call({
