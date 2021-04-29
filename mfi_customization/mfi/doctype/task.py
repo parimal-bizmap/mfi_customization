@@ -66,7 +66,6 @@ def after_insert(doc,method):
 
 	# Share Task with user respectively
 	docshare = frappe.new_doc("DocShare")
-	print(doc.name,"*************",doc.completed_by)
 	docshare.update({
 		"user": doc.completed_by,
 		"share_doctype": 'Task',
@@ -126,9 +125,22 @@ def set_item_from_material_req(doc,method):
 		task.material_request=doc.name
 		task.save()
 
+@frappe.whitelist()
+def get_tech(doctype, txt, searchfield, start, page_len, filters):
+	tch_lst = []
+	fltr = {}
+	if txt:
+			fltr.update({"name": ("like", "{0}%".format(txt))})
+	for i in frappe.get_roles(filters.get("user")):
 		
-
+		for ss in frappe.db.get_all('Support Setting Table',{'back_office_team_role':i},['technician_role','back_office_team_role']):
+			for usr in frappe.get_all('User',fltr,['name']):
+				if ss.get('technician_role') in frappe.get_roles(usr.get("name")) and not usr.get("name") == 'Administrator':
+					
+					if usr.name not in tch_lst:
+						tch_lst.append(usr.name)
 	
+	return [(d,) for d in tch_lst]
 
 			
 
