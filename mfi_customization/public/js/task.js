@@ -16,7 +16,19 @@ refresh:function(frm){
         },
         __('Make')
         )
+        frm.set_query("completed_by", function() {
+            console.log("**************888");
+            
+                return {
+                    query: 'mfi_customization.mfi.doctype.task.get_tech',
+                    filters: {
+                        "user":frappe.session.user
+                    }
+                };
+            
+        });
 },
+
 setup:function(frm){
     frm.set_query("asset", "current_reading", function() {
         return {
@@ -25,7 +37,9 @@ setup:function(frm){
             }
         }
     });
+  
 },
+
 validate:function(frm){
     // Assigning time on start and on complete
     
