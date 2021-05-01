@@ -34,10 +34,11 @@ frappe.ui.form.on('Issue', {
 	}},
 	asset:function(frm){
 		if (frm.doc.asset){
-		frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name','company'])
+		frappe.db.get_value('Asset',{'name':frm.doc.asset,'docstatus':1},['asset_name','company','serial_no'])
 		.then(({ message }) => {
 			frm.set_value('asset_name',message.asset_name);
 			frm.set_value('company',message.company);
+			frm.set_value('serial_no',message.serial_no);
 		});    
 	} 
 		if (!frm.doc.asset){
@@ -90,6 +91,7 @@ frappe.ui.form.on('Issue', {
 					}
 				};
 			}
+			
 		});
 		frm.set_query("serial_no", function() {
 				return {
@@ -114,6 +116,16 @@ frappe.ui.form.on('Issue', {
 				});
 			}, __("Make"));
 		}
+		
+		// frm.set_query("asset", function() {
+		// 	return {
+		// 		query: 'mfi_customization.mfi.doctype.issue.get_live_asset',
+		// 		filters: {
+		// 				"docstatus" : 1
+		// 		 }
+		// 	};
+		// });
+	
 	},
 	validate:function(frm){
 		if(!frm.response_date_time){

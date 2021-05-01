@@ -51,7 +51,7 @@ validate:function(frm){
         frm.set_value("attended_date_time", frappe.datetime.now_datetime());
     };
     
-    if (frm.doc.status == 'Completed'){
+    if (frm.doc.status == 'Completed' && frm.doc.completion_date_time){
         frm.set_value("completion_date_time", frm.doc.modified);
     };
     // Validation for working and completion time
@@ -59,9 +59,25 @@ validate:function(frm){
         frm.set_value("completion_date_time","");
         frappe.throw("Status Cannot be complete before working")
     }
+    //validation for tech to stop chnges status back to working and other
+    // if (frm.doc.status == 'Completed'){
+    // frappe.call({
+    //     method: "mfi_customization.mfi.doctype.task.set_status",
+    //     args:{
+    //         "user":frappe.session.user,
+    //         "status": frm.doc.status
+    //     },
+    //     callback: function(r) {
+    //        console.log(r.message)
+    //        frm.set_df_property('status','read_only',r.message)
 
+
+    //     }
+
+
+    // })}
     
-
+    
     frappe.call({
         method:
         "mfi_customization.mfi.doctype.task.set_readings",
@@ -82,9 +98,10 @@ validate:function(frm){
                 c.reading_2 = element.colour;
             });
             refresh_field("last_readings"); 
-}}
+        }}
     })
     
+
 
 
 }
