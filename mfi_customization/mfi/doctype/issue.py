@@ -24,21 +24,39 @@ def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 		from `tabAsset`  {location}"""
 		.format(location=location))
 
+# @frappe.whitelist()
+# def get_asset_in_issue(doctype, txt, searchfield, start, page_len, filters):
+# 	cond1=''
+# 	cond2=''
+# 	if filters.get("customer"):
+# 			print(filters.get("customer"),"***************")
+# 			cond2+="where customer ='{0}'".format(filters.get("customer"))
+
+# 	if filters.get("location"):
+# 			cond1+="where location='{0}'".format(filters.get("location"))
+		
+# 	data = frappe.db.sql("""select asset from `tabAsset Serial No` where asset IN (select name from `tabAsset` {0} and project = (select name
+# 		from `tabProject`  {1}))
+# 		""".format(cond1,cond2))
+# 	print(data)
+# 	return data
 @frappe.whitelist()
 def get_asset_in_issue(doctype, txt, searchfield, start, page_len, filters):
-	cond1=''
-	cond2=''
+	cond1 = ''
+	cond2 = ''
+	cond3 = ''
+	if txt:
+		cond3 = "and name = '{0}'".format(txt)
 	if filters.get("customer"):
-			print(filters.get("customer"),"***************")
 			cond2+="where customer ='{0}'".format(filters.get("customer"))
 
 	if filters.get("location"):
 			cond1+="where location='{0}'".format(filters.get("location"))
 		
-	data = frappe.db.sql("""select asset from `tabAsset Serial No` where asset IN (select name from `tabAsset` {0} and project = (select name
-		from `tabProject`  {1}))
-		""".format(cond1,cond2))
-	print(data)
+	data = frappe.db.sql("""select asset from `tabAsset Serial No` 
+			where asset IN (select name from `tabAsset` {0} and project = (select name
+		from `tabProject`  {1} {2}))
+		""".format(cond1,cond2,cond3))
 	return data
 
 
@@ -76,3 +94,10 @@ def get_location(doctype, txt, searchfield, start, page_len, filters):
 				lst.append(a.location)
 	return [(d,) for d in lst]	
 		
+# @frappe.whitelist()
+# def get_live_asset(doctype, txt, searchfield, start, page_len, filters):
+# 	cond = ''
+# 	if txt:
+# 		cond= "and name = '{0}'".format(txt)
+# 	data =  frappe.db.sql("""select name from `tabAsset` where docstatus = 1 {0}""".format(cond))
+# 	return data
