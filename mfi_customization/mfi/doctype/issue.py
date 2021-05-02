@@ -51,11 +51,13 @@ def get_asset_in_issue(doctype, txt, searchfield, start, page_len, filters):
 			cond2+="where customer ='{0}'".format(filters.get("customer"))
 
 	if filters.get("location"):
-			cond1+="where location='{0}'".format(filters.get("location"))
+			cond1+="and location='{0}'".format(filters.get("location"))
 		
 	data = frappe.db.sql("""select asset from `tabAsset Serial No` 
-			where asset IN (select name from `tabAsset` {0} and project = (select name
-		from `tabProject`  {1} {2}))
+			where asset IN (select name from 
+			`tabAsset` where docstatus = 1  {0} 
+			and project = (select name
+			from `tabProject`  {1} {2}))
 		""".format(cond1,cond2,cond3))
 	return data
 
@@ -93,7 +95,66 @@ def get_location(doctype, txt, searchfield, start, page_len, filters):
 			if a.location not in lst:
 				lst.append(a.location)
 	return [(d,) for d in lst]	
+
+
+@frappe.whitelist()
+def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
+		fltr = {}
+		asst = {}
+		lst = []
+		if filters.get('customer'):
+			fltr.update({'customer':filters.get('customer')})
+		if txt:
+			asst.update({'name':("like", "{0}%".format(txt))})
+		# asst.update()
+		for i  in frappe.get_all('Project',fltr,['name']):
+			asst.update({'project':i.get('name'),'docstatus':1})
+			for ass in frappe.get_all('Asset',asst,['name']):
+				if ass.name not in lst:
+					lst.append(ass.name)
+		return [(d,) for d in lst]	
 		
+
+
+@frappe.whitelist()
+def get_asset_serial_on_cust(doctype, txt, searchfield, start, page_len, filters):
+		fltr = {}
+		asst = {}
+		lst = []
+		if filters.get('customer'):
+			fltr.update({'customer':filters.get('customer')})
+		if txt:
+			asst.update({'serial_no':("like", "{0}%".format(txt))})
+		# asst.update()
+		for i  in frappe.get_all('Project',fltr,['name']):
+			asst.update({'project':i.get('name'),'docstatus':1})
+			for ass in frappe.get_all('Asset',asst,['serial_no']):
+				if ass.serial_no not in lst:
+					lst.append(ass.serial_no)
+		return [(d,) for d in lst]	
+
+@frappe.whitelist()
+def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
+	# data = frappe.db.sql("""select name from `tabProject` """)
+	print("**********8")
+	fltr1 = {}
+	fltr2 = {}
+	lst = []
+	if filters.get('customer'):
+		fltr1.update({'customer':filters.get('customer')})
+	if filters.get('location'):
+		fltr2.update({'location':filters.get('location')})
+	if txt:
+		fltr2.update({'serial_no':txt})
+	for i in frappe.get_all('Project',fltr1,['name']):
+		print("*****",i.get('name'))
+		fltr2.update({'project':i.get('name'),'docstatus':1})
+		for j in frappe.get_all('Asset',fltr2,['serial_no']):
+			if j.serial_no not in lst:
+					lst.append(j.serial_no)
+	return [(d,) for d in lst]	
+
+
 # @frappe.whitelist()
 # def get_live_asset(doctype, txt, searchfield, start, page_len, filters):
 # 	cond = ''

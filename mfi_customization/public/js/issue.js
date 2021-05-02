@@ -91,19 +91,53 @@ frappe.ui.form.on('Issue', {
 					}
 				};
 			}
-			
-		});
-		frm.set_query("serial_no", function() {
+			if (frm.doc.customer && !frm.doc.location) {
 				return {
+					query: 'mfi_customization.mfi.doctype.issue.get_asset_on_cust',
+					filters: {
+						// "location":frm.doc.location,
+						"customer":frm.doc.customer
+					}
+				};
+			}
+	
+		});
+
+		frm.set_query("serial_no", function() {
+			if(frm.doc.location && frm.doc.asset){	
+			return {
 					query: 'mfi_customization.mfi.doctype.issue.get_serial_no_list',
 					filters: {
 						"location":frm.doc.location
 						,"asset":frm.doc.asset
 					}
-				};
+				};}
+				if (frm.doc.customer && !frm.doc.location) {
+					return {
+						query: 'mfi_customization.mfi.doctype.issue.get_asset_serial_on_cust',
+						filters: {
+							// "location":frm.doc.location,
+							"customer":frm.doc.customer
+						}
+					};
+				}
+				if(frm.doc.customer &&  frm.doc.location){
+					console.log("*in js task cust loc")
+					return {
+						query: 'mfi_customization.mfi.doctype.issue.get_serial_on_cust_loc',
+						filters: {
+							"location":frm.doc.location,
+							"customer":frm.doc.customer
+						}
+					};
+
+				}
 		});
 	},
 	refresh: function (frm) {
+		console.log("after 1st");
+		if (!frm.doc.__islocal ){
+			console.log("after 2st");
 		frm.add_custom_button(__('Task'), function() {
 			frappe.set_route('List', 'Task', {issue: frm.doc.name});
 		},__("View"));
@@ -116,7 +150,15 @@ frappe.ui.form.on('Issue', {
 				});
 			}, __("Make"));
 		}
-		
+	}
+	else{
+		frm.remove_custom_button('Task','Make');
+		frm.remove_custom_button('Task','View');
+		frm.remove_custom_button('Close');
+
+	} 	
+	
+
 		// frm.set_query("asset", function() {
 		// 	return {
 		// 		query: 'mfi_customization.mfi.doctype.issue.get_live_asset',
