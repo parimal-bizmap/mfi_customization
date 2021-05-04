@@ -176,16 +176,22 @@ frappe.ui.form.on('Issue', {
 				console.log(val.attended_date_time)
 				frm.set_value('response_date_time',val.attended_date_time);
 			});
-			
+		if (frm.doc.customer){
+				frm.set_df_property("customer","read_only",1);			}
 
 		}
 
 
+	},
+	customer:function(frm){
+		if (frm.doc.customer){
+			frappe.db.get_value("Project",{'customer':frm.doc.customer},"name", function(val){
+				if (val.name){
+					frm.set_value("project",val.name);
+				}
+			})
+}
 	}
-	// ,onload:function(frm){
-	// 	$("[data-doctype='Task']").hide();
-
-	// }
 	
 })
 
