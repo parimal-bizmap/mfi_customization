@@ -239,6 +239,23 @@ def get_customer(serial_no,asset):
 	customer = frappe.db.get_value('Project',{'name':project},'customer')
 	name =  frappe.db.get_value('Customer',{'name':customer},'name')
 	return name
+@frappe.whitelist()
+def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
+		fltr = {}
+		asst = {}
+		lst = []
+		if filters.get('customer'):
+			fltr.update({'customer':filters.get('customer')})
+		if txt:
+			asst.update({'name':("like", "{0}%".format(txt))})
+		# asst.update()
+		for i  in frappe.get_all('Project',fltr,['name']):
+			asst.update({'project':i.get('name'),'docstatus':1})
+			for ass in frappe.get_all('Asset',asst,['name']):
+				if ass.name not in lst:
+					lst.append(ass.name)
+		return [(d,) for d in lst]	
+
 
 
 # @frappe.whitelist()		
