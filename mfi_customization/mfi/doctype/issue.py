@@ -136,7 +136,6 @@ def get_asset_serial_on_cust(doctype, txt, searchfield, start, page_len, filters
 @frappe.whitelist()
 def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
 	# data = frappe.db.sql("""select name from `tabProject` """)
-	print("**********8")
 	fltr1 = {}
 	fltr2 = {}
 	lst = []
@@ -153,6 +152,8 @@ def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
 			if j.serial_no not in lst:
 					lst.append(j.serial_no)
 	return [(d,) for d in lst]	
+
+
 
 
 # @frappe.whitelist()
