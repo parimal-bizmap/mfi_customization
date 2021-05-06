@@ -204,10 +204,10 @@ validate:function(frm){
     if(frm.doc.status == 'Completed'  ){
         console.log("*****",frm.doc.current_reading.length);
         if(!frm.doc.asset){
-        frappe.throw('Please add asset details and current readings');
+        frappe.throw('Asset details missing.');
     }
     if(!frm.doc.current_reading.length){
-        frappe.throw('Please add asset details and current readings');
+        frappe.throw('Current readings missing.');
     }
 
 }
