@@ -1,12 +1,82 @@
 frappe.ui.form.on('Task', {
 asset:function(frm){
-    frappe.db.get_value('Asset',{'name':frm.doc.asset},['asset_name','location'])
+    if(frm.doc.asset){
+    frappe.db.get_value('Asset',{'name':frm.doc.asset,'docstatus':1},['asset_name','location','serial_no'])
     .then(({ message }) => {
         frm.set_value('asset_name',message.asset_name);
         frm.set_value('location',message.location);
+        frm.set_value('serial_no',message.serial_no);
+    });
+    frappe.db.get_value('Asset',{'name':frm.doc.asset,'docstatus':1},['project'])
+    .then(({ message }) => {
+        console.log(message,"&&&&");
+    frappe.db.get_value('Project',{'name':message.project},['customer'])
+    .then(({ message }) => {
+        console.log(message);
+        if (!frm.doc.customer){
+                frm.set_value('customer',message.customer);
+            }
+
+         
+    }); 
+}); 
+}
+    
+
+
+},serial_no:function(frm){
+    if(frm.doc.serial_no && !frm.doc.asset){
+    frm.set_value('asset','');
+    frm.set_value('asset_name','');
+    frm.set_value('location','');
+    frm.set_value('customer','');
+    
+    frappe.call({
+        method: "mfi_customization.mfi.doctype.task.get_customer",
+        args: {
+            "serial_no":frm.doc.serial_no,
+            "asset":frm.doc.asset
+        },
+        callback: function(r) {
+        
+                frm.set_value('customer',r.message);				
+            }
+
+        
+});
+        frappe.db.get_value('Asset',{'serial_no':frm.doc.serial_no,'docstatus':1},['project'])
+        .then(({ message }) => {
+            frm.set_value('project',message.project);
+        });
+    
+
+    frappe.db.get_value('Asset Serial No',{'name':frm.doc.serial_no},['asset','location'])
+    .then(({ message }) => {
+        
+        if (!frm.doc.asset){
+                frm.set_value('asset',message.asset);
+            }
+
+        if (!frm.doc.location){
+                frm.set_value('location',message.location);
+            }
     });                                                                                  
+}},
+onload:function(frm){
+    if(!frm.doc.asset){
+        frm.set_df_property('asset',"read_only",0);
+        frm.set_df_property('customer',"read_only",0);
+        frm.set_df_property('location',"read_only",0);
+        frm.set_df_property('serial_no',"read_only",0);
+        frm.set_df_property('project',"read_only",0);
+        frm.set_value('project','');
+    }
+
 },
+
 refresh:function(frm){
+    
+
     frm.add_custom_button('Material Request', () => {
         frappe.model.open_mapped_doc({
             method: "mfi_customization.mfi.doctype.task.make_material_req",
@@ -17,9 +87,7 @@ refresh:function(frm){
         __('Make')
         )
         frm.set_query("completed_by", function() {
-            console.log("**************888");
-            
-                return {
+               return {
                     query: 'mfi_customization.mfi.doctype.task.get_tech',
                     filters: {
                         "user":frappe.session.user
@@ -27,9 +95,92 @@ refresh:function(frm){
                 };
             
         });
+        // frappe.db.get_value('Task',{})
 },
+status:function(frm){
+    if(frm.doc.status == 'Completed'){
+        frappe.call({
+        method: "mfi_customization.mfi.doctype.task.check_material_request_status",
+        args: {
+            "task":frm.doc.name
+        },
+        callback: function(r) {
+          if (r.message){
+              frm.set_value('status','Working');
+              frappe.throw("Material Request is not completed yet.");
+              
+          }  
+               				
+        }
+
+        
+});
+}
+        
+},	
 
 setup:function(frm){
+    frm.set_query("location", function() {
+        if (frm.doc.customer) {
+            return {
+                query: 'mfi_customization.mfi.doctype.task.get_location',
+                filters: {
+                    "customer":frm.doc.customer
+                }
+            };
+        }
+    });
+    frm.set_query("asset", function() {
+        if (frm.doc.customer && frm.doc.location) {
+            return {
+                query: 'mfi_customization.mfi.doctype.task.get_asset_in_task',
+                filters: {
+                    "location":frm.doc.location,
+                    "customer":frm.doc.customer
+                }
+            };
+        }
+        if (frm.doc.customer && !frm.doc.location) {
+            return {
+                query: 'mfi_customization.mfi.doctype.task.get_asset_on_cust',
+                filters: {
+                    // "location":frm.doc.location,
+                    "customer":frm.doc.customer
+                }
+            };
+        }
+
+    });
+
+		frm.set_query("serial_no", function() {
+			if(frm.doc.location && frm.doc.asset){	
+			return {
+					query: 'mfi_customization.mfi.doctype.task.get_serial_no_list',
+					filters: {
+						"location":frm.doc.location
+						,"asset":frm.doc.asset
+					}
+				};}
+				if (frm.doc.customer && !frm.doc.location) {
+					return {
+						query: 'mfi_customization.mfi.doctype.task.get_asset_serial_on_cust',
+						filters: {
+							// "location":frm.doc.location,
+							"customer":frm.doc.customer
+						}
+					};
+				}
+				if(frm.doc.customer &&  frm.doc.location){
+					return {
+						query: 'mfi_customization.mfi.doctype.task.get_serial_on_cust_loc',
+						filters: {
+							"location":frm.doc.location,
+							"customer":frm.doc.customer
+						}
+					};
+
+				}
+		});
     frm.set_query("asset", "current_reading", function() {
         return {
             filters: {
@@ -37,12 +188,31 @@ setup:function(frm){
             }
         }
     });
-  
-},
-
-validate:function(frm){
-    // Assigning time on start and on complete
     
+  
+}
+,
+completed_by:function(frm){
+    if(frm.doc.completed_by){
+        frappe.db.get_value('User',{'name':frm.doc.completed_by},['full_name'],(val) =>
+			{
+				frm.set_value('technician_name',val.full_name);
+			});
+    }
+},
+validate:function(frm){
+    if(frm.doc.status == 'Completed'  ){
+        console.log("*****",frm.doc.current_reading.length);
+        if(!frm.doc.asset){
+        frappe.throw('Please add asset details and current readings');
+    }
+    if(!frm.doc.current_reading.length){
+        frappe.throw('Please add asset details and current readings');
+    }
+
+}
+    
+    // Assigning time on start and on complete
     if (frm.doc.completed_by && frm.doc.assign_date == null){
         frm.set_value("assign_date",frappe.datetime.now_datetime());
        
@@ -59,23 +229,6 @@ validate:function(frm){
         frm.set_value("completion_date_time","");
         frappe.throw("Status Cannot be complete before working")
     }
-    //validation for tech to stop chnges status back to working and other
-    // if (frm.doc.status == 'Completed'){
-    // frappe.call({
-    //     method: "mfi_customization.mfi.doctype.task.set_status",
-    //     args:{
-    //         "user":frappe.session.user,
-    //         "status": frm.doc.status
-    //     },
-    //     callback: function(r) {
-    //        console.log(r.message)
-    //        frm.set_df_property('status','read_only',r.message)
-
-
-    //     }
-
-
-    // })}
     
     
     frappe.call({

@@ -129,21 +129,127 @@ def set_item_from_material_req(doc,method):
 def get_tech(doctype, txt, searchfield, start, page_len, filters):
 	tch_lst = []
 	fltr = {}
+	dct = {}
 	if txt:
 			fltr.update({"name": ("like", "{0}%".format(txt))})
 	for i in frappe.get_roles(filters.get("user")):
 		
 		for ss in frappe.db.get_all('Support Setting Table',{'back_office_team_role':i},['technician_role','back_office_team_role']):
-			for usr in frappe.get_all('User',fltr,['name']):
+			for usr in frappe.get_all('User',fltr,['name','full_name']):
 				if ss.get('technician_role') in frappe.get_roles(usr.get("name")) and not usr.get("name") == 'Administrator':
 					
 					if usr.name not in tch_lst:
 						tch_lst.append(usr.name)
+						dct.update({usr.full_name:usr.name})
 	
-	return [(d,) for d in tch_lst]
+	return [(y,d) for d,y in dct.items()]
 
-			
 
+@frappe.whitelist()
+def check_material_request_status(task):
+	flag = False
+	
+	for i in frappe.get_all('Material Request',{'task_':task},['status']):
+		if i.get('status') not in ['Stopped','Cancelled','Issued']:
+			flag = True
+	print("**********",flag)
+	return flag
+@frappe.whitelist()
+def get_location(doctype, txt, searchfield, start, page_len, filters):
+	lst = []
+	fltr = {}
+	if txt:
+			fltr.update({"location": ("like", "{0}%".format(txt))})
+	for i in frappe.get_all('Project',filters,['name']):
+		fltr.update({'project':i.get('name')})
+		for a in frappe.get_all('Asset',fltr,['location']):
+			if a.location not in lst:
+				lst.append(a.location)
+	return [(d,) for d in lst]	
+
+@frappe.whitelist()
+def get_asset_in_task(doctype, txt, searchfield, start, page_len, filters):
+	cond1 = ''
+	cond2 = ''
+	cond3 = ''
+	if txt:
+		cond3 = "and name = '{0}'".format(txt)
+	if filters.get("customer"):
+			cond2+="where customer ='{0}'".format(filters.get("customer"))
+
+	if filters.get("location"):
+			cond1+="and location='{0}'".format(filters.get("location"))
+		
+	data = frappe.db.sql("""select asset from `tabAsset Serial No` 
+			where asset IN (select name from 
+			`tabAsset` where docstatus = 1  {0} 
+			and project = (select name
+			from `tabProject`  {1} {2}))
+		""".format(cond1,cond2,cond3))
+	return data
+
+@frappe.whitelist()
+def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
+ 	if txt:
+ 		filters.update({"name": ("like", "{0}%".format(txt))})
+		
+ 	return frappe.get_all("Asset Serial No",filters=filters,fields = ["name"], as_list=1)
+
+
+@frappe.whitelist()
+def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
+	# data = frappe.db.sql("""select name from `tabProject` """)
+	fltr1 = {}
+	fltr2 = {}
+	lst = []
+	if filters.get('customer'):
+		fltr1.update({'customer':filters.get('customer')})
+	if filters.get('location'):
+		fltr2.update({'location':filters.get('location')})
+	if txt:
+		fltr2.update({'serial_no':txt})
+	for i in frappe.get_all('Project',fltr1,['name']):
+		fltr2.update({'project':i.get('name'),'docstatus':1})
+		for j in frappe.get_all('Asset',fltr2,['serial_no']):
+			if j.serial_no not in lst:
+					lst.append(j.serial_no)
+	return [(d,) for d in lst]	
+
+
+@frappe.whitelist()
+def get_asset_serial_on_cust(doctype, txt, searchfield, start, page_len, filters):
+		fltr = {}
+		asst = {}
+		lst = []
+		if filters.get('customer'):
+			fltr.update({'customer':filters.get('customer')})
+		if txt:
+			asst.update({'serial_no':("like", "{0}%".format(txt))})
+		# asst.update()
+		for i  in frappe.get_all('Project',fltr,['name']):
+			asst.update({'project':i.get('name'),'docstatus':1})
+			for ass in frappe.get_all('Asset',asst,['serial_no']):
+				if ass.serial_no not in lst:
+					lst.append(ass.serial_no)
+		return [(d,) for d in lst]	
+
+@frappe.whitelist()
+def get_customer(serial_no,asset):
+	project = frappe.get_value('Asset',{'serial_no':serial_no},'project')
+	customer = frappe.db.get_value('Project',{'name':project},'customer')
+	name =  frappe.db.get_value('Customer',{'name':customer},'name')
+	return name
+
+
+# @frappe.whitelist()		
+# def set_status(user,status):
+# 		#for i in  frappe.get_roles(user):
+# 			flag = 0
+# 			for s in frappe.get_all('Support Setting Table',['technician_role']):
+# 				if s.get('technician_role') in frappe.get_roles(user):
+# 					flag = 1
+				
+# 			return flag
 
 
 
