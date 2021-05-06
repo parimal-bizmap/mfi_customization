@@ -99,6 +99,7 @@ refresh:function(frm){
 },
 status:function(frm){
     if(frm.doc.status == 'Completed'){
+        frm.set_df_property('asset',"reqd",1);
         frappe.call({
         method: "mfi_customization.mfi.doctype.task.check_material_request_status",
         args: {
@@ -231,7 +232,8 @@ validate:function(frm){
     }
     
     
-    frappe.call({
+    if(frm.doc.project && frm.doc.asset){
+        frappe.call({
         method:
         "mfi_customization.mfi.doctype.task.set_readings",
         args: {
@@ -252,7 +254,7 @@ validate:function(frm){
             });
             refresh_field("last_readings"); 
         }}
-    })
+    })}
     
 
 
