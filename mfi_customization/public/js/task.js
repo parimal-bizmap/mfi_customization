@@ -1,29 +1,15 @@
 frappe.ui.form.on('Task', {
 asset:function(frm){
     if(frm.doc.asset){
-    frappe.db.get_value('Asset',{'name':frm.doc.asset,'docstatus':1},['asset_name','location','serial_no'])
+    frappe.db.get_value('Asset',{'name':frm.doc.asset,'docstatus':1},['asset_name','location','serial_no','project'])
     .then(({ message }) => {
         frm.set_value('asset_name',message.asset_name);
         frm.set_value('location',message.location);
         frm.set_value('serial_no',message.serial_no);
+        frm.set_value('project',message.project);
     });
-    frappe.db.get_value('Asset',{'name':frm.doc.asset,'docstatus':1},['project'])
-    .then(({ message }) => {
-        console.log(message,"&&&&");
-    frappe.db.get_value('Project',{'name':message.project},['customer'])
-    .then(({ message }) => {
-        console.log(message);
-        if (!frm.doc.customer){
-                frm.set_value('customer',message.customer);
-            }
-
-         
-    }); 
-}); 
+ 
 }
-    
-
-
 },serial_no:function(frm){
     if(frm.doc.serial_no && !frm.doc.asset){
     frm.set_value('asset','');
@@ -69,10 +55,20 @@ onload:function(frm){
         frm.set_df_property('location',"read_only",0);
         frm.set_df_property('serial_no',"read_only",0);
         frm.set_df_property('project',"read_only",0);
+        frm.set_df_property('clear',"hidden",0);
+
         frm.set_value('project','');
     }
 
 },
+clear:function(frm){
+    frm.set_value('asset','');
+    frm.set_value('location','');
+    frm.set_value('serial_no','');
+    frm.set_value('customer','');
+    
+}
+,
 
 refresh:function(frm){
     
@@ -203,7 +199,6 @@ completed_by:function(frm){
 },
 validate:function(frm){
     if(frm.doc.status == 'Completed'  ){
-        console.log("*****",frm.doc.current_reading.length);
         if(!frm.doc.asset){
         frappe.throw('Asset details missing.');
     }
@@ -212,7 +207,7 @@ validate:function(frm){
     }
 
 }
-    
+    frm.set_df_property('failure_date_and_time','read_only',1);
     // Assigning time on start and on complete
     if (frm.doc.completed_by && frm.doc.assign_date == null){
         frm.set_value("assign_date",frappe.datetime.now_datetime());
@@ -222,7 +217,7 @@ validate:function(frm){
         frm.set_value("attended_date_time", frappe.datetime.now_datetime());
     };
     
-    if (frm.doc.status == 'Completed' && frm.doc.completion_date_time){
+    if (frm.doc.status == 'Completed' && !frm.doc.completion_date_time){
         frm.set_value("completion_date_time", frm.doc.modified);
     };
     // Validation for working and completion time

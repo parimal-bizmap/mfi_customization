@@ -32,6 +32,17 @@ frappe.ui.form.on('Issue', {
 				}
 		});                                                                                  
 	}},
+	clear:function(frm){
+        frm.set_value('asset','');
+        frm.set_value('location','');
+        frm.set_value('serial_no','');
+		frm.set_value('customer','');
+		frm.set_value('name_of_the_customer','');
+
+
+
+},
+
 	asset:function(frm){
 		if (frm.doc.asset){
 		frappe.db.get_value('Asset',{'name':frm.doc.asset,'docstatus':1},['asset_name','company','serial_no'])
@@ -151,6 +162,31 @@ frappe.ui.form.on('Issue', {
 		});
 	},
 	refresh: function (frm) {
+		if(frm.doc.asset && frm.doc.project && frm.doc.__islocal == 1){
+			frappe.call({
+			method:
+			"mfi_customization.mfi.doctype.issue.set_reading_from_task",
+			args: {
+				issue:frm.doc.name,
+				asset : frm.doc.asset,
+				project:frm.doc.project
+			},
+			callback: (r) => {
+				if(r.message) {
+	   
+					cur_frm.clear_table("current_reading");
+					r.message.forEach(function(element) {
+					var c = cur_frm.add_child("current_reading");
+					c.date = element.date;
+					c.type = element.type;
+					c.asset = element.asset;
+					c.reading = element.black_white;
+					c.reading_2 = element.colour;
+					c.task = element.task;
+				});
+				refresh_field("current_reading"); 
+			}}
+		})}
 		if (!frm.doc.__islocal ){
 		frm.add_custom_button(__('Task'), function() {
 			frappe.set_route('List', 'Task', {issue: frm.doc.name});
@@ -195,22 +231,22 @@ frappe.ui.form.on('Issue', {
 				console.log(val.attended_date_time)
 				frm.set_value('response_date_time',val.attended_date_time);
 			});
-		if (frm.doc.customer){
-				frm.set_df_property("customer","read_only",1);			}
+
 
 		}
+		
 		
 
 
 	},
 	customer:function(frm){
 		if (frm.doc.customer){
-			frappe.db.get_value("Project",{'customer':frm.doc.customer},"name", function(val){
+			frappe.db.get_value("Project",{'customer':frm.doc.customer},["name"], (val) => {
 				if (val.name){
 					frm.set_value("project",val.name);
 				}
 			})
-}
+	}
 	}
 	
 })
