@@ -152,6 +152,25 @@ def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
 			if j.serial_no not in lst:
 					lst.append(j.serial_no)
 	return [(d,) for d in lst]	
+@frappe.whitelist()
+def set_reading_from_task(issue,asset,target_doc=None):
+	
+	reading_list=[]
+	task = frappe.db.get_value('Task',{'issue':issue},['name'])
+	print("*********",task)
+	for d in frappe.get_all('Asset Readings',filters={'parent':task,'asset':asset,'parenttype':'Task'},fields=['date','type','asset','reading','reading_2','parent']):
+		print('****',)
+		reading_list.append({
+			'date':d.date,
+			'type':d.type,
+			'asset':d.asset,
+			'black_white':d.get("reading"),
+			'colour':d.get("reading_2"),
+			'task':d.get('parent')
+		})
+		
+	
+	return reading_list
 
 
 
