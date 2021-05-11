@@ -249,7 +249,8 @@ validate:function(frm){
             });
             refresh_field("last_readings"); 
         }}
-    })}
+    })
+}
     
 
 

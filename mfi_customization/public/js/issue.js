@@ -162,7 +162,19 @@ frappe.ui.form.on('Issue', {
 		});
 	},
 	refresh: function (frm) {
-		if(frm.doc.asset && frm.doc.project && frm.doc.__islocal == 1){
+		var project = '';
+		
+		if(frm.doc.asset ){
+			if(!frm.doc.project){
+				frappe.db.get_value('Project',{'customer':frm.doc.customer},['name'])
+				.then(({ message }) => {
+					var project = message.name;
+				}); 
+			}
+			else{
+				var project = frm.doc.project;
+			}
+			
 			frappe.call({
 			method:
 			"mfi_customization.mfi.doctype.issue.set_reading_from_task",
@@ -174,7 +186,6 @@ frappe.ui.form.on('Issue', {
 			callback: (r) => {
 				if(r.message) {
 	   
-					cur_frm.clear_table("current_reading");
 					r.message.forEach(function(element) {
 					var c = cur_frm.add_child("current_reading");
 					c.date = element.date;
@@ -228,7 +239,6 @@ frappe.ui.form.on('Issue', {
 		if(!frm.response_date_time){
 			frappe.db.get_value('Task',{'issue':frm.doc.name},['attended_date_time'],(val) =>
 			{
-				console.log(val.attended_date_time)
 				frm.set_value('response_date_time',val.attended_date_time);
 			});
 
