@@ -131,7 +131,7 @@ def get_tech(doctype, txt, searchfield, start, page_len, filters):
 	fltr = {}
 	dct = {}
 	if txt:
-			fltr.update({"name": ("like", "{0}%".format(txt))})
+			fltr.update({"full_name": ("like", "{0}%".format(txt))})
 	for i in frappe.get_roles(filters.get("user")):
 		
 		for ss in frappe.db.get_all('Support Setting Table',{'back_office_team_role':i},['technician_role','back_office_team_role']):
@@ -152,7 +152,6 @@ def check_material_request_status(task):
 	for i in frappe.get_all('Material Request',{'task_':task},['status']):
 		if i.get('status') not in ['Stopped','Cancelled','Issued']:
 			flag = True
-	print("**********",flag)
 	return flag
 @frappe.whitelist()
 def get_location(doctype, txt, searchfield, start, page_len, filters):
