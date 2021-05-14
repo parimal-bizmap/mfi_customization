@@ -1,4 +1,12 @@
 frappe.ui.form.on('Issue', {
+	raised_by: function ( frm ) {
+	
+	if (!(frappe.utils.validate_type(frm.doc.raised_by, "email")) && !(frappe.utils.validate_type(frm.doc.raised_by, "number"))) {
+		frappe.msgprint('Please Enter valid email or contact');
+		
+	}
+}
+	,
 
 	serial_no:function(frm){
 		if(frm.doc.serial_no){
@@ -162,6 +170,8 @@ frappe.ui.form.on('Issue', {
 		});
 	},
 	refresh: function (frm) {
+		frm.trigger('customer');
+		
 		var project = '';
 		
 		if(frm.doc.asset ){
@@ -222,17 +232,7 @@ frappe.ui.form.on('Issue', {
 		frm.set_df_property('asset','reqd',1);
 		frm.set_df_property('serial_no','reqd',1);
 		frm.set_df_property('location','reqd',1);
-	}	
-	
-
-		// frm.set_query("asset", function() {
-		// 	return {
-		// 		query: 'mfi_customization.mfi.doctype.issue.get_live_asset',
-		// 		filters: {
-		// 				"docstatus" : 1
-		// 		 }
-		// 	};
-		// });
+	}
 	
 	},
 	validate:function(frm){
@@ -244,9 +244,6 @@ frappe.ui.form.on('Issue', {
 
 
 		}
-		
-		
-
 
 	},
 	customer:function(frm){
@@ -257,6 +254,34 @@ frappe.ui.form.on('Issue', {
 				}
 			})
 	}
+	if(frm.doc.customer){
+		frm.set_query('location', 'asset_details', function() {
+			if(frm.doc.customer){return {
+				query: 'mfi_customization.mfi.doctype.issue.get_location',
+				filters: {
+					"customer":frm.doc.customer
+				}
+			};}
+		});	
+		frm.set_query('asset', 'asset_details', function() {
+			if(frm.doc.customer){return {
+				query: 'mfi_customization.mfi.doctype.issue.get_asset_on_cust',
+				filters: {
+					"customer":frm.doc.customer
+				}
+			};}
+		});
+		frm.set_query('serial_no', 'asset_details', function() {
+			if(frm.doc.customer){return {
+				query: 'mfi_customization.mfi.doctype.issue.get_asset_serial_on_cust',
+				filters: {
+					"customer":frm.doc.customer
+				}
+			};}
+		});
+	}
+
+
 	}
 	
 })
@@ -267,4 +292,46 @@ frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
 	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','none')
 	}
 	refresh_field("asset", d.name, d.parentfield);
+});
+frappe.ui.form.on("Asset Details", "location", function(frm, cdt, cdn) {
+    
+    var d = locals[cdt][cdn];
+    if(d.location){
+    frappe.db.get_value('Asset', {location: d.location,"docstatus":1}, ['asset_name','name','serial_no'], (r) => {
+        d.asset=r.name
+        d.serial_no=r.serial_no
+        d.asset_name = r.asset_name
+        refresh_field("asset", d.name, d.parentfield);
+        refresh_field("serial_no", d.name, d.parentfield);
+        refresh_field("asset_name",d.name, d.parentfield);
+       })
+    }
+
+});
+frappe.ui.form.on("Asset Details", "asset", function(frm, cdt, cdn) {
+    var d = locals[cdt][cdn];
+    if(d.asset){
+        frappe.db.get_value('Asset', {name: d.asset,"docstatus":1}, ['location','serial_no'], (r) => {
+        d.location=r.location
+        d.serial_no=r.serial_no
+        
+        refresh_field("location", d.name, d.parentfield);
+        refresh_field("serial_no", d.name, d.parentfield);
+       })
+    }
+});
+frappe.ui.form.on("Asset Details ", "serial_no", function(frm, cdt, cdn) {
+    var d = locals[cdt][cdn];
+    
+    if(d.serial_no){
+    frappe.db.get_value('Asset', {serial_no: d.serial_no,"docstatus":1}, ['location','name','asset_name'], (r) => {
+        // console.log("*********************",d.serial_no);    
+        d.asset_name=r.asset_name
+        d.location=r.location
+        d.asset=r.name
+        refresh_field("location", d.name, d.parentfield);
+        refresh_field("asset", d.name, d.parentfield);
+        refresh_field("asset_name", d.name, d.parentfield);
+       })
+      }
 });
