@@ -63,19 +63,29 @@ def after_insert(doc,method):
 					}) 
 			asset_doc.save()
 	
-
 	# Share Task with user respectively
-	docshare = frappe.new_doc("DocShare")
-	docshare.update({
+	docperm = frappe.new_doc("User Permission")
+	docperm.update({
 		"user": doc.completed_by,
-		"share_doctype": 'Task',
-		"share_name": doc.name,
-		"read": 1,
-		"write": 1
+		"allow": 'Task',
+		"for_value": doc.name
 	})
 
-	docshare.save(ignore_permissions=True)
-			
+	docperm.save(ignore_permissions=True)
+	
+
+	# Share Task with user respectively
+	# docshare = frappe.new_doc("DocShare")
+	# docshare.update({
+	# 	"user": doc.completed_by,
+	# 	"share_doctype": 'Task',
+	# 	"share_name": doc.name,
+	# 	"read": 1,
+	# 	"write": 1
+	# })
+
+	# docshare.save(ignore_permissions=True)
+	
 			
 	
 
