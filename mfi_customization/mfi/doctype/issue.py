@@ -42,24 +42,22 @@ def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 # 	return data
 @frappe.whitelist()
 def get_asset_in_issue(doctype, txt, searchfield, start, page_len, filters):
-	cond1 = ''
-	cond2 = ''
-	cond3 = ''
-	if txt:
-		cond3 = "and name = '{0}'".format(txt)
-	if filters.get("customer"):
-			cond2+="where customer ='{0}'".format(filters.get("customer"))
-
+	fltr1 = {}
+	fltr2 = {}
+	asst = {}
+	lst = []
+	if filters.get('customer'):
+		fltr1.update({'customer':filters.get('customer')})
 	if filters.get("location"):
-			cond1+="and location='{0}'".format(filters.get("location"))
-		
-	data = frappe.db.sql("""select asset from `tabAsset Serial No` 
-			where asset IN (select name from 
-			`tabAsset` where docstatus = 1  {0} 
-			and project = (select name
-			from `tabProject`  {1} {2}))
-		""".format(cond1,cond2,cond3))
-	return data
+		fltr2.update({'location':filters.get('location')})
+	if txt:
+		fltr2.update({'name':("like", "{0}%".format(txt))})
+	for i  in frappe.get_all('Project',fltr1,['name']):
+		fltr2.update({'project':i.get('name'),'docstatus':1})
+		for ass in frappe.get_all('Asset',fltr2,['name']):
+			if ass.name not in lst:
+				lst.append(ass.name)
+	return [(d,) for d in lst]	
 
 
 @frappe.whitelist()
