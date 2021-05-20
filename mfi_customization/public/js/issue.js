@@ -351,6 +351,7 @@ frappe.ui.form.on("Asset Details ", "serial_no", function(frm, cdt, cdn) {
 // 	}
 // 	if(d.type == 'Both'){
 // 		frm.set_df_property("reading","read_only",0);
+
 // 		frm.set_df_property("reading_2","read_only",0);
 
 // 	}
