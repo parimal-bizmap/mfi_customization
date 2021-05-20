@@ -249,6 +249,7 @@ frappe.ui.form.on('Issue', {
 
 	},
 	customer:function(frm){
+		console.log("****");
 		if (frm.doc.customer){
 			frappe.db.get_value("Project",{'customer':frm.doc.customer},["name"], (val) => {
 				if (val.name){
