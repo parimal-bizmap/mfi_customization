@@ -146,7 +146,6 @@ def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
 	if txt:
 		fltr2.update({'serial_no':txt})
 	for i in frappe.get_all('Project',fltr1,['name']):
-		print("*****",i.get('name'))
 		fltr2.update({'project':i.get('name'),'docstatus':1})
 		for j in frappe.get_all('Asset',fltr2,['serial_no']):
 			if j.serial_no not in lst:
@@ -156,24 +155,22 @@ def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
 def set_reading_from_task(issue,asset,target_doc=None):
 	
 	reading_list=[]
-	task = frappe.db.get_value('Task',{'issue':issue},['name'])
-	print("*********",task)
-	for d in frappe.get_all('Asset Readings',filters={'parent':task,'asset':asset,'parenttype':'Task'},fields=['date','type','asset','reading','reading_2','parent']):
-		print('****',)
-		reading_list.append({
-			'date':d.date,
-			'type':d.type,
-			'asset':d.asset,
-			'black_white':d.get("reading"),
-			'colour':d.get("reading_2"),
-			'task':d.get('parent')
-		})
-		
+	for i in frappe.get_all('Task',{'issue':issue},['name']):
+		for d in frappe.get_all('Asset Readings',filters={'parent':i.get('name'),'asset':asset,'parenttype':'Task'},fields=['date','type','asset','reading','reading_2','parent']):
+			reading_list.append({
+				'date':d.date,
+				'type':d.type,
+				'asset':d.asset,
+				'black_white':d.get("reading"),
+				'colour':d.get("reading_2"),
+				'task':d.get('parent')
+			})
+	print(reading_list)
 	
 	return reading_list
 
-
-
+def on_change(doc,method):
+	pass
 
 # @frappe.whitelist()
 # def get_live_asset(doctype, txt, searchfield, start, page_len, filters):

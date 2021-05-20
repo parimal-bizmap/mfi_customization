@@ -101,7 +101,8 @@ doc_events = {
         "on_update":"mfi_customization.mfi.doctype.Asset.on_update"
     },
     "Issue":{
-        "validate":"mfi_customization.mfi.doctype.issue.validate"
+        "validate":"mfi_customization.mfi.doctype.issue.validate",
+         "on_change":"mfi_customization.mfi.doctype.issue.on_change"
     },
     "Material Request":{
         "on_change":"mfi_customization.mfi.doctype.task.set_item_from_material_req"

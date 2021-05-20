@@ -216,7 +216,13 @@ customer:function(frm){
                     "customer":frm.doc.customer
                 }
             };}
-        });}
+        });
+        frappe.db.get_value('Project',{'customer':frm.doc.customer},['name'],(val) =>
+        {
+            frm.set_value('project',val.name);
+        });
+        
+    }
 }
 ,
 completed_by:function(frm){
