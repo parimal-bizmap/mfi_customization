@@ -37,7 +37,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "\nBlack & White\nColour"
+   "options": "\nBlack & White\nColour\nBoth"
   },
   {
    "fieldname": "reading_2",
@@ -54,14 +54,12 @@
   {
    "fieldname": "task",
    "fieldtype": "Link",
-   "in_list_view": 1,
    "label": "Task",
-   "options": "Task",
-   "read_only": 1
+   "options": "Task"
   }
  ],
  "istable": 1,
- "modified": "2021-05-07 16:28:22.035020",
+ "modified": "2021-05-20 11:02:17.529488",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Readings",

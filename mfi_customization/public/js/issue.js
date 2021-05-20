@@ -171,7 +171,6 @@ frappe.ui.form.on('Issue', {
 	},
 	refresh: function (frm) {
 		frm.trigger('customer');
-		
 		var project = '';
 		
 		if(frm.doc.asset ){
@@ -195,7 +194,7 @@ frappe.ui.form.on('Issue', {
 			},
 			callback: (r) => {
 				if(r.message) {
-	   
+					cur_frm.clear_table("current_reading");
 					r.message.forEach(function(element) {
 					var c = cur_frm.add_child("current_reading");
 					c.date = element.date;
@@ -208,6 +207,8 @@ frappe.ui.form.on('Issue', {
 				refresh_field("current_reading"); 
 			}}
 		})}
+		
+		
 		if (!frm.doc.__islocal ){
 		frm.add_custom_button(__('Task'), function() {
 			frappe.set_route('List', 'Task', {issue: frm.doc.name});
@@ -244,6 +245,7 @@ frappe.ui.form.on('Issue', {
 
 
 		}
+		
 
 	},
 	customer:function(frm){
@@ -335,3 +337,22 @@ frappe.ui.form.on("Asset Details ", "serial_no", function(frm, cdt, cdn) {
        })
       }
 });
+// frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
+//     var d = locals[cdt][cdn];
+// 	if(d.type == 'Black & White'){
+// 		frm.set_df_property("reading_2","read_only",1);
+// 		frm.set_df_property("reading","read_only",0);
+// 		console.log("in blk white");
+// 	}
+// 	if(d.type == 'Colour'){
+// 		frm.set_df_property("reading","read_only",1);
+// 		frm.set_df_property("reading_2","read_only",0);
+// 		console.log("in colour");
+// 	}
+// 	if(d.type == 'Both'){
+// 		frm.set_df_property("reading","read_only",0);
+// 		frm.set_df_property("reading_2","read_only",0);
+
+// 	}
+   
+// });
