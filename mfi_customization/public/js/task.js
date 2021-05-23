@@ -73,6 +73,14 @@ clear:function(frm){
 refresh:function(frm){
     
     frm.trigger('customer');
+    if (!frm.doc.__islocal){
+        frm.add_custom_button(__("Asset Movement"), function() {
+            frappe.model.open_mapped_doc({
+                method: "mfi_customization.mfi.doctype.task.make_asset_movement",
+               frm : me.frm
+            })
+            }, __('Make'))}
+    
     
     frm.add_custom_button('Material Request', () => {
         frappe.model.open_mapped_doc({
@@ -92,6 +100,7 @@ refresh:function(frm){
                 };
             
         });
+     
     
         
        
@@ -287,7 +296,6 @@ validate:function(frm){
         }}
     })
 }
-    
 
 
 

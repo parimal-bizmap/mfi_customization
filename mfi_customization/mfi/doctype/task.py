@@ -102,6 +102,28 @@ def make_material_req(source_name, target_doc=None):
 	}, target_doc )
 
 	return doclist
+
+
+@frappe.whitelist()
+def make_asset_movement(source_name, target_doc=None, ignore_permissions=False):
+	def set_missing_values(source, target):
+	   customer = frappe.db.get_value("Task", source_name,'customer')
+	   company = frappe.db.get_value("Project",{"customer":customer},'company')
+	   target.purpose = "Transfer"
+	   target.company = company
+	   target.task=source_name
+
+
+
+	doclist = get_mapped_doc("Task", source_name, {
+		"Task": {
+			"doctype": "Asset Movement",
+			
+		}
+	}, target_doc ,set_missing_values, ignore_permissions=ignore_permissions)
+
+	return doclist
+
 @frappe.whitelist()
 def set_readings(project,asset,target_doc=None):
 	
