@@ -111,6 +111,7 @@ def make_asset_movement(source_name, target_doc=None, ignore_permissions=False):
 	   company = frappe.db.get_value("Project",{"customer":customer},'company')
 	   target.purpose = "Transfer"
 	   target.company = company
+	   target.task=source_name
 
 
 

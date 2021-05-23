@@ -182,29 +182,7 @@ frappe.ui.form.on('Issue', {
 				var project = frm.doc.project;
 			}
 			
-			frappe.call({
-			method:
-			"mfi_customization.mfi.doctype.issue.set_reading_from_task",
-			args: {
-				issue:frm.doc.name,
-				asset : frm.doc.asset,
-				project:frm.doc.project
-			},
-			callback: (r) => {
-				if(r.message) {
-					cur_frm.clear_table("current_reading");
-					r.message.forEach(function(element) {
-					var c = cur_frm.add_child("current_reading");
-					c.date = element.date;
-					c.type = element.type;
-					c.asset = element.asset;
-					c.reading = element.black_white;
-					c.reading_2 = element.colour;
-					c.task = element.task;
-				});
-				refresh_field("current_reading"); 
-			}}
-		})}
+	}
 		
 		
 		if (!frm.doc.__islocal ){
@@ -340,7 +318,7 @@ frappe.ui.form.on("Asset Details", "asset", function(frm, cdt, cdn) {
 // 	}
    
 // });
-frappe.ui.form.on("Asset Details ", "serial_no", function(frm, cdt, cdn) {
+frappe.ui.form.on("Asset Details", "serial_no", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
     
     if(d.serial_no){

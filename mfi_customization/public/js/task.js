@@ -73,7 +73,6 @@ clear:function(frm){
 refresh:function(frm){
     
     frm.trigger('customer');
-    console.log(frm.doc.project , frm.doc.asset);
     if (!frm.doc.__islocal){
         frm.add_custom_button(__("Asset Movement"), function() {
             frappe.model.open_mapped_doc({

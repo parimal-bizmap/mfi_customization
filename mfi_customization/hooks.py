@@ -32,7 +32,8 @@ doctype_js = {
                 "Issue":"public/js/issue.js",
                 "Task":"public/js/task.js",
                 "Asset Maintenance":"public/js/asset_maintenance.js",
-                "Location":"public/js/location.js"
+                "Location":"public/js/location.js",
+                "Asset Movement":"public/js/asset_movement.js"
 }	
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -102,7 +103,7 @@ doc_events = {
     },
     "Issue":{
         "validate":"mfi_customization.mfi.doctype.issue.validate",
-         "on_change":"mfi_customization.mfi.doctype.issue.on_change"
+         "on_change":["mfi_customization.mfi.doctype.issue.on_change","mfi_customization.mfi.doctype.issue.set_reading_from_task"]
     },
     "Material Request":{
         "on_change":"mfi_customization.mfi.doctype.task.set_item_from_material_req"
