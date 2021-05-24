@@ -142,7 +142,17 @@ doc_events = {
 
 # Testing
 # -------
-
+before_migrate=['mfi_customization.mfi.patch.migrate_patch.get_custom_role_permission']
+after_migrate = ['mfi_customization.mfi.patch.migrate_patch.set_custom_role_permission']
+fixtures = [
+    {"dt": "Custom DocPerm", "filters": [
+        [
+            "parent", "not in", [
+                "DocType"
+            ]
+        ]
+    ]}
+]
 # before_tests = "mfi_customization.install.before_tests"
 
 # Overriding Methods
