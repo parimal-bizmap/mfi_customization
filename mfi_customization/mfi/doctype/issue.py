@@ -156,26 +156,26 @@ def set_reading_from_task(doc,method):
 	# reading_list=[]
 	# for d in doc.get('current_reading'):
 	# 	for pr in task.get('current_reading'):
-	
-	task_doc=frappe.get_doc('Task',{'issue':doc.get("name")})
-	duplicate=[]
-	for d in doc.get('current_reading'):
-		for pr in task_doc.get('current_reading'):
-			if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
-				duplicate.append(d.date)
-	for d in task_doc.get('current_reading'):
-		# if d.date not in duplicate:
+	print(len(frappe.get_all('Task',{'issue':doc.get("name")})),"*******")
+	if len(frappe.get_all('Task',{'issue':doc.get("name")})) != 0:
+		task_doc=frappe.get_doc('Task',{'issue':doc.get("name")})
+		duplicate=[]
+		for d in doc.get('current_reading'):
+			for pr in task_doc.get('current_reading'):
+				if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
+					duplicate.append(d.date)
+		for d in task_doc.get('current_reading'):
+			# if d.date not in duplicate:
 
-		doc.append("current_reading", {
-		"date" : d.get('date'),
-		"type" : d.get('type'),
-		"asset":d.get('asset'),
-		"reading":d.get('reading')
-		})
-		task_doc.save()		
-	
-def on_change(doc,method):
-	pass
+			doc.append("current_reading", {
+			"date" : d.get('date'),
+			"type" : d.get('type'),
+			"asset":d.get('asset'),
+			"reading":d.get('reading'),
+			"reading_2":d.get('reading_2')
+			})
+			task_doc.save()		
+		
 
 # @frappe.whitelist()
 # def get_live_asset(doctype, txt, searchfield, start, page_len, filters):

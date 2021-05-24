@@ -15,5 +15,4 @@ def get_asset_filter(doctype, txt, searchfield, start, page_len, filters):
     lst = []
     for i in frappe.get_all('Task',{"name":filters.get("task")},['asset']):
         lst.append(i.get("asset"))
-        print(lst,"******")
     return [(d,) for d in lst]
