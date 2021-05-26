@@ -149,26 +149,33 @@ def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
 			if j.serial_no not in lst:
 					lst.append(j.serial_no)
 	return [(d,) for d in lst]	
-@frappe.whitelist()
-def set_reading_from_task(issue,asset,target_doc=None):
-	
-	reading_list=[]
-	for i in frappe.get_all('Task',{'issue':issue},['name']):
-		for d in frappe.get_all('Asset Readings',filters={'parent':i.get('name'),'asset':asset,'parenttype':'Task'},fields=['date','type','asset','reading','reading_2','parent']):
-			reading_list.append({
-				'date':d.date,
-				'type':d.type,
-				'asset':d.asset,
-				'black_white':d.get("reading"),
-				'colour':d.get("reading_2"),
-				'task':d.get('parent')
-			})
-	print(reading_list)
-	
-	return reading_list
 
-def on_change(doc,method):
-	pass
+
+def set_reading_from_task(doc,method):
+	# task = frappe.get_doc('Task',{'issue':doc.get("issue")})
+	# reading_list=[]
+	# for d in doc.get('current_reading'):
+	# 	for pr in task.get('current_reading'):
+	print(len(frappe.get_all('Task',{'issue':doc.get("name")})),"*******")
+	if len(frappe.get_all('Task',{'issue':doc.get("name")})) != 0:
+		task_doc=frappe.get_doc('Task',{'issue':doc.get("name")})
+		duplicate=[]
+		for d in doc.get('current_reading'):
+			for pr in task_doc.get('current_reading'):
+				if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
+					duplicate.append(d.date)
+		for d in task_doc.get('current_reading'):
+			# if d.date not in duplicate:
+
+			doc.append("current_reading", {
+			"date" : d.get('date'),
+			"type" : d.get('type'),
+			"asset":d.get('asset'),
+			"reading":d.get('reading'),
+			"reading_2":d.get('reading_2')
+			})
+			task_doc.save()		
+		
 
 # @frappe.whitelist()
 # def get_live_asset(doctype, txt, searchfield, start, page_len, filters):

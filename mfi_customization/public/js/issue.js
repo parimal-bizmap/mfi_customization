@@ -5,7 +5,7 @@ frappe.ui.form.on('Issue', {
 		frappe.msgprint('Please Enter valid email or contact');
 		
 	}
-}
+   }
 	,
 
 	serial_no:function(frm){
@@ -131,7 +131,6 @@ frappe.ui.form.on('Issue', {
 				return {
 					query: 'mfi_customization.mfi.doctype.issue.get_asset_on_cust',
 					filters: {
-						// "location":frm.doc.location,
 						"customer":frm.doc.customer
 					}
 				};
@@ -152,7 +151,6 @@ frappe.ui.form.on('Issue', {
 					return {
 						query: 'mfi_customization.mfi.doctype.issue.get_asset_serial_on_cust',
 						filters: {
-							// "location":frm.doc.location,
 							"customer":frm.doc.customer
 						}
 					};
@@ -184,29 +182,7 @@ frappe.ui.form.on('Issue', {
 				var project = frm.doc.project;
 			}
 			
-			frappe.call({
-			method:
-			"mfi_customization.mfi.doctype.issue.set_reading_from_task",
-			args: {
-				issue:frm.doc.name,
-				asset : frm.doc.asset,
-				project:frm.doc.project
-			},
-			callback: (r) => {
-				if(r.message) {
-					cur_frm.clear_table("current_reading");
-					r.message.forEach(function(element) {
-					var c = cur_frm.add_child("current_reading");
-					c.date = element.date;
-					c.type = element.type;
-					c.asset = element.asset;
-					c.reading = element.black_white;
-					c.reading_2 = element.colour;
-					c.task = element.task;
-				});
-				refresh_field("current_reading"); 
-			}}
-		})}
+	}
 		
 		
 		if (!frm.doc.__islocal ){
@@ -249,7 +225,6 @@ frappe.ui.form.on('Issue', {
 
 	},
 	customer:function(frm){
-		console.log("****");
 		if (frm.doc.customer){
 			frappe.db.get_value("Project",{'customer':frm.doc.customer},["name"], (val) => {
 				if (val.name){
@@ -343,12 +318,11 @@ frappe.ui.form.on("Asset Details", "asset", function(frm, cdt, cdn) {
 // 	}
    
 // });
-frappe.ui.form.on("Asset Details ", "serial_no", function(frm, cdt, cdn) {
+frappe.ui.form.on("Asset Details", "serial_no", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
     
     if(d.serial_no){
     frappe.db.get_value('Asset', {serial_no: d.serial_no,"docstatus":1}, ['location','name','asset_name'], (r) => {
-        // console.log("*********************",d.serial_no);    
         d.asset_name=r.asset_name
         d.location=r.location
         d.asset=r.name
