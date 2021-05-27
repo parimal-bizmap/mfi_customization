@@ -8,6 +8,9 @@ from frappe.utils.data import getdate,today
 from frappe.model.mapper import get_mapped_doc
 
 def validate(doc,method):
+	if doc.get('__islocal'):
+		for d in frappe.get_all("Task",{"issue":doc.issue}):
+			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
 	if  doc.project:
 		pro_doc=frappe.get_doc('Project',doc.project)
 		if doc.status=='Completed' and doc.project:
@@ -34,14 +37,11 @@ def validate(doc,method):
 				ar.completion_date=today()
 				ar.save()
 				ar.submit()
-
-
-
-	if doc.get('issue'):
-		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
 		
 
 def after_insert(doc,method):
+	if doc.get('issue'):
+		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
 	last_reading=today()
 	if doc.issue:
 		issue_doc=frappe.get_doc('Issue',{'name':doc.issue})
@@ -55,9 +55,7 @@ def after_insert(doc,method):
 			"reading":d.get('reading'),
 			"reading_2":d.get('reading_2')
 			})
-	# select reading_date,asset from `tabMachine Reading` where reading_date<"2021-05-27" limit 1;
-	print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-	print(last_reading)
+
 	if len(frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc"))!=0:
 		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc"):
 			doc.append("last_readings", {
