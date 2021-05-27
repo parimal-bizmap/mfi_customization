@@ -254,9 +254,9 @@ frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
 	if (d.type=='Black & White'){
 	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','none')
 	}
-	if (d.type=="Colour"){
-		$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','none')
-	}
+	// if (d.type=="Colour"){
+	// 	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','none')
+	// }
 	refresh_field("asset", d.name, d.parentfield);
 });
 frappe.ui.form.on("Asset Details", "location", function(frm, cdt, cdn) {
