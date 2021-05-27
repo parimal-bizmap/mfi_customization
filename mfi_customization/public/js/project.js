@@ -4,7 +4,8 @@ cur_frm.dashboard.add_transactions([
 			'Asset',
 			'Asset Maintenance',
 			'Asset Maintenance Log',
-			'Asset Repair'
+			'Asset Repair',
+			"Machine Reading"
 		],
 		'label': 'Others'
 	},
