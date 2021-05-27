@@ -44,7 +44,7 @@
    "fieldname": "machine_type",
    "fieldtype": "Select",
    "label": "Machine Type",
-   "options": "\nBlack & White\nBoth"
+   "options": "\nBlack & White\nColour"
   },
   {
    "fieldname": "colour_reading",
@@ -74,7 +74,7 @@
    "options": "Task"
   }
  ],
- "modified": "2021-05-27 13:04:11.007269",
+ "modified": "2021-05-27 15:21:45.279067",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Machine Reading",
