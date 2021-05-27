@@ -1,0 +1,99 @@
+{
+ "autoname": "MCN-RDG-.####S",
+ "creation": "2021-05-26 21:07:49.333414",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "reading_date",
+  "asset",
+  "task",
+  "project",
+  "column_break_4",
+  "machine_type",
+  "colour_reading",
+  "black_and_white_reading",
+  "total"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "posting Date"
+  },
+  {
+   "fieldname": "reading_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Reading Date"
+  },
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Asset",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "machine_type",
+   "fieldtype": "Select",
+   "label": "Machine Type",
+   "options": "\nColour\nBlack & White\nBoth"
+  },
+  {
+   "fieldname": "colour_reading",
+   "fieldtype": "Data",
+   "label": "Colour reading"
+  },
+  {
+   "fieldname": "black_and_white_reading",
+   "fieldtype": "Data",
+   "label": "Black and white Reading"
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Data",
+   "label": "Total"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "task",
+   "options": "Task"
+  }
+ ],
+ "modified": "2021-05-27 10:12:46.387801",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Machine Reading",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

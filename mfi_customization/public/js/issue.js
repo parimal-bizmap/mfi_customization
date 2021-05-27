@@ -168,23 +168,7 @@ frappe.ui.form.on('Issue', {
 		});
 	},
 	refresh: function (frm) {
-		frm.trigger('customer');
-		var project = '';
-		
-		if(frm.doc.asset ){
-			if(!frm.doc.project){
-				frappe.db.get_value('Project',{'customer':frm.doc.customer},['name'])
-				.then(({ message }) => {
-					var project = message.name;
-				}); 
-			}
-			else{
-				var project = frm.doc.project;
-			}
-			
-	}
-		
-		
+
 		if (!frm.doc.__islocal ){
 		frm.add_custom_button(__('Task'), function() {
 			frappe.set_route('List', 'Task', {issue: frm.doc.name});
@@ -200,6 +184,7 @@ frappe.ui.form.on('Issue', {
 		}
 	}
 	else{
+		frm.trigger('customer');
 		frm.remove_custom_button('Task','Make');
 		frm.remove_custom_button('Task','View');
 		frm.remove_custom_button('Close');
@@ -268,6 +253,9 @@ frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	if (d.type=='Black & White'){
 	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','none')
+	}
+	if (d.type=="Colour"){
+		$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','none')
 	}
 	refresh_field("asset", d.name, d.parentfield);
 });

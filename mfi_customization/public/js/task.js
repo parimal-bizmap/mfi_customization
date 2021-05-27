@@ -57,7 +57,7 @@ onload:function(frm){
         frm.set_df_property('project',"read_only",0);
         frm.set_df_property('clear',"hidden",0);
 
-        frm.set_value('project','');
+        // frm.set_value('project','');
     }
 
 },
@@ -309,7 +309,17 @@ cur_frm.dashboard.add_transactions([
 		'label': 'Others'
 	},
 ]);
-
+frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
+	var d = locals[cdt][cdn];
+	if (d.type=='Black & White'){
+	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','none')
+	}
+	if (d.type=="Colour"){
+		$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','none')
+	}
+	refresh_field("asset", d.name, d.parentfield);
+});
+    
 frappe.ui.form.on("Asset Details", "location", function(frm, cdt, cdn) {
     
     var d = locals[cdt][cdn];

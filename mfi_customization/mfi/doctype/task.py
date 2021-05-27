@@ -8,7 +8,7 @@ from frappe.utils.data import getdate,today
 from frappe.model.mapper import get_mapped_doc
 
 def validate(doc,method):
-	if doc.issue_type in ['Toner Request','Machine Issue'] and doc.project:
+	if  doc.project:
 		pro_doc=frappe.get_doc('Project',doc.project)
 		if doc.status=='Completed' and doc.project:
 			duplicate=[]
@@ -42,6 +42,45 @@ def validate(doc,method):
 		
 
 def after_insert(doc,method):
+	last_reading=today()
+	if doc.issue:
+		issue_doc=frappe.get_doc('Issue',{'name':doc.issue})
+		for d in issue_doc.get('current_reading'):
+			if getdate(last_reading)>getdate( d.get('date')):
+				last_reading= d.get('date')
+			doc.append("current_reading", {
+			"date" : d.get('date'),
+			"type" : d.get('type'),
+			"asset":d.get('asset'),
+			"reading":d.get('reading'),
+			"reading_2":d.get('reading_2')
+			})
+	# select reading_date,asset from `tabMachine Reading` where reading_date<"2021-05-27" limit 1;
+	print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+	print(last_reading)
+	if len(frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc"))!=0:
+		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc"):
+			doc.append("last_readings", {
+				"date" : d.get('reading_date'),
+				"type" : d.get('machine_type'),
+				"asset":d.get('asset'),
+				"reading":d.get('black_and_white_reading'),
+				"reading_2":d.get('colour_reading')
+				})
+	else:
+		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc"):
+			doc.append("last_readings", {
+				"date" : d.get('reading_date'),
+				"type" : d.get('machine_type'),
+				"asset":d.get('asset'),
+				"reading":d.get('black_and_white_reading'),
+				"reading_2":d.get('colour_reading')
+				})
+	doc.save()
+	if doc.failure_date_and_time and doc.issue:
+		doc.failure_date_and_time=frappe.db.get_value("Issue",doc.issue,"failure_date_and_time")
+	if doc.issue:
+		doc.description=frappe.db.get_value("Issue",doc.issue,"description")
 	if doc.issue_type in ['Toner Request','Machine Issue'] and doc.project:
 		task_list=[]
 		for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
@@ -287,8 +326,43 @@ def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
 					lst.append(ass.name)
 		return [(d,) for d in lst]	
 
+def on_change(doc,method):
+	create_machine_reading(doc)
+	set_reading_from_task_to_issue(doc)
+	if doc.issue and doc.status not in ['Open','Completed']:
+		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
 
-
+def create_machine_reading(doc):
+	for d in doc.get('current_reading'):
+		if len(frappe.get_all("Machine Reading",{"task":doc.name,"project":doc.project,"asset":d.get('asset'),"reading_date":d.get('date')}))<1:
+			mr=frappe.new_doc("Machine Reading")
+			mr.reading_date=d.get('date')
+			mr.asset=d.get('asset')
+			mr.black_and_white_reading=d.get("reading")
+			mr.colour_reading=d.get("reading_2")
+			mr.machine_type=d.get('type')
+			mr.total=d.get("total")
+			mr.project=doc.project
+			mr.task=doc.name
+			mr.save()
+	
+def set_reading_from_task_to_issue(doc):
+	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
+	duplicate=[]
+	for d in doc.get('current_reading'):
+		for pr in issue_doc.get('current_reading'):
+			if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
+				duplicate.append(d.idx)
+	for d in doc.get('current_reading'):
+		if d.idx not in duplicate:
+			issue_doc.append("current_reading", {
+			"date" : d.get('date'),
+			"type" : d.get('type'),
+			"asset":d.get('asset'),
+			"reading":d.get('reading'),
+			"reading_2":d.get('reading_2')
+			})
+			issue_doc.save()	
 # @frappe.whitelist()		
 # def set_status(user,status):
 # 		#for i in  frappe.get_roles(user):

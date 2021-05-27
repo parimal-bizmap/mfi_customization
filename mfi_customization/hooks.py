@@ -91,7 +91,8 @@ doc_events = {
     "Task":{
         "validate":"mfi_customization.mfi.doctype.task.validate",
         "after_insert":"mfi_customization.mfi.doctype.task.after_insert",
-        "on_trash":"mfi_customization.mfi.doctype.task.after_delete"
+        "on_trash":"mfi_customization.mfi.doctype.task.after_delete",
+        "on_change":"mfi_customization.mfi.doctype.task.on_change"
     },
     "Project":{
         "validate":"mfi_customization.mfi.doctype.project.validate"
@@ -103,7 +104,7 @@ doc_events = {
     },
     "Issue":{
         "validate":"mfi_customization.mfi.doctype.issue.validate",
-         "on_change":"mfi_customization.mfi.doctype.issue.set_reading_from_task"
+         "on_change":"mfi_customization.mfi.doctype.issue.set_reading_from_issue_to_task"
     },
     "Material Request":{
         "on_change":"mfi_customization.mfi.doctype.task.set_item_from_material_req"
