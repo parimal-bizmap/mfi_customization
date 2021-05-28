@@ -67,6 +67,9 @@ def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
  	return frappe.get_all("Asset Serial No",filters=filters,fields = ["name"], as_list=1)
 
 def validate(doc,method):
+	for d in doc.get("current_reading"):
+		if d.idx>1:
+			frappe.throw("More than one row not allowed")
 	if doc.status=="Closed":
 		for t in frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']):
 			if t.status != 'Completed':

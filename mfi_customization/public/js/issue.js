@@ -259,6 +259,13 @@ frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
 	// }
 	refresh_field("asset", d.name, d.parentfield);
 });
+
+frappe.ui.form.on("Asset Readings", "date", function(frm, cdt, cdn) {
+	var d = locals[cdt][cdn];
+	if (d.idx>1){
+        frappe.throw("More than one row not allowed")
+    }
+});
 frappe.ui.form.on("Asset Details", "location", function(frm, cdt, cdn) {
     
     var d = locals[cdt][cdn];

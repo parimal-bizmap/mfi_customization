@@ -8,6 +8,9 @@ from frappe.utils.data import getdate,today
 from frappe.model.mapper import get_mapped_doc
 
 def validate(doc,method):
+	for d in doc.get("current_reading"):
+		if d.idx>1:
+			frappe.throw("More than one row not allowed")
 	if doc.get('__islocal'):
 		for d in frappe.get_all("Task",{"issue":doc.issue}):
 			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
@@ -43,19 +46,6 @@ def after_insert(doc,method):
 	if doc.get('issue'):
 		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
 	last_reading=today()
-	if doc.issue:
-		issue_doc=frappe.get_doc('Issue',{'name':doc.issue})
-		for d in issue_doc.get('current_reading'):
-			if getdate(last_reading)>getdate( d.get('date')):
-				last_reading= d.get('date')
-			doc.append("current_reading", {
-			"date" : d.get('date'),
-			"type" : d.get('type'),
-			"asset":d.get('asset'),
-			"reading":d.get('reading'),
-			"reading_2":d.get('reading_2')
-			})
-
 	if len(frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc"))!=0:
 		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc"):
 			doc.append("last_readings", {
@@ -364,13 +354,12 @@ def set_reading_from_task_to_issue(doc):
 			issue_doc.save()
 
 def validate_reading(doc):
-	
-	reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
-	if not str(reading).isdigit():
-		frappe.throw("only numbers allowed in reading")
-	for lst in doc.get("last_readings"):
-		last_reading=lst.get("reading") if lst.get("reading") else lst.get("reading_2")
-		if len(doc.get('current_reading'))>0:
+	if len(doc.get('current_reading'))>0:
+		reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
+		if not str(reading).isdigit():
+			frappe.throw("only numbers allowed in reading")
+		for lst in doc.get("last_readings"):
+			last_reading=lst.get("reading") if lst.get("reading") else lst.get("reading_2")
 			current_reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
 			if last_reading>current_reading:
 				frappe.throw("Current Reading Must be Greater than Last Reading")
