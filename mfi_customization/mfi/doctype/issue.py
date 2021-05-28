@@ -68,6 +68,7 @@ def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
 
 def validate(doc,method):
 	for d in doc.get("current_reading"):
+		d.total=(d.get('reading') or 0 +d.get('reading_2') or 0)
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
 	if doc.status=="Closed":

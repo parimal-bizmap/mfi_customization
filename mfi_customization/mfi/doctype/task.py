@@ -343,17 +343,17 @@ def set_reading_from_task_to_issue(doc):
 			if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
 				duplicate.append(d.idx)
 	for d in doc.get('current_reading'):
-		if d.idx not in duplicate:
-			issue_doc.append("current_reading", {
-			"date" : d.get('date'),
-			"type" : d.get('type'),
-			"asset":d.get('asset'),
-			"reading":d.get('reading'),
-			"reading_2":d.get('reading_2')
-			})
+		for isu in doc.get("current_reading"):
+			isu.date=d.get('date')
+			isu.type=d.get('type')
+			isu.asset=d.get('asset')
+			isu.reading=d.get('reading')
+			isu.reading_2=d.get('reading_2')
 			issue_doc.save()
 
 def validate_reading(doc):
+	for d in doc.get('current_reading'):
+		d.total=(d.get('reading') or 0 +d.get('reading_2') or 0)
 	if len(doc.get('current_reading'))>0:
 		reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
 		if not str(reading).isdigit():
