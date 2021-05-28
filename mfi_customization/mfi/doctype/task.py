@@ -327,6 +327,7 @@ def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
 def on_change(doc,method):
 	create_machine_reading(doc)
 	set_reading_from_task_to_issue(doc)
+	validate_reading(doc)
 	if doc.issue and doc.status not in ['Open','Completed']:
 		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
 
@@ -360,7 +361,20 @@ def set_reading_from_task_to_issue(doc):
 			"reading":d.get('reading'),
 			"reading_2":d.get('reading_2')
 			})
-			issue_doc.save()	
+			issue_doc.save()
+
+def validate_reading(doc):
+	
+	reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
+	if not str(reading).isdigit():
+		frappe.throw("only numbers allowed in reading")
+	for lst in doc.get("last_readings"):
+		last_reading=lst.get("reading") if lst.get("reading") else lst.get("reading_2")
+		if len(doc.get('current_reading'))>0:
+			current_reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
+			if last_reading>current_reading:
+				frappe.throw("Current Reading Must be Greater than Last Reading")
+
 # @frappe.whitelist()		
 # def set_status(user,status):
 # 		#for i in  frappe.get_roles(user):
