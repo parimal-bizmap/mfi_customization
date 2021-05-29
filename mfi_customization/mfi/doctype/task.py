@@ -14,24 +14,6 @@ def validate(doc,method):
 	if doc.get('__islocal'):
 		for d in frappe.get_all("Task",{"issue":doc.issue}):
 			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
-	# if  doc.project:
-	# 	pro_doc=frappe.get_doc('Project',doc.project)
-	# 	if doc.status=='Completed' and doc.project:
-	# 		duplicate=[]
-	# 		for d in doc.get('current_reading'):
-	# 			for pr in pro_doc.get('machine_readings'):
-	# 				if getdate(d.date) ==  getdate(pr.date) and d.type== pr.type and d.asset == pr.asset:
-	# 					duplicate.append(d.asset)
-	# 		for d in doc.get('current_reading'):
-	# 			if d.asset not in duplicate:
-	# 				pro_doc.append("machine_readings", {
-	# 				"date" : d.get('date'),
-	# 				"type" : d.get('type'),
-	# 				"asset":d.get('asset'),
-	# 				"reading":d.get('reading')
-	# 				}) 
-	# 		pro_doc.save()
-
 
 		# if doc.status=='Completed' :
 		# 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
@@ -48,7 +30,6 @@ def after_insert(doc,method):
 	last_reading=today()
 	if len(frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="name desc"))!=0:
 		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="name desc"):
-			print(d.name)
 			doc.append("last_readings", {
 				"date" : d.get('reading_date'),
 				"type" : d.get('machine_type'),
@@ -58,7 +39,6 @@ def after_insert(doc,method):
 				})
 	else:
 		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)},fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="name desc"):
-			print(d.name)
 			doc.append("last_readings", {
 				"date" : d.get('reading_date'),
 				"type" : d.get('machine_type'),
@@ -71,28 +51,8 @@ def after_insert(doc,method):
 		doc.failure_date_and_time=frappe.db.get_value("Issue",doc.issue,"failure_date_and_time")
 	if doc.issue:
 		doc.description=frappe.db.get_value("Issue",doc.issue,"description")
-	# if doc.issue_type in ['Toner Request','Machine Issue'] and doc.project:
-	# 	task_list=[]
-	# 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
-	# 		task_list.append(t.name)
-	# 	if doc.status!='Completed' and doc.name not in task_list:
-	# 		asset_doc = frappe.new_doc("Asset Repair")
-	# 		asset_doc.task=doc.name
-	# 		asset_doc.asset_name=doc.asset
-	# 		asset_doc.project=doc.project
-	# 		asset_doc.assign_to=doc.completed_by
-	# 		asset_doc.description=doc.description
-	# 		asset_doc.failure_date=doc.failure_date_and_time
-	# 		for d in doc.get('current_reading'):
-	# 			asset_doc.append("repair_on_reading", {
-	# 				"date" : d.get('date'),
-	# 				"type" : d.get('type'),
-	# 				"asset":d.get('asset'),
-	# 				"reading":d.get('reading')
-	# 				}) 
-	# 		asset_doc.save()
+
 	
-	# Share Task with user respectively
 	docperm = frappe.new_doc("User Permission")
 	docperm.update({
 		"user": doc.completed_by,
@@ -101,19 +61,6 @@ def after_insert(doc,method):
 	})
 
 	docperm.save(ignore_permissions=True)
-	
-
-	# Share Task with user respectively
-	# docshare = frappe.new_doc("DocShare")
-	# docshare.update({
-	# 	"user": doc.completed_by,
-	# 	"share_doctype": 'Task',
-	# 	"share_name": doc.name,
-	# 	"read": 1,
-	# 	"write": 1
-	# })
-
-	# docshare.save(ignore_permissions=True)
 	
 			
 	
@@ -320,8 +267,10 @@ def on_change(doc,method):
 	create_machine_reading(doc)
 	set_reading_from_task_to_issue(doc)
 	validate_reading(doc)
-	if doc.issue and doc.status not in ['Open','Completed']:
+	if doc.issue and doc.status != 'Open':
 		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
+		if doc.status == 'Completed':
+			frappe.db.set_value("Issue",doc.issue,'status',"Task Completed")
 
 def create_machine_reading(doc):
 	for d in doc.get('current_reading'):
@@ -355,7 +304,7 @@ def set_reading_from_task_to_issue(doc):
 
 def validate_reading(doc):
 	for d in doc.get('current_reading'):
-		d.total=( int(d.get('reading'))  + int(d.get('reading_2')))
+		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
 	if len(doc.get('current_reading'))>0:
 		reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
 		if not str(reading).isdigit():
@@ -365,17 +314,6 @@ def validate_reading(doc):
 			current_reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
 			if last_reading>current_reading:
 				frappe.throw("Current Reading Must be Greater than Last Reading")
-
-# @frappe.whitelist()		
-# def set_status(user,status):
-# 		#for i in  frappe.get_roles(user):
-# 			flag = 0
-# 			for s in frappe.get_all('Support Setting Table',['technician_role']):
-# 				if s.get('technician_role') in frappe.get_roles(user):
-# 					flag = 1
-				
-# 			return flag
-
 
 
 
