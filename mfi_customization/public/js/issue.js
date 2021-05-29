@@ -73,12 +73,14 @@ frappe.ui.form.on('Issue', {
 			if (!frm.doc.details_available){
 				frm.set_df_property('asset','reqd',0);
 				frm.set_df_property('serial_no','reqd',0);
-				frm.set_df_property('location','reqd',0);
+				frm.set_df_property('asset','read_only',1);
+				frm.set_df_property('serial_no','read_only',1);
 			}
 			if(frm.doc.details_available){
 				frm.set_df_property('asset','reqd',1);
 				frm.set_df_property('serial_no','reqd',1);
-				frm.set_df_property('location','reqd',1);
+				frm.set_df_property('asset','read_only',0);
+				frm.set_df_property('serial_no','read_only',0);
 			}
 	},
 	location:function(frm){
@@ -253,10 +255,12 @@ frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	if (d.type=='Black & White'){
 	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','none')
+    $("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','all')
 	}
-	// if (d.type=="Colour"){
-	// 	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','none')
-	// }
+	if (d.type=="Colour"){
+        $("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','all')
+		$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','all')
+	}
 	refresh_field("asset", d.name, d.parentfield);
 });
 

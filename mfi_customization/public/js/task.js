@@ -310,10 +310,12 @@ frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
 	if (d.type=='Black & White'){
 	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','none')
+    $("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','all')
 	}
-	// if (d.type=="Colour"){
-	// 	$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','none')
-	// }
+	if (d.type=="Colour"){
+        $("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','all')
+		$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','all')
+	}
 	refresh_field("asset", d.name, d.parentfield);
 });
     

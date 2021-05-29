@@ -6,6 +6,24 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.mapper import get_mapped_doc
 
+def validate(doc,method):
+	email_validation(doc)
+	for d in doc.get("current_reading"):
+		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
+		if d.idx>1:
+			frappe.throw("More than one row not allowed")
+	if doc.status=="Closed":
+		for t in frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']):
+			if t.status != 'Completed':
+				frappe.throw("Please Complete <b>Issue '{0}'</b>".format(t.name))
+		if len(frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']))==0:
+			if len(doc.get('current_reading'))==0:
+				frappe.throw("Please add Asset readings before closing issue")
+
+def email_validation(doc):
+	if doc.email_conact and "@" not in 	doc.email_conact:
+		frappe.throw("Email Not Valid")
+
 @frappe.whitelist()
 def make_task(source_name, target_doc=None):
 	return get_mapped_doc("Issue", source_name, {
@@ -66,18 +84,6 @@ def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
  		filters.update({"name": ("like", "{0}%".format(txt))})
  	return frappe.get_all("Asset Serial No",filters=filters,fields = ["name"], as_list=1)
 
-def validate(doc,method):
-	for d in doc.get("current_reading"):
-		d.total=(d.get('reading') or 0 +d.get('reading_2') or 0)
-		if d.idx>1:
-			frappe.throw("More than one row not allowed")
-	if doc.status=="Closed":
-		for t in frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']):
-			if t.status != 'Completed':
-				frappe.throw("Please Complete <b>Issue '{0}'</b>".format(t.name))
-		if len(frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']))==0:
-			if len(doc.get('current_reading'))==0:
-				frappe.throw("Please add Asset readings before closing issue")
 @frappe.whitelist()
 def get_customer(serial_no,asset):
 	project = frappe.get_value('Asset',{'serial_no':serial_no},'project')
