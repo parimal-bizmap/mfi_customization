@@ -8,7 +8,9 @@ from frappe.utils.data import getdate,today
 from frappe.model.mapper import get_mapped_doc
 
 def validate(doc,method):
+	machine_reading=""
 	for d in doc.get("current_reading"):
+		machine_reading=d.machine_reading
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
 	if doc.get('__islocal'):
@@ -18,7 +20,10 @@ def validate(doc,method):
 	last_reading=today()
 	if doc.asset:
 		doc.set("last_readings", [])
-		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)},fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc,name desc"):
+		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
+		if machine_reading:
+			fltr.update({"name":("!=",machine_reading)})
+		for d in frappe.get_all("Machine Reading",filters=fltr,fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc,name desc"):
 			doc.append("last_readings", {
 				"date" : d.get('reading_date'),
 				"type" : d.get('machine_type'),
@@ -279,6 +284,7 @@ def create_machine_reading(doc):
 			mr.project=doc.project
 			mr.task=doc.name
 			mr.save()
+			d.machine_reading=mr.name
 	
 def set_reading_from_task_to_issue(doc):
 	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
