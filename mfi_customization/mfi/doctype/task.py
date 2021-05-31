@@ -15,6 +15,18 @@ def validate(doc,method):
 		for d in frappe.get_all("Task",{"issue":doc.issue}):
 			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
 
+	last_reading=today()
+	if doc.asset:
+		doc.set("last_readings", [])
+		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)},fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc,name desc"):
+			doc.append("last_readings", {
+				"date" : d.get('reading_date'),
+				"type" : d.get('machine_type'),
+				"asset":d.get('asset'),
+				"reading":d.get('black_and_white_reading'),
+				"reading_2":d.get('colour_reading'),
+				"total":( int(d.get('black_and_white_reading') or 0)  + int(d.get('colour_reading') or 0))
+				})
 		# if doc.status=='Completed' :
 		# 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
 		# 		ar=frappe.get_doc('Asset Repair',t.name)
@@ -27,25 +39,7 @@ def validate(doc,method):
 def after_insert(doc,method):
 	if doc.get('issue'):
 		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
-	last_reading=today()
-	if len(frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="name desc"))!=0:
-		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<",last_reading)},fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="name desc"):
-			doc.append("last_readings", {
-				"date" : d.get('reading_date'),
-				"type" : d.get('machine_type'),
-				"asset":d.get('asset'),
-				"reading":d.get('black_and_white_reading'),
-				"reading_2":d.get('colour_reading')
-				})
-	else:
-		for d in frappe.get_all("Machine Reading",filters={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)},fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="name desc"):
-			doc.append("last_readings", {
-				"date" : d.get('reading_date'),
-				"type" : d.get('machine_type'),
-				"asset":d.get('asset'),
-				"reading":d.get('black_and_white_reading'),
-				"reading_2":d.get('colour_reading')
-				})
+
 	doc.save()
 	if doc.failure_date_and_time and doc.issue:
 		doc.failure_date_and_time=frappe.db.get_value("Issue",doc.issue,"failure_date_and_time")
@@ -306,11 +300,11 @@ def validate_reading(doc):
 	for d in doc.get('current_reading'):
 		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
 	if len(doc.get('current_reading'))>0:
-		reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
+		reading=(doc.get('current_reading')[-1]).get('total')
 		if not str(reading).isdigit():
 			frappe.throw("only numbers allowed in reading")
 		for lst in doc.get("last_readings"):
-			last_reading=lst.get("reading") if lst.get("reading") else lst.get("reading_2")
+			last_reading=lst.get("total")
 			current_reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
 			if last_reading>current_reading:
 				frappe.throw("Current Reading Must be Greater than Last Reading")
