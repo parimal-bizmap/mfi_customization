@@ -33,7 +33,7 @@ doctype_js = {
                 "Task":"public/js/task.js",
                 "Asset Maintenance":"public/js/asset_maintenance.js",
                 "Location":"public/js/location.js",
-                "Asset Movement":"public/js/asset_movement.js"
+                "Asset Movement":"public/js/asset_movement.js",
 }	
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -117,6 +117,9 @@ doc_events = {
     },
     "File":{
         "after_insert":"mfi_customization.mfi.doctype.communication.after_insert_file"
+    },
+    "Material Request":{
+        "validate":"mfi_customization.mfi.doctype.material_request.validate"
     }
 }
 
