@@ -293,6 +293,19 @@ validate:function(frm){
 //         }}
 //     })
 // }
+        if (frm.doc.current_reading){
+            (frm.doc.current_reading).forEach(e => {
+                (frm.doc.last_readings).forEach(i =>
+                    {
+                        if(e.date <  i.date){
+                            frappe.throw("Please select next date than last reading");
+
+                        }
+
+                    });
+                
+            });
+        }
 
 
 
