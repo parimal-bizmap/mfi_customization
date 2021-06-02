@@ -71,7 +71,11 @@ clear:function(frm){
 ,
 
 refresh:function(frm){
-    
+    if (!frm.doc.__islocal ){
+		frm.add_custom_button(__('Material Request'), function() {
+			frappe.set_route('List', 'Material Request', {task: frm.doc.name});
+		},__("View"));
+    }
     frm.trigger('customer');
     if (!frm.doc.__islocal){
         frm.add_custom_button(__("Asset Movement"), function() {
@@ -240,6 +244,7 @@ completed_by:function(frm){
     }
 },
 validate:function(frm){
+  
     if(frm.doc.status == 'Completed'  ){
         if(!frm.doc.asset){
         frappe.throw('Asset details missing.');
