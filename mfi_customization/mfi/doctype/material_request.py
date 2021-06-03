@@ -7,3 +7,13 @@ def validate(doc,method):
                 if emp2.user_id:
                     doc.approver=emp2.user_id
                     doc.approver_name=frappe.db.get_value("User",emp2.user_id,"full_name")
+    #User Permission For Approver
+    docperm = frappe.new_doc("User Permission")
+    docperm.update({
+		"user": doc.approver,
+		"allow": 'Material Request',
+		"for_value": doc.name
+	})
+    docperm.save(ignore_permissions=True)
+	
+	
