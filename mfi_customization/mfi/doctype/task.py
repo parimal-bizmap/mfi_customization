@@ -32,15 +32,13 @@ def validate(doc,method):
 				"reading_2":d.get('colour_reading'),
 				"total":( int(d.get('black_and_white_reading') or 0)  + int(d.get('colour_reading') or 0))
 				})
-		# if doc.status=='Completed' :
-		# 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
-		# 		ar=frappe.get_doc('Asset Repair',t.name)
-		# 		ar.repair_status='Completed'
-		# 		ar.completion_date=today()
-		# 		ar.save()
-		# 		ar.submit()
-		
-
+	if doc.get("issue"):
+		issue = frappe.get_doc("Issue",{"name":doc.get("issue")})		
+		if doc.get("completed_by"):
+			issue.assign_to = doc.get("completed_by")
+		if doc.get("assign_date"):
+			issue.assign_date = doc.get("assign_date")
+		issue.save()
 def after_insert(doc,method):
 	if doc.get('issue'):
 		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
@@ -296,21 +294,20 @@ def create_machine_reading(doc):
 				mr_doc.save()
 	
 def set_reading_from_task_to_issue(doc):
-	if doc.get("issue"):
-		issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
-		duplicate=[]
-		for d in doc.get('current_reading'):
-			for pr in issue_doc.get('current_reading'):
-				if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
-					duplicate.append(d.idx)
-		for d in doc.get('current_reading'):
-			for isu in doc.get("current_reading"):
-				isu.date=d.get('date')
-				isu.type=d.get('type')
-				isu.asset=d.get('asset')
-				isu.reading=d.get('reading')
-				isu.reading_2=d.get('reading_2')
-				issue_doc.save()
+	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
+	duplicate=[]
+	for d in doc.get('current_reading'):
+		for pr in issue_doc.get('current_reading'):
+			if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
+				duplicate.append(d.idx)
+	for d in doc.get('current_reading'):
+		for isu in doc.get("current_reading"):
+			isu.date=d.get('date')
+			isu.type=d.get('type')
+			isu.asset=d.get('asset')
+			isu.reading=d.get('reading')
+			isu.reading_2=d.get('reading_2')
+			issue_doc.save()
 
 def validate_reading(doc):
 	for d in doc.get('current_reading'):
