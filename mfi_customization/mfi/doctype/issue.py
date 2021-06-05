@@ -8,10 +8,10 @@ from frappe.model.mapper import get_mapped_doc
 
 def validate(doc,method):
 	email_validation(doc)
-	for d in doc.get("current_reading"):
-		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
-		if d.idx>1:
-			frappe.throw("More than one row not allowed")
+	# for d in doc.get("current_reading"):
+	# 	d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
+	# 	if d.idx>1:
+	# 		frappe.throw("More than one row not allowed")
 	if doc.status=="Closed":
 		for t in frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']):
 			if t.status != 'Completed':
