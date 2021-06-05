@@ -7,7 +7,9 @@ def validate(doc,method):
                 if emp2.user_id:
                     doc.approver=emp2.user_id
                     doc.approver_name=frappe.db.get_value("User",emp2.user_id,"full_name")
-    #User Permission For Approver
+    
+#User Permission For Approver
+def after_insert_file(doc,method):    
     docperm = frappe.new_doc("User Permission")
     docperm.update({
 		"user": doc.approver,
