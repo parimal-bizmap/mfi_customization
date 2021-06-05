@@ -296,20 +296,21 @@ def create_machine_reading(doc):
 				mr_doc.save()
 	
 def set_reading_from_task_to_issue(doc):
-	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
-	duplicate=[]
-	for d in doc.get('current_reading'):
-		for pr in issue_doc.get('current_reading'):
-			if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
-				duplicate.append(d.idx)
-	for d in doc.get('current_reading'):
-		for isu in doc.get("current_reading"):
-			isu.date=d.get('date')
-			isu.type=d.get('type')
-			isu.asset=d.get('asset')
-			isu.reading=d.get('reading')
-			isu.reading_2=d.get('reading_2')
-			issue_doc.save()
+	if doc.get("issue"):
+		issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
+		duplicate=[]
+		for d in doc.get('current_reading'):
+			for pr in issue_doc.get('current_reading'):
+				if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
+					duplicate.append(d.idx)
+		for d in doc.get('current_reading'):
+			for isu in doc.get("current_reading"):
+				isu.date=d.get('date')
+				isu.type=d.get('type')
+				isu.asset=d.get('asset')
+				isu.reading=d.get('reading')
+				isu.reading_2=d.get('reading_2')
+				issue_doc.save()
 
 def validate_reading(doc):
 	for d in doc.get('current_reading'):
