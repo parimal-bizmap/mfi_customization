@@ -32,6 +32,7 @@ def validate(doc,method):
 				"reading_2":d.get('colour_reading'),
 				"total":( int(d.get('black_and_white_reading') or 0)  + int(d.get('colour_reading') or 0))
 				})
+
 	if doc.get("issue"):
 		issue = frappe.get_doc("Issue",{"name":doc.get("issue")})		
 		if doc.get("completed_by"):
@@ -39,6 +40,7 @@ def validate(doc,method):
 		if doc.get("assign_date"):
 			issue.assign_date = doc.get("assign_date")
 		issue.save()
+		
 def after_insert(doc,method):
 	if doc.get('issue'):
 		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
@@ -263,9 +265,9 @@ def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
 		return [(d,) for d in lst]	
 
 def on_change(doc,method):
-	create_machine_reading(doc)
 	set_reading_from_task_to_issue(doc)
 	validate_reading(doc)
+	create_machine_reading(doc)
 	if doc.issue and doc.status != 'Open':
 		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
 		if doc.status == 'Completed':
@@ -285,23 +287,23 @@ def create_machine_reading(doc):
 			mr.task=doc.name
 			mr.save()
 			d.machine_reading=mr.name
-		else:
-			for mr in frappe.get_all("Machine Reading",{"task":doc.name,"project":doc.project,"asset":d.get('asset'),"reading_date":d.get('date')}):
-				mr_doc=frappe.get_doc("Machine Reading",mr.name)
-				mr_doc.black_and_white_reading=d.get("reading")
-				mr_doc.colour_reading=d.get("reading_2")
-				mr_doc.machine_type=d.get('type')
-				mr_doc.total=d.get("total")
-				mr_doc.reading_date=d.get('date')
-				mr_doc.save()
+		# else:
+		# 	for mr in frappe.get_all("Machine Reading",{"task":doc.name,"project":doc.project,"asset":d.get('asset'),"reading_date":d.get('date')}):
+		# 		mr_doc=frappe.get_doc("Machine Reading",mr.name)
+		# 		mr_doc.black_and_white_reading=d.get("reading")
+		# 		mr_doc.colour_reading=d.get("reading_2")
+		# 		mr_doc.machine_type=d.get('type')
+		# 		mr_doc.total=d.get("total")
+		# 		mr_doc.reading_date=d.get('date')
+		# 		mr_doc.save()
 	
 def set_reading_from_task_to_issue(doc):
 	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
-	duplicate=[]
-	for d in doc.get('current_reading'):
-		for pr in issue_doc.get('current_reading'):
-			if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
-				duplicate.append(d.idx)
+	# duplicate=[]
+	# for d in doc.get('current_reading'):
+	# 	for pr in issue_doc.get('current_reading'):
+	# 		if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
+	# 			duplicate.append(d.idx)
 	for d in doc.get('current_reading'):
 		for isu in doc.get("current_reading"):
 			isu.date=d.get('date')
@@ -312,20 +314,26 @@ def set_reading_from_task_to_issue(doc):
 			issue_doc.save()
 
 def validate_reading(doc):
-	current_date=today()
-	for d in doc.get('current_reading'):
-		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
-		current_date=d.date
-	if len(doc.get('current_reading'))>0:
-		reading=(doc.get('current_reading')[-1]).get('total')
-		if not str(reading).isdigit():
-			frappe.throw("only numbers allowed in reading")
-		for lst in doc.get("last_readings"):
-			last_reading=lst.get("total")
-			if int(last_reading)>reading:
+	for cur in doc.get('current_reading'):
+		cur.total=( int(cur.get('reading') or 0)  + int(cur.get('reading_2') or 0))
+		for lst in doc.get('last_readings'):
+			lst.total=( int(lst.get('reading') or 0)  + int(lst.get('reading_2') or 0))
+			if int(lst.total)>int(cur.total):
 				frappe.throw("Current Reading Must be Greater than Last Reading")
-			if getdate(lst.date)>getdate(current_date):
+			if getdate(lst.date)>getdate(cur.date):
 				frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
+	# 	d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
+	# 	current_date=d.date
+	# if len(doc.get('current_reading'))>0:
+	# 	reading=(doc.get('current_reading')[-1]).get('total')
+	# 	if not str(reading).isdigit():
+	# 		frappe.throw("only numbers allowed in reading")
+	# 	for lst in doc.get("last_readings"):
+	# 		last_reading=lst.get("total")
+			# if int(last_reading)>reading:
+			# 	frappe.throw("Current Reading Must be Greater than Last Reading")
+			# if getdate(lst.date)>getdate(current_date):
+			# 	frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
 
 
 
