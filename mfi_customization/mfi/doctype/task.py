@@ -206,7 +206,6 @@ def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
 
 @frappe.whitelist()
 def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
-	# data = frappe.db.sql("""select name from `tabProject` """)
 	fltr1 = {}
 	fltr2 = {}
 	lst = []
@@ -287,23 +286,9 @@ def create_machine_reading(doc):
 			mr.task=doc.name
 			mr.save()
 			d.machine_reading=mr.name
-		# else:
-		# 	for mr in frappe.get_all("Machine Reading",{"task":doc.name,"project":doc.project,"asset":d.get('asset'),"reading_date":d.get('date')}):
-		# 		mr_doc=frappe.get_doc("Machine Reading",mr.name)
-		# 		mr_doc.black_and_white_reading=d.get("reading")
-		# 		mr_doc.colour_reading=d.get("reading_2")
-		# 		mr_doc.machine_type=d.get('type')
-		# 		mr_doc.total=d.get("total")
-		# 		mr_doc.reading_date=d.get('date')
-		# 		mr_doc.save()
 	
 def set_reading_from_task_to_issue(doc):
 	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
-	# duplicate=[]
-	# for d in doc.get('current_reading'):
-	# 	for pr in issue_doc.get('current_reading'):
-	# 		if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
-	# 			duplicate.append(d.idx)
 	for d in doc.get('current_reading'):
 		for isu in doc.get("current_reading"):
 			isu.date=d.get('date')
@@ -322,18 +307,3 @@ def validate_reading(doc):
 				frappe.throw("Current Reading Must be Greater than Last Reading")
 			if getdate(lst.date)>getdate(cur.date):
 				frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
-	# 	d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
-	# 	current_date=d.date
-	# if len(doc.get('current_reading'))>0:
-	# 	reading=(doc.get('current_reading')[-1]).get('total')
-	# 	if not str(reading).isdigit():
-	# 		frappe.throw("only numbers allowed in reading")
-	# 	for lst in doc.get("last_readings"):
-	# 		last_reading=lst.get("total")
-			# if int(last_reading)>reading:
-			# 	frappe.throw("Current Reading Must be Greater than Last Reading")
-			# if getdate(lst.date)>getdate(current_date):
-			# 	frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
-
-
-

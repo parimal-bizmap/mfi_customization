@@ -193,11 +193,20 @@ setup:function(frm){
 				}
 		});
     frm.set_query("asset", "current_reading", function() {
-        return {
+        // if(frm.doc.asset){
+            return {
             filters: {
-                "name": frm.doc.asset
+                "name": frm.doc.asset || ""
             }
         }
+    // }
+    // else{
+    //     return {
+    //         filters: {
+    //             "name": ""
+    //         }
+    //     }
+    // }
     });
     
   
@@ -274,21 +283,6 @@ validate:function(frm){
         frappe.throw("Status Cannot be complete before working")
     }
     
-    
-        if (frm.doc.current_reading){
-            (frm.doc.current_reading).forEach(e => {
-                (frm.doc.last_readings).forEach(i =>
-                    {
-                        if(e.date <  i.date){
-                            frappe.throw("Please select next date than last reading");
-
-                        }
-
-                    });
-                
-            });
-        }
-
 
 
 }

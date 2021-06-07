@@ -120,8 +120,7 @@ doc_events = {
         "after_insert":"mfi_customization.mfi.doctype.communication.after_insert_file"
     },
     "Material Request":{
-        "validate":"mfi_customization.mfi.doctype.material_request.validate",
-         "after_insert":"mfi_customization.mfi.doctype.material_request.after_insert_file"
+        "validate":"mfi_customization.mfi.doctype.material_request.validate"
     }
 }
 

@@ -93,11 +93,13 @@ frappe.ui.form.on('Issue', {
 	},
 	setup:function(frm){
 		frm.set_query("asset", "current_reading", function() {
+			
 			return {
 				filters: {
-					"name": frm.doc.asset
+					"name": frm.doc.asset || ""
 				}
-			}
+			
+		}
 		});
 		frm.set_query("asset", function() {
 			if (frm.doc.project) {
