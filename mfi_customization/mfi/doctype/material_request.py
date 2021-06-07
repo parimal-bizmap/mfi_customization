@@ -5,17 +5,31 @@ def validate(doc,method):
 		if emp.reports_to:
 			for emp2 in frappe.get_all("Employee",{"name":emp.reports_to},['user_id']):
 				if emp2.user_id:
-					print("**********",emp2.user_id)
 					doc.approver=emp2.user_id
 					doc.approver_name=frappe.db.get_value("User",emp2.user_id,"full_name")
+	#User Permission For Approver   
 	
+	
+	if doc.approver and doc.name and not doc.is_new():
+		if not len(frappe.get_all("User Permission"),{"for_value":doc.name,"user":doc.approver}):
+			docperm = frappe.new_doc("User Permission")
+			docperm.update({
+				"user": doc.approver,
+				"allow": 'Material Request',
+				"for_value": doc.name
+			})
+			docperm.save(ignore_permissions=True)
+		
+
+def after_insert_file(doc,method):
 	#User Permission For Approver   
 	docperm = frappe.new_doc("User Permission")
-	if doc.approver:
-		docperm.update({
-			"user": doc.approver,
-			"allow": 'Material Request',
-			"for_value": doc.name
-		})
-		docperm.save(ignore_permissions=True)
+	# if doc.approver and doc.name:
+	# 	if not len(frappe.get_all("User Permission"),{"for_value":doc.name,"user":doc.approver}):
+	# 		docperm.update({
+	# 			"user": doc.approver,
+	# 			"allow": 'Material Request',
+	# 			"for_value": doc.name
+	# 		})
+	# 		docperm.save(ignore_permissions=True)
 	
