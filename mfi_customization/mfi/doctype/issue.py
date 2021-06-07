@@ -5,10 +5,13 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.mapper import get_mapped_doc
+from frappe.utils.data import today
 
 def validate(doc,method):
 	email_validation(doc)
+	# machine_reading=""
 	for d in doc.get("current_reading"):
+		# machine_reading=d.machine_reading
 		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
@@ -19,7 +22,25 @@ def validate(doc,method):
 		if len(frappe.get_all('Task',filters={'issue':doc.name},fields=['name','status']))==0:
 			if len(doc.get('current_reading'))==0:
 				frappe.throw("Please add Asset readings before closing issue")
+	last_reading=today()
+	if doc.asset:
+		doc.set("last_readings", [])
+		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
+		# if machine_reading:
+		# 	fltr.update({"name":("!=",machine_reading)})
+		for d in frappe.get_all("Machine Reading",filters=fltr,fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc,name desc"):
+			doc.append("last_readings", {
+				"date" : d.get('reading_date'),
+				"type" : d.get('machine_type'),
+				"asset":d.get('asset'),
+				"reading":d.get('black_and_white_reading'),
+				"reading_2":d.get('colour_reading'),
+				"total":( int(d.get('black_and_white_reading') or 0)  + int(d.get('colour_reading') or 0))
+				})
 
+def on_change(doc,method):
+	validate_reading(doc)
+	
 def email_validation(doc):
 	if doc.email_conact and "@" not in 	doc.email_conact:
 		frappe.throw("Email Not Valid")
@@ -178,3 +199,17 @@ def set_reading_from_issue_to_task(doc,method):
 				"reading_2":d.get('reading_2')
 				})
 				task_doc.save()
+
+def validate_reading(doc):
+	for d in doc.get('current_reading'):
+		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
+	if len(doc.get('current_reading'))>0:
+		reading=(doc.get('current_reading')[-1]).get('total')
+		if not str(reading).isdigit():
+			frappe.throw("only numbers allowed in reading")
+		for lst in doc.get("last_readings"):
+			last_reading=lst.get("total")
+			# current_reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
+			print(int(last_reading),reading)
+			if int(last_reading)>reading:
+				frappe.throw("Current Reading Must be Greater than Last Reading")
