@@ -68,11 +68,13 @@ def after_delete(doc,method):
 
 @frappe.whitelist()
 def make_material_req(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.company=frappe.db.get_value("Employee",{"user_id":frappe.session.user},"company")
 	doclist = get_mapped_doc("Task", source_name, {
 		"Task": {
 			"doctype": "Material Request"
 		}
-	}, target_doc )
+	}, target_doc,set_missing_values )
 
 	return doclist
 
@@ -310,8 +312,10 @@ def set_reading_from_task_to_issue(doc):
 			issue_doc.save()
 
 def validate_reading(doc):
+	current_date=today()
 	for d in doc.get('current_reading'):
 		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
+		current_date=d.date
 	if len(doc.get('current_reading'))>0:
 		reading=(doc.get('current_reading')[-1]).get('total')
 		if not str(reading).isdigit():
@@ -320,6 +324,8 @@ def validate_reading(doc):
 			last_reading=lst.get("total")
 			if int(last_reading)>reading:
 				frappe.throw("Current Reading Must be Greater than Last Reading")
+			if getdate(lst.date)>getdate(current_date):
+				frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
 
 
 

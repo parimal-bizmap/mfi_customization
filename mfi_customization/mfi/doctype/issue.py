@@ -5,7 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.mapper import get_mapped_doc
-from frappe.utils.data import today
+from frappe.utils.data import today,getdate
 
 def validate(doc,method):
 	email_validation(doc)
@@ -40,7 +40,7 @@ def validate(doc,method):
 
 def on_change(doc,method):
 	validate_reading(doc)
-	
+
 def email_validation(doc):
 	if doc.email_conact and "@" not in 	doc.email_conact:
 		frappe.throw("Email Not Valid")
@@ -201,15 +201,18 @@ def set_reading_from_issue_to_task(doc,method):
 				task_doc.save()
 
 def validate_reading(doc):
+	current_date=today()
 	for d in doc.get('current_reading'):
 		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
+		current_date=d.date
+
 	if len(doc.get('current_reading'))>0:
 		reading=(doc.get('current_reading')[-1]).get('total')
 		if not str(reading).isdigit():
 			frappe.throw("only numbers allowed in reading")
 		for lst in doc.get("last_readings"):
 			last_reading=lst.get("total")
-			# current_reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
-			print(int(last_reading),reading)
 			if int(last_reading)>reading:
 				frappe.throw("Current Reading Must be Greater than Last Reading")
+			if getdate(lst.date)>getdate(current_date):
+				frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
