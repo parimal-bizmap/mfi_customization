@@ -27,4 +27,5 @@ def after_insert(doc,method):
 			"for_value": doc.name
 		})
 		docperm.save(ignore_permissions=True)
+
 	

@@ -107,28 +107,28 @@ refresh:function(frm){
         });
        
 },
-status:function(frm){
-    if(frm.doc.status == 'Completed'){
-        frm.set_df_property('asset',"reqd",1);
-        frappe.call({
-        method: "mfi_customization.mfi.doctype.task.check_material_request_status",
-        args: {
-            "task":frm.doc.name
-        },
-        callback: function(r) {
-          if (r.message){
-              frm.set_value('status','Working');
-              frappe.throw("Material Request is not completed yet.");
+// status:function(frm){
+//     if(frm.doc.status == 'Completed'){
+//         frm.set_df_property('asset',"reqd",1);
+//         frappe.call({
+//         method: "mfi_customization.mfi.doctype.task.check_material_request_status",
+//         args: {
+//             "task":frm.doc.name
+//         },
+//         callback: function(r) {
+//           if (r.message){
+//               frm.set_value('status','Working');
+//               frappe.throw("Material Request is not completed yet.");
               
-          }  
+//           }  
                				
-        }
+//         }
 
         
-});
-}
+// });
+// }
         
-},	
+// },	
 
 setup:function(frm){
     frm.set_query("location", function() {

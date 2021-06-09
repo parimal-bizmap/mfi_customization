@@ -270,6 +270,7 @@ def on_change(doc,method):
 	if doc.issue and doc.status != 'Open':
 		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
 		if doc.status == 'Completed':
+			validate_if_material_request_is_not_submitted(doc)
 			frappe.db.set_value("Issue",doc.issue,'status',"Task Completed")
 
 def create_machine_reading(doc):
@@ -307,3 +308,7 @@ def validate_reading(doc):
 				frappe.throw("Current Reading Must be Greater than Last Reading")
 			if getdate(lst.date)>getdate(cur.date):
 				frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
+
+def validate_if_material_request_is_not_submitted(doc):
+	for mr in frappe.get_all("Material Request",{"task":doc.name,"docstatus":0}):
+		frappe.throw("Material Request is not completed yet. Name <b>{0}</b>".format(mr.name))
