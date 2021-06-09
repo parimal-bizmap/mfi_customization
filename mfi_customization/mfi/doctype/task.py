@@ -18,7 +18,7 @@ def validate(doc,method):
 			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
 
 	last_reading=today()
-	if doc.asset and len(doc.get("last_readings"))==0:
+	if doc.asset and doc.get("last_readings") and len(doc.get("last_readings"))==0:
 		# doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
 		if machine_reading:
@@ -293,7 +293,7 @@ def create_machine_reading(doc):
 def set_reading_from_task_to_issue(doc):
 	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
 	for d in doc.get('current_reading'):
-		if len(issue_doc.get("current_reading"))>0:
+		if issue_doc.get("current_reading") and len(issue_doc.get("current_reading"))>0:
 			for isu in doc.get("current_reading"):
 				isu.date=d.get('date')
 				isu.type=d.get('type')
@@ -309,6 +309,10 @@ def set_reading_from_task_to_issue(doc):
 				"reading":d.get('reading'),
 				"reading_2":d.get('reading_2')
 			})
+	if doc.get("asset"):
+		issue_doc.asset = doc.get("asset")
+	if doc.get("serial_no"):
+		issue_doc.serial_no = doc.get("serial_no")
 	issue_doc.save()
 
 def validate_reading(doc):
