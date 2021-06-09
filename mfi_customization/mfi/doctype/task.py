@@ -264,13 +264,15 @@ def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
 		return [(d,) for d in lst]	
 
 def on_change(doc,method):
-	set_reading_from_task_to_issue(doc)
+	if doc.get("issue"):
+		set_reading_from_task_to_issue(doc)
 	validate_reading(doc)
 	create_machine_reading(doc)
 	if doc.issue and doc.status != 'Open':
 		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
 		if doc.status == 'Completed':
 			validate_if_material_request_is_not_submitted(doc)
+			attachment_validation(doc)
 			frappe.db.set_value("Issue",doc.issue,'status',"Task Completed")
 
 def create_machine_reading(doc):
@@ -304,8 +306,6 @@ def validate_reading(doc):
 		cur.total=( int(cur.get('reading') or 0)  + int(cur.get('reading_2') or 0))
 		for lst in doc.get('last_readings'):
 			lst.total=( int(lst.get('reading') or 0)  + int(lst.get('reading_2') or 0))
-			print("$$$")
-			print(int(lst.total),int(cur.total))
 			if int(lst.total)>int(cur.total):
 				frappe.throw("Current Reading Must be Greater than Last Reading")
 			if getdate(lst.date)>getdate(cur.date):
@@ -314,3 +314,7 @@ def validate_reading(doc):
 def validate_if_material_request_is_not_submitted(doc):
 	for mr in frappe.get_all("Material Request",{"task":doc.name,"docstatus":0}):
 		frappe.throw("Material Request is not completed yet. Name <b>{0}</b>".format(mr.name))
+
+def attachment_validation(doc):
+	if not doc.attachment:
+		frappe.throw("Cann't Completed Task Without Attachment")
