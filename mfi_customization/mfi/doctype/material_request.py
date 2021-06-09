@@ -7,11 +7,7 @@ def validate(doc,method):
 				if emp2.user_id:
 					doc.approver=emp2.user_id
 					doc.approver_name=frappe.db.get_value("User",emp2.user_id,"full_name")
-	
-	
-	#User Permission For Approver   
-	if doc.approver and doc.name and not doc.is_new():
-		if not len(frappe.get_all("User Permission"),{"for_value":doc.name,"user":doc.approver}):
+		if doc.approver and len(frappe.get_all("User Permission",{"for_value":doc.name,"user":doc.approver}))==0 and not doc.get("__islocal"):
 			docperm = frappe.new_doc("User Permission")
 			docperm.update({
 				"user": doc.approver,
@@ -19,4 +15,16 @@ def validate(doc,method):
 				"for_value": doc.name
 			})
 			docperm.save(ignore_permissions=True)
-		
+	
+	
+	#User Permission For Approver  
+def after_insert(doc,method):
+	if doc.approver and len(frappe.get_all("User Permission",{"for_value":doc.name,"user":doc.approver}))==0:
+		docperm = frappe.new_doc("User Permission")
+		docperm.update({
+			"user": doc.approver,
+			"allow": 'Material Request',
+			"for_value": doc.name
+		})
+		docperm.save(ignore_permissions=True)
+	
