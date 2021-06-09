@@ -78,13 +78,13 @@ refresh:function(frm){
     }
     frm.trigger('customer');
     
-    if (!frm.doc.__islocal && !frappe.user.has_role('Morocco ATM')){
-        frm.add_custom_button(__("Asset Movement"), function() {
-            frappe.model.open_mapped_doc({
-                method: "mfi_customization.mfi.doctype.task.make_asset_movement",
-               frm : me.frm
-            })
-            }, __('Make'))}
+    // if (!frm.doc.__islocal && !frappe.user.has_role('Morocco ATM')){
+    //     frm.add_custom_button(__("Asset Movement"), function() {
+    //         frappe.model.open_mapped_doc({
+    //             method: "mfi_customization.mfi.doctype.task.make_asset_movement",
+    //            frm : me.frm
+    //         })
+    //         }, __('Make'))}
     
     
     frm.add_custom_button('Material Request', () => {
