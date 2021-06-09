@@ -18,8 +18,8 @@ def validate(doc,method):
 			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
 
 	last_reading=today()
-	if doc.asset:
-		doc.set("last_readings", [])
+	if doc.asset and len(doc.get("last_readings"))==0:
+		# doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
 		if machine_reading:
 			fltr.update({"name":("!=",machine_reading)})
@@ -304,6 +304,8 @@ def validate_reading(doc):
 		cur.total=( int(cur.get('reading') or 0)  + int(cur.get('reading_2') or 0))
 		for lst in doc.get('last_readings'):
 			lst.total=( int(lst.get('reading') or 0)  + int(lst.get('reading_2') or 0))
+			print("$$$")
+			print(int(lst.total),int(cur.total))
 			if int(lst.total)>int(cur.total):
 				frappe.throw("Current Reading Must be Greater than Last Reading")
 			if getdate(lst.date)>getdate(cur.date):

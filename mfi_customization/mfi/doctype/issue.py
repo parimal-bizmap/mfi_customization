@@ -23,8 +23,8 @@ def validate(doc,method):
 			if len(doc.get('current_reading'))==0:
 				frappe.throw("Please add Asset readings before closing issue")
 	last_reading=today()
-	if doc.asset:
-		doc.set("last_readings", [])
+	if doc.asset and len(doc.get("last_readings"))==0:
+		# doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
 		# if machine_reading:
 		# 	fltr.update({"name":("!=",machine_reading)})
