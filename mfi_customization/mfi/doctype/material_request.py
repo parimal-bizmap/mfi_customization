@@ -38,7 +38,7 @@ def validate(doc,method):
 
 	#User Permission For Approver  
 def after_insert(doc,method):
-	pass
+	
 	# if doc.approver :
 	# 	docperm = frappe.new_doc("User Permission")
 	# 	docperm.update({
