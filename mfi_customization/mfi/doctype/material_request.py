@@ -25,7 +25,7 @@ def validate(doc,method):
     #             "write": 1
     #         })
 	# 	docperm.save(ignore_permissions=True)
-	if doc.approver and doc.name:
+	if doc.approver and doc.is_new():
 		docperm = frappe.new_doc("DocShare")
 		docperm.update({
                 "user": doc.approver,
