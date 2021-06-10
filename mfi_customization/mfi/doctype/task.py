@@ -52,17 +52,24 @@ def after_insert(doc,method):
 		doc.description=frappe.db.get_value("Issue",doc.issue,"description")
 
 	
-	docperm = frappe.new_doc("User Permission")
-	docperm.update({
-		"user": doc.completed_by,
-		"allow": 'Task',
-		"for_value": doc.name
-	})
+	# docperm = frappe.new_doc("User Permission")
+	# docperm.update({
+	# 	"user": doc.completed_by,
+	# 	"allow": 'Task',
+	# 	"for_value": doc.name
+	# })
 
+	# docperm.save(ignore_permissions=True)
+	docperm = frappe.new_doc("DocShare")
+	docperm.update({
+			"user": doc.completed_by,
+			"share_doctype": 'Task',
+			"share_name": doc.name ,
+			"read": 1,
+			"write": 1
+		})
 	docperm.save(ignore_permissions=True)
-	
-			
-	
+		
 
 def after_delete(doc,method):
 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
