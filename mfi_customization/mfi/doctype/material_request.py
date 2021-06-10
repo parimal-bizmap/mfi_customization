@@ -1,12 +1,12 @@
 import frappe
 
 def validate(doc,method):
-	# for emp in frappe.get_all("Employee",{"user_id":frappe.session.user},['material_request_approver']):
-	# 	if emp.material_request_approver:
-	# 		for emp2 in frappe.get_all("Employee",{"name":emp.material_request_approver},['user_id']):
-	# 			if emp2.user_id:
-	# 				doc.approver=emp2.user_id
-	# 				doc.approver_name=frappe.db.get_value("User",emp2.user_id,"full_name")
+	for emp in frappe.get_all("Employee",{"user_id":frappe.session.user},['material_request_approver']):
+		if emp.material_request_approver:
+			for emp2 in frappe.get_all("Employee",{"name":emp.material_request_approver},['user_id']):
+				if emp2.user_id:
+					doc.approver=emp2.user_id
+					doc.approver_name=frappe.db.get_value("User",emp2.user_id,"full_name")
 	# if doc.approver and not doc.get("__islocal"):
 	# 	docperm = frappe.new_doc("User Permission")
 	# 	docperm.update({
@@ -60,12 +60,7 @@ def get_approver(user):
 	return var
 @frappe.whitelist()
 def get_approver_name(user):
-	var = ""
-	for emp in frappe.get_all("Employee",{"user_id":user},['material_request_approver']):
-		if emp.material_request_approver:
-		
-			for emp2 in frappe.get_all("Employee",{"name":emp.material_request_approver},['user_id']):
-				if emp2.user_id:
-					var = frappe.db.get_value("User",emp2.user_id,"full_name")
+
+	return frappe.db.get_value("User",{"email":user},"full_name")
 					
-	return var
+
