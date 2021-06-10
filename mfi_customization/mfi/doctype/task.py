@@ -18,7 +18,7 @@ def validate(doc,method):
 			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
 
 	last_reading=today()
-	if doc.asset and doc.get("last_readings") and len(doc.get("last_readings"))==0:
+	if doc.asset and  len(doc.get("last_readings"))==0:
 		# doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
 		if machine_reading:
