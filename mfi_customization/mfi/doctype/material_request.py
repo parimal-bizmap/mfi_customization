@@ -25,7 +25,7 @@ def validate(doc,method):
     #             "write": 1
     #         })
 	# 	docperm.save(ignore_permissions=True)
-	if doc.approver and doc.is_new():
+	if doc.approver and not doc.is_new():
 		docperm = frappe.new_doc("DocShare")
 		docperm.update({
                 "user": doc.approver,
@@ -47,16 +47,16 @@ def after_insert(doc,method):
 	# 		"for_value": doc.name
 	# 	})
 	# 	docperm.save(ignore_permissions=True)
-	# if doc.approver:
-	# 	docperm = frappe.new_doc("DocShare")
-	# 	docperm.update({
-    #             "user": doc.approver,
-    #             "share_doctype": 'Material Request',
-    #             "share_name": doc.name ,
-    #             "read": 1,
-    #             "write": 1
-    #         })
-	# 	docperm.save(ignore_permissions=True)
+	if doc.approver and doc.is_new():
+		docperm = frappe.new_doc("DocShare")
+		docperm.update({
+                "user": doc.approver,
+                "share_doctype": 'Material Request',
+                "share_name": doc.name ,
+                "read": 1,
+                "write": 1
+            })
+		docperm.save(ignore_permissions=True)
 
 @frappe.whitelist()
 def get_approver(user):
