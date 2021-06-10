@@ -23,7 +23,7 @@ def validate(doc,method):
 			if doc.get('current_reading') and len(doc.get('current_reading'))==0:
 				frappe.throw("Please add Asset readings before closing issue")
 	last_reading=today()
-	if doc.asset and doc.get("last_readings") and len(doc.get("last_readings"))==0:
+	if doc.asset and len(doc.get("last_readings"))==0:
 		# doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
 		# if machine_reading:
@@ -203,12 +203,10 @@ def set_reading_from_issue_to_task(doc,method):
 def validate_reading(doc):
 	for cur in doc.get('current_reading'):
 		cur.total=( int(cur.get('reading') or 0)  + int(cur.get('reading_2') or 0))
-		try:
+		if doc.get('last_readings'):
 			for lst in doc.get('last_readings'):
 				lst.total=( int(lst.get('reading') or 0)  + int(lst.get('reading_2') or 0))
 				if int(lst.total)>int(cur.total):
 					frappe.throw("Current Reading Must be Greater than Last Reading")
 				if getdate(lst.date)>getdate(cur.date):
 					frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
-		except:
-			print("****************in validation of meter reading")
