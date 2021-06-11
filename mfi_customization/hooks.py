@@ -37,7 +37,7 @@ doctype_js = {
                 "Sales Invoice":"public/js/sales_invoice.js",
                 "Material Request":"public/js/material_request.js"
 }	
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Material Request":"public/js/material_request_list.js",}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -120,10 +120,10 @@ doc_events = {
     "File":{
         "after_insert":"mfi_customization.mfi.doctype.communication.after_insert_file"
     },
-    "Material Request":{
-        "validate":"mfi_customization.mfi.doctype.material_request.validate",
-        "after_insert":"mfi_customization.mfi.doctype.material_request.after_insert"
-    }
+    # "Material Request":{
+    #     "validate":"mfi_customization.mfi.doctype.material_request.validate",
+    #     "after_insert":"mfi_customization.mfi.doctype.material_request.after_insert"
+    # }
 }
 
 # Scheduled Tasks

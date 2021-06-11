@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.utils.data import getdate,today
 from frappe.model.mapper import get_mapped_doc
+from frappe.permissions import add_user_permission
 
 def validate(doc,method):
 	machine_reading=""
@@ -13,9 +14,6 @@ def validate(doc,method):
 		machine_reading=d.machine_reading
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
-	if doc.get('__islocal'):
-		for d in frappe.get_all("Task",{"issue":doc.issue}):
-			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
 
 	last_reading=today()
 	if doc.asset and  len(doc.get("last_readings"))==0:
@@ -33,6 +31,41 @@ def validate(doc,method):
 				"total":( int(d.get('black_and_white_reading') or 0)  + int(d.get('colour_reading') or 0))
 				})
 
+	set_field_values(doc)
+
+	if doc.get('__islocal'):
+		for d in frappe.get_all("Task",{"issue":doc.issue}):
+			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
+	else:
+		create_user_permission(doc)
+		
+def after_insert(doc,method):
+	if doc.get('issue'):
+		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
+	if doc.failure_date_and_time and doc.issue:
+		doc.failure_date_and_time=frappe.db.get_value("Issue",doc.issue,"failure_date_and_time")
+	if doc.issue:
+		doc.description=frappe.db.get_value("Issue",doc.issue,"description")
+
+	
+	create_user_permission(doc)
+
+	# docperm = frappe.new_doc("DocShare")
+	# docperm.update({
+	# 		"user": doc.completed_by,
+	# 		"share_doctype": 'Task',
+	# 		"share_name": doc.name ,
+	# 		"read": 1,
+	# 		"write": 1
+	# 	})
+	# docperm.save(ignore_permissions=True)
+		
+
+def after_delete(doc,method):
+	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
+		frappe.delete_doc('Asset Repair',t.name)
+
+def set_field_values(doc):
 	if doc.get("issue"):
 		issue = frappe.get_doc("Issue",{"name":doc.get("issue")})		
 		if doc.get("completed_by"):
@@ -40,48 +73,15 @@ def validate(doc,method):
 		if doc.get("assign_date"):
 			issue.assign_date = doc.get("assign_date")
 		issue.save()
-		
-def after_insert(doc,method):
-	if doc.get('issue'):
-		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
-
-	doc.save()
-	if doc.failure_date_and_time and doc.issue:
-		doc.failure_date_and_time=frappe.db.get_value("Issue",doc.issue,"failure_date_and_time")
-	if doc.issue:
-		doc.description=frappe.db.get_value("Issue",doc.issue,"description")
-
 	
-	# docperm = frappe.new_doc("User Permission")
-	# docperm.update({
-	# 	"user": doc.completed_by,
-	# 	"allow": 'Task',
-	# 	"for_value": doc.name
-	# })
-
-	# docperm.save(ignore_permissions=True)
-	docperm = frappe.new_doc("DocShare")
-	docperm.update({
-			"user": doc.completed_by,
-			"share_doctype": 'Task',
-			"share_name": doc.name ,
-			"read": 1,
-			"write": 1
-		})
-	docperm.save(ignore_permissions=True)
-		
-
-def after_delete(doc,method):
-	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
-		frappe.delete_doc('Asset Repair',t.name)
-
 @frappe.whitelist()
 def make_material_req(source_name, target_doc=None):
 	def set_missing_values(source, target):
 		target.company=frappe.db.get_value("Employee",{"user_id":frappe.session.user},"company")
 	doclist = get_mapped_doc("Task", source_name, {
 		"Task": {
-			"doctype": "Material Request"
+			"doctype": "Material Request",
+			"name":"custom_task"
 		}
 	}, target_doc,set_missing_values )
 
@@ -339,3 +339,12 @@ def validate_if_material_request_is_not_submitted(doc):
 def attachment_validation(doc):
 	if not doc.attachment:
 		frappe.throw("Cann't Completed Task Without Attachment")
+	
+def create_user_permission(doc):
+	add_user_permission("Task",doc.name,doc.completed_by)
+
+	for emp in frappe.get_all("Employee",{"user_id":doc.completed_by},['material_request_approver']):
+		if emp.material_request_approver:
+			for emp2 in frappe.get_all("Employee",{"name":emp.material_request_approver},['user_id']):
+				if emp2.user_id:
+					add_user_permission("Task",doc.name,emp2.user_id)
