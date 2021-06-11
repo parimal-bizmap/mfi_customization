@@ -341,7 +341,7 @@ def attachment_validation(doc):
 		frappe.throw("Cann't Completed Task Without Attachment")
 	
 def create_user_permission(doc):
-	# add_user_permission("Task",doc.name,doc.completed_by)
+	add_user_permission("Task",doc.name,doc.completed_by)
 
 	for emp in frappe.get_all("Employee",{"user_id":doc.completed_by},['material_request_approver']):
 		if emp.material_request_approver:
