@@ -10,8 +10,7 @@
   "task",
   "reading",
   "reading_2",
-  "total",
-  "machine_reading"
+  "total"
  ],
  "fields": [
   {
@@ -57,17 +56,10 @@
    "fieldtype": "Link",
    "label": "Task",
    "options": "Task"
-  },
-  {
-   "fieldname": "machine_reading",
-   "fieldtype": "Link",
-   "label": "Machine Reading",
-   "options": "Machine Reading",
-   "read_only": 1
   }
  ],
  "istable": 1,
- "modified": "2021-05-31 14:08:18.010949",
+ "modified": "2021-06-12 13:04:19.940592",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Readings",
