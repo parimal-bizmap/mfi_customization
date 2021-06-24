@@ -35,7 +35,8 @@ doctype_js = {
                 "Location":"public/js/location.js",
                 "Asset Movement":"public/js/asset_movement.js",
                 "Sales Invoice":"public/js/sales_invoice.js",
-                "Material Request":"public/js/material_request.js"
+                "Material Request":"public/js/material_request.js",
+                "Item":"public/js/item.js"
 }	
 doctype_list_js = {"Material Request":"public/js/material_request_list.js",}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}

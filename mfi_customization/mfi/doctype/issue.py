@@ -210,3 +210,8 @@ def validate_reading(doc):
 					frappe.throw("Current Reading Must be Greater than Last Reading")
 				if getdate(lst.date)>getdate(cur.date):
 					frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
+
+
+@frappe.whitelist()
+def filter_toner_from_mfi_setting(doctype, txt, searchfield, start, page_len, filters):
+    return frappe.get_all("Toner Group List",{"parent":"MFI Setting"},["toner_group"],as_list=1)
