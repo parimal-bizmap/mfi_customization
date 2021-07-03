@@ -72,7 +72,7 @@ def per_click_calculation(doc,itm,itm_rate):
 	itm.mono_net_rate_per_click=(acc_monoyeild+tn_monoyeild)/(acc_monorate+tn_monorate)
 	itm.colour_net_rate_per_click=(acc_monoyeild+tn_monoyeild+acc_colouryeild+tn_colouryeild)/(acc_monorate+tn_monorate+acc_colourrate+tn_colourrate)
 	itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
-	itm.color_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
+	itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 def minimum_volume_calculation(doc,itm,service_charge):
 	mono_service_charge=((doc.mono_volume/(doc.mono_volume+doc.colour_volume))*service_charge)
@@ -102,7 +102,7 @@ def minimum_volume_calculation(doc,itm,service_charge):
 	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge)/doc.mono_volume
 	itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
 	itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge)/doc.colour_volume
-	itm.color_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
+	itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 
 def get_rate_from_item_price(doc,item):
