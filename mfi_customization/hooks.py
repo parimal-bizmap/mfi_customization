@@ -36,7 +36,8 @@ doctype_js = {
                 "Asset Movement":"public/js/asset_movement.js",
                 "Sales Invoice":"public/js/sales_invoice.js",
                 "Material Request":"public/js/material_request.js",
-                "Item":"public/js/item.js"
+                "Item":"public/js/item.js",
+                "Quotation":"public/js/quotation.js"
 }	
 doctype_list_js = {"Material Request":"public/js/material_request_list.js",}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -123,6 +124,9 @@ doc_events = {
     },
     "Item":{
         "after_insert":"mfi_customization.mfi.doctype.item.validate"
+    },
+    "Quotation":{
+        "validate":"mfi_customization.mfi.doctype.quotation.validate"
     }
     # "Material Request":{
     #     "validate":"mfi_customization.mfi.doctype.material_request.validate",

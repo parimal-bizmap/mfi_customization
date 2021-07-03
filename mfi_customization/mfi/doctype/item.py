@@ -19,11 +19,22 @@ def create_item(prefix,doc,fixed_asset=0,asset_category=""):
     if len(frappe.get_all("Item",{"item_code":prefix+doc.item_code}))==0:
         new_item.save()
 
-# @frappe.whitelist()
-# def toner_from_mfi_setting(doctype, txt, searchfield, start, page_len, filters):
-#     return frappe.get_all("Toner Group List",{"parent":"MFI Setting"},["toner_group"],as_list=1)
-
+@frappe.whitelist()
+def toner_from_mfi_setting(doctype, txt, searchfield, start, page_len, filters):
+    data=[]
+    item_group=[]
+    for d in frappe.get_all("Default Toner group Item",{"parent":"MFI Settings"},["toner_group"]):
+        item_group.append(d.toner_group)
+    for it in frappe.get_all("Item",{"item_group":["IN",item_group]},["name","item_name","description","item_group","customer_code"],as_list=1):
+        data.append(it)
+    return data
 
 @frappe.whitelist()
-def toner_from_mfi_setting(name):
-    return frappe.get_all("Toner Group List",{"parent":"MFI Setting"},["toner_group"],as_list=1)
+def accessory_from_mfi_setting(doctype, txt, searchfield, start, page_len, filters):
+    data=[]
+    item_group=[]
+    for d in frappe.get_all("Default Accessories Item",{"parent":"MFI Settings"},["accessory_group"]):
+        item_group.append(d.accessory_group)
+    for it in frappe.get_all("Item",{"item_group":["IN",item_group]},["name","item_name","description","item_group","customer_code"],as_list=1):
+        data.append(it)
+    return data

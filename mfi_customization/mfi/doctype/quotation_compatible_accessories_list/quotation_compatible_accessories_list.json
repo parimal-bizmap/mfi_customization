@@ -1,0 +1,60 @@
+{
+ "actions": [],
+ "creation": "2021-06-25 12:57:33.179668",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "accessory",
+  "accessory_name",
+  "qty",
+  "yeild",
+  "compatible_with"
+ ],
+ "fields": [
+  {
+   "fieldname": "accessory",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Accessory",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "accessory.item_name",
+   "fieldname": "accessory_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Accessory Name"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Qty"
+  },
+  {
+   "fieldname": "compatible_with",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Compatible with"
+  },
+  {
+   "fetch_from": "accessory.yeild",
+   "fieldname": "yeild",
+   "fieldtype": "Float",
+   "label": "Yeild"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-06-25 19:11:50.305340",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Quotation Compatible Accessories List",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

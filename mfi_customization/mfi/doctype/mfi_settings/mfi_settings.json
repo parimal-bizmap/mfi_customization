@@ -9,7 +9,9 @@
   "section_break_2",
   "default_toner_groups",
   "section_break_4",
-  "default_accessories_item"
+  "default_accessories_item",
+  "section_break_6",
+  "service_item_group"
  ],
  "fields": [
   {
@@ -37,12 +39,22 @@
    "fieldtype": "Table",
    "label": "Default Accessories Item",
    "options": "Default Accessories Item"
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "service_item_group",
+   "fieldtype": "Table",
+   "label": "Service Item Group",
+   "options": "Service Item Group"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-06-25 12:05:53.586129",
+ "modified": "2021-07-02 10:50:59.176064",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "MFI Settings",
