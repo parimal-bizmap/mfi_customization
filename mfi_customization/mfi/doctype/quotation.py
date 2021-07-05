@@ -75,8 +75,10 @@ def per_click_calculation(doc,itm,itm_rate):
 	itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 def minimum_volume_calculation(doc,itm,service_charge):
-	mono_service_charge=((doc.mono_volume/(doc.mono_volume+doc.colour_volume))*service_charge)
-	colour_service_charge=((doc.colour_volume/(doc.mono_volume+doc.colour_volume))*service_charge)
+	mono=doc.mono_volume*doc.lease_period
+	colour=doc.colour_volume*doc.lease_period
+	mono_service_charge=((mono/(mono+colour))*service_charge)
+	colour_service_charge=((colour/(mono+colour))*service_charge)
 	cost_of_monotoner=0
 	cost_of_colourtoner=0
 	if doc.get("compatible_toner_list"):
@@ -84,9 +86,9 @@ def minimum_volume_calculation(doc,itm,service_charge):
 			toner_type=frappe.db.get_value("Item",{"name":tn.toner},"toner_type")
 			if tn.get('compatible_with')==itm.item_code and toner_type:
 				if toner_type=="Black":
-					cost_of_monotoner+=((doc.colour_volume+doc.mono_volume)/tn.yeild)*get_rate_from_item_price(doc,tn.toner)
+					cost_of_monotoner+=((colour+mono)/tn.yeild)*get_rate_from_item_price(doc,tn.toner)
 				else:
-					cost_of_colourtoner+=((doc.colour_volume)/tn.yeild)*get_rate_from_item_price(doc,tn.toner)
+					cost_of_colourtoner+=((colour)/tn.yeild)*get_rate_from_item_price(doc,tn.toner)
 
 	cost_of_monoaccessory=0
 	cost_of_colouraccessory=0		
@@ -95,14 +97,15 @@ def minimum_volume_calculation(doc,itm,service_charge):
 			accessory_type=frappe.db.get_value("Item",{"name":acc.accessory},"accessory_type")
 			if acc.get('compatible_with')==itm.item_code and accessory_type:
 				if accessory_type=="Mono":
-					cost_of_monoaccessory+=(((doc.colour_volume+doc.mono_volume)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory)
+					cost_of_monoaccessory+=(((colour+mono)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory)
 				else:
 					cost_of_colouraccessory+=(((doc.colour_volume)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory)
 
-	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge)/doc.mono_volume
+	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge)/mono
 	itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
-	itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge)/doc.colour_volume
-	itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
+	if doc.colour_volume>0:
+		itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge)/colour
+		itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 
 def get_rate_from_item_price(doc,item):
