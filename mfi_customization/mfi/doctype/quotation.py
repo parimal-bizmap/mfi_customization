@@ -8,7 +8,8 @@ def validate(doc,method):
 def calculation(doc):
 	service_charge=0
 	for itm in doc.get('items'):
-		service_charge+=calculate_service_charge(doc,itm)
+		# service_charge+=calculate_service_charge(doc,itm)
+		service_charge+=itm.rate
 
 	for itm in doc.get('items'):
 		itm_rate=get_rate_from_item_price(doc,itm.item_code)
@@ -99,11 +100,11 @@ def minimum_volume_calculation(doc,itm,service_charge):
 				if accessory_type=="Mono":
 					cost_of_monoaccessory+=(((colour+mono)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory) if (((colour+mono)/acc.yeild)-1)>0 else 0
 				else:
-					cost_of_colouraccessory+=(((doc.colour_volume)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory) if (((doc.colour_volume)/acc.yeild)-1)>0 else 0
+					cost_of_colouraccessory+=(((colour)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory) if (((colour)/acc.yeild)-1)>0 else 0
 
 	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge)/mono
 	itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
-	if doc.colour_volume>0:
+	if colour>0:
 		itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge)/colour
 		itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
