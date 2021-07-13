@@ -282,6 +282,7 @@ def on_change(doc,method):
 			attachment_validation(doc)
 			issue=frappe.get_doc("Issue",doc.issue)
 			issue.status="Task Completed"
+			issue.set("task_attachments",[])
 			for d in doc.get("attachments"):
 				issue.append("task_attachments",{
 					"attach":d.attach
