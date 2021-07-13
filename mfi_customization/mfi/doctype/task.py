@@ -280,7 +280,13 @@ def on_change(doc,method):
 		if doc.status == 'Completed':
 			validate_if_material_request_is_not_submitted(doc)
 			attachment_validation(doc)
-			frappe.db.set_value("Issue",doc.issue,'status',"Task Completed")
+			issue=frappe.get_doc("Issue",doc.issue)
+			issue.status="Task Completed"
+			for d in doc.get("attachments"):
+				issue.append("task_attachments",{
+					"attach":d.attach
+				})
+			issue.save()		
 
 def create_machine_reading(doc):
 	for d in doc.get('current_reading'):
