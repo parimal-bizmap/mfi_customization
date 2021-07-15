@@ -1,7 +1,7 @@
 import frappe
 def after_insert(doc,method):
-    if len(frappe.get_all('Asset Serial No', doc.serial_no,['name','asset']))>0:
-        for d in frappe.get_all('Asset Serial No', doc.serial_no,['name','asset']):
+    if len(frappe.get_all('Asset Serial No',{"serial_no":doc.serial_no},['name','asset']))>0:
+        for d in frappe.get_all('Asset Serial No',{"serial_no":doc.serial_no},['name','asset']):
             if d.asset:
                 frappe.throw("serial number already exist")
             else:
