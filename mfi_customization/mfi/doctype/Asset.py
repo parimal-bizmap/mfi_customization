@@ -1,7 +1,8 @@
 import frappe
 def after_insert(doc,method):
-    if frappe.db.exists('Asset Serial No', doc.serial_no):
-        frappe.throw("serial number already exist")
+    for d in frappe.get_all('Asset Serial No', doc.serial_no,['asset']):
+        if d.asset:
+            frappe.throw("serial number already exist")
         
     asn = frappe.new_doc('Asset Serial No')
     asn.subject = doc.serial_no
