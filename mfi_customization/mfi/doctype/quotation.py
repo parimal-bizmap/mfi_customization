@@ -12,7 +12,7 @@ def calculation(doc):
 		service_charge+=itm.rate
 
 	for itm in doc.get('items'):
-		itm_rate=get_rate_from_item_price(doc,itm.item_code)
+		itm_rate=(get_rate_from_item_price(doc,itm.item_code)*doc.factor)/doc.margin_on_cost
 		if doc.order_type=="Per Click" and  (itm.item_code in [d.compatible_with for d in doc.get("compatible_toner_list")] or (itm.item_code in [d.compatible_with for d in doc.get("compatible_accessories_list")])):
 			per_click_calculation(doc,itm,itm_rate)
 		elif doc.order_type=="Minimum Volume" and (itm.item_code in [d.compatible_with for d in doc.get("compatible_toner_list")] or (itm.item_code in [d.compatible_with for d in doc.get("compatible_accessories_list")])):
@@ -29,10 +29,10 @@ def per_click_calculation(doc,itm,itm_rate):
 			accessory_type=frappe.db.get_value("Item",{"name":acc.accessory},"accessory_type")
 			if acc.get('compatible_with')==itm.item_code and accessory_type:
 				if accessory_type=="Mono":
-					acc_monorate+=get_rate_from_item_price(doc,acc.accessory)
+					acc_monorate+=(get_rate_from_item_price(doc,acc.accessory)*doc.factor)/doc.margin_on_cost
 					acc_monoyeild+=acc.yeild
 				else:
-					acc_colourrate+=get_rate_from_item_price(doc,acc.accessory)
+					acc_colourrate+=(get_rate_from_item_price(doc,acc.accessory)*doc.factor)/doc.margin_on_cost
 					acc_colouryeild+=acc.yeild
 	tn_monorate=0
 	tn_colourrate=0
@@ -44,10 +44,10 @@ def per_click_calculation(doc,itm,itm_rate):
 			toner_type=frappe.db.get_value("Item",{"name":tn.toner},"toner_type")
 			if tn.get('compatible_with')==itm.item_code and toner_type:
 				if toner_type=="Black":
-					tn_monorate+=get_rate_from_item_price(doc,tn.toner)
+					tn_monorate+=(get_rate_from_item_price(doc,tn.toner)*doc.factor)/doc.margin_on_cost
 					tn_monoyeild+=tn.yeild
 				else:
-					tn_colourrate+=get_rate_from_item_price(doc,tn.toner)
+					tn_colourrate+=(get_rate_from_item_price(doc,tn.toner)*doc.factor)/doc.margin_on_cost
 					tn_colouryeild+=tn.yeild
 				
 	total_cost=(itm_rate+acc_monorate+acc_colourrate)
@@ -76,6 +76,7 @@ def per_click_calculation(doc,itm,itm_rate):
 	itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 def minimum_volume_calculation(doc,itm,service_charge):
+	itm_rate=(get_rate_from_item_price(doc,itm.item_code)*doc.factor)/doc.margin_on_cost
 	mono=doc.mono_volume*doc.lease_period
 	colour=doc.colour_volume*doc.lease_period
 	mono_service_charge=((mono/(mono+colour))*service_charge)
@@ -96,16 +97,19 @@ def minimum_volume_calculation(doc,itm,service_charge):
 	if doc.get("compatible_accessories_list"):
 		for acc in doc.get("compatible_accessories_list"):
 			accessory_type=frappe.db.get_value("Item",{"name":acc.accessory},"accessory_type")
+			landed_cost_if_not_yeild=0
 			if acc.get('compatible_with')==itm.item_code and accessory_type:
+				if acc.yeild<1:
+					landed_cost_if_not_yeild+=(get_rate_from_item_price(doc,acc.accessory)*doc.factor)/doc.margin_on_cost
 				if accessory_type=="Mono":
 					cost_of_monoaccessory+=(((colour+mono)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory) if (((colour+mono)/acc.yeild)-1)>0 else 0
 				else:
 					cost_of_colouraccessory+=(((colour)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory) if (((colour)/acc.yeild)-1)>0 else 0
 
-	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge)/mono
+	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge+(itm_rate+landed_cost_if_not_yeild))/mono
 	itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
 	if colour>0:
-		itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge)/colour
+		itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge+(itm_rate+landed_cost_if_not_yeild))/colour
 		itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 

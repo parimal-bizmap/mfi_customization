@@ -112,7 +112,6 @@ frappe.ui.form.on('Quotation', {
                         primary_action: function(){
                             d.hide();
                             (d.get_values()['toner_item']).forEach(element => {
-                                console.log(element)
                                 var c = frm.add_child("compatible_toner_list")
                                 c.toner=element.toner
                                 c.toner_name=element.toner_name

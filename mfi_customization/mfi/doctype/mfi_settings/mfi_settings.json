@@ -11,7 +11,9 @@
   "section_break_4",
   "default_accessories_item",
   "section_break_6",
-  "service_item_group"
+  "service_item_group",
+  "default_asset_accounts",
+  "company_customer_warehouse"
  ],
  "fields": [
   {
@@ -49,12 +51,24 @@
    "fieldtype": "Table",
    "label": "Service Item Group",
    "options": "Service Item Group"
+  },
+  {
+   "fieldname": "default_asset_accounts",
+   "fieldtype": "Table",
+   "label": "Default Asset Accounts",
+   "options": "Default Asset Accounts"
+  },
+  {
+   "fieldname": "company_customer_warehouse",
+   "fieldtype": "Table",
+   "label": "Company Customer Warehouse ",
+   "options": "Customer Warehouse Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-07-02 10:50:59.176064",
+ "modified": "2021-07-10 22:00:28.251705",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "MFI Settings",

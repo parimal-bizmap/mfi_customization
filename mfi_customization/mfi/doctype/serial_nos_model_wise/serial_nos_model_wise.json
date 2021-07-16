@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "creation": "2021-07-07 16:04:12.191139",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "serial_no",
+  "asset_model",
+  "model_name",
+  "warehouse",
+  "client_location"
+ ],
+ "fields": [
+  {
+   "fieldname": "serial_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Serial No",
+   "options": "Serial No"
+  },
+  {
+   "fieldname": "asset_model",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Asset model",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "asset_model.item_name",
+   "fieldname": "model_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "model Name"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "client_location",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Client Location",
+   "options": "Location"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-07-08 11:08:34.413025",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Serial Nos Model wise",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
