@@ -11,12 +11,23 @@ def calculation(doc):
 		# service_charge+=calculate_service_charge(doc,itm)
 		service_charge+=itm.rate
 
+	total_mono_per_click=0
+	total_colour_per_click=0
 	for itm in doc.get('items'):
 		itm_rate=(get_rate_from_item_price(doc,itm.item_code)*doc.factor)/doc.margin_on_cost
 		if doc.order_type=="Per Click" and  (itm.item_code in [d.compatible_with for d in doc.get("compatible_toner_list")] or (itm.item_code in [d.compatible_with for d in doc.get("compatible_accessories_list")])):
 			per_click_calculation(doc,itm,itm_rate)
 		elif doc.order_type=="Minimum Volume" and (itm.item_code in [d.compatible_with for d in doc.get("compatible_toner_list")] or (itm.item_code in [d.compatible_with for d in doc.get("compatible_accessories_list")])):
 			minimum_volume_calculation(doc,itm,service_charge)
+		total_mono_per_click+=itm.mono_net_rate_per_click
+		total_colour_per_click+=itm.colour_net_rate_per_click
+
+	doc.mono_per_click_net_rate=total_mono_per_click
+	doc.mono_per_click_rate=(doc.mono_per_click_net_rate+doc.margin_on_mono_per_click_rate_)
+
+	doc.colour_per_click__net_rate_=total_colour_per_click
+	doc.colour_per_click_rate=(doc.colour_per_click__net_rate_+doc.margin_on_colour_per_click_)
+
 
 def per_click_calculation(doc,itm,itm_rate):
 	acc_monorate=0
@@ -72,8 +83,8 @@ def per_click_calculation(doc,itm,itm_rate):
 	#per copy rate
 	itm.mono_net_rate_per_click=(acc_monoyeild+tn_monoyeild)/(acc_monorate+tn_monorate)
 	itm.colour_net_rate_per_click=(acc_monoyeild+tn_monoyeild+acc_colouryeild+tn_colouryeild)/(acc_monorate+tn_monorate+acc_colourrate+tn_colourrate)
-	itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
-	itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
+	# itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
+	# itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 def minimum_volume_calculation(doc,itm,service_charge):
 	itm_rate=(get_rate_from_item_price(doc,itm.item_code)*doc.factor)/doc.margin_on_cost
@@ -107,10 +118,10 @@ def minimum_volume_calculation(doc,itm,service_charge):
 					cost_of_colouraccessory+=(((colour)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory) if (((colour)/acc.yeild)-1)>0 else 0
 
 	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge+(itm_rate+landed_cost_if_not_yeild))/mono
-	itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
+	# itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
 	if colour>0:
 		itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge+(itm_rate+landed_cost_if_not_yeild))/colour
-		itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
+		# itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 
 def get_rate_from_item_price(doc,item):
