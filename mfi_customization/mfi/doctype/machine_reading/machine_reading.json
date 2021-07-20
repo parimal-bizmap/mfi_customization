@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "autoname": "MCN-RDG-.####S",
  "creation": "2021-05-26 21:07:49.333414",
  "doctype": "DocType",
@@ -11,6 +12,7 @@
   "task",
   "project",
   "column_break_4",
+  "reading_type",
   "machine_type",
   "colour_reading",
   "black_and_white_reading",
@@ -72,9 +74,17 @@
    "fieldtype": "Link",
    "label": "task",
    "options": "Task"
+  },
+  {
+   "fieldname": "reading_type",
+   "fieldtype": "Select",
+   "label": "Reading Type",
+   "options": "\nBilling\nMaintenance"
   }
  ],
- "modified": "2021-05-27 15:21:45.279067",
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2021-07-19 16:59:51.466260",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Machine Reading",
