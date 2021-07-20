@@ -61,7 +61,7 @@ def per_click_calculation(doc,itm,itm_rate):
 					tn_colourrate+=(get_rate_from_item_price(doc,tn.toner)*doc.factor)/doc.margin_on_cost
 					tn_colouryeild+=tn.yeild
 				
-	total_cost=(itm_rate+acc_monorate+acc_colourrate)+(itm_rate*(doc.insurance/100))
+	total_cost=(itm_rate+acc_monorate+acc_colourrate)+(itm_rate*(doc.insurance/100))+(itm_rate*(doc.contingency/100))
 	if doc.interest_rate and doc.interest_rate>0.0:
 		total_cost=((itm_rate+acc_monorate+acc_colourrate)/doc.interest_rate)+(itm_rate+acc_monorate+acc_colourrate)
 
@@ -117,10 +117,10 @@ def minimum_volume_calculation(doc,itm,service_charge):
 				else:
 					cost_of_colouraccessory+=(((colour)/acc.yeild)-1)*get_rate_from_item_price(doc,acc.accessory) if (((colour)/acc.yeild)-1)>0 else 0
 
-	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge+(itm_rate+landed_cost_if_not_yeild)+((itm_rate+landed_cost_if_not_yeild)*(doc.insurance/100)))/mono
+	itm.mono_net_rate_per_click=(cost_of_monotoner+cost_of_monoaccessory+mono_service_charge+(itm_rate+landed_cost_if_not_yeild)+((itm_rate+landed_cost_if_not_yeild)*(doc.insurance/100))+((itm_rate+landed_cost_if_not_yeild)*(doc.contingency/100)))/mono
 	# itm.mono_per_click_rate=(itm.mono_net_rate_per_click+itm.mono_per_click_margin)
 	if colour>0:
-		itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge+(itm_rate+landed_cost_if_not_yeild)+((itm_rate+landed_cost_if_not_yeild)*(doc.insurance/100)))/colour
+		itm.colour_net_rate_per_click=(cost_of_colourtoner+cost_of_colouraccessory+colour_service_charge+(itm_rate+landed_cost_if_not_yeild)+((itm_rate+landed_cost_if_not_yeild)*(doc.insurance/100))+((itm_rate+landed_cost_if_not_yeild)*(doc.contingency/100)))/colour
 		# itm.colour_per_click_rate=(itm.colour_net_rate_per_click+itm.colour_per_click_margin)
 	
 
