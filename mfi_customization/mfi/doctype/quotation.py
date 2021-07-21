@@ -4,6 +4,7 @@ import frappe,json
 from frappe.utils import data
 def validate(doc,method):
 	calculation(doc)
+	set_parent_values(doc)
 
 def calculation(doc):
 	service_charge=0
@@ -23,10 +24,10 @@ def calculation(doc):
 		total_colour_per_click+=itm.colour_net_rate_per_click
 
 	doc.mono_per_click_net_rate=total_mono_per_click
-	doc.mono_per_click_rate=(doc.mono_per_click_net_rate+doc.margin_on_mono_per_click_rate_)
+	doc.mono_per_click_rate=(doc.mono_per_click_net_rate+(doc.margin_on_mono_per_click_rate_ or 0 ))
 
 	doc.colour_per_click__net_rate_=total_colour_per_click
-	doc.colour_per_click_rate=(doc.colour_per_click__net_rate_+doc.margin_on_colour_per_click_)
+	doc.colour_per_click_rate=(doc.colour_per_click__net_rate_+(doc.margin_on_colour_per_click_ or 0))
 
 
 def per_click_calculation(doc,itm,itm_rate):
@@ -150,3 +151,9 @@ def get_toner_items(item):
 	for d in frappe.get_all("Compatible Toner Item",{"parent":item},["toner","toner_name"]):
 		data.append(d.update({"yeild":frappe.db.get_value("Item",d.toner,"yeild")}))
 	return data
+
+def set_parent_values(doc):
+	total_rent=0
+	for itm in doc.get('items'):
+		total_rent+=(itm.net_rent+itm.margin_on_rent)
+	doc.total_rent=total_rent

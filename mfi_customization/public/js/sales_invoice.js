@@ -1,5 +1,6 @@
 frappe.ui.form.on('Sales Invoice', {
-	get_assets:function(frm){
+	get_assets
+    :function(frm){
         if (frm.doc.project){
             // frm.add_custom_button('Get Assets', function() {
                 frappe.call({
@@ -28,6 +29,7 @@ frappe.ui.form.on('Sales Invoice', {
                                 row.colour_current_reading=d.colour_current_reading
                                 row.colour_last_reading=d.colour_last_reading
                                 row.rate=d.rate
+                                row.qty=1
                                     
                             });
                             frm.refresh_field("items")
