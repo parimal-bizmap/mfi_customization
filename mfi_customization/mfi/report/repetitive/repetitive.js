@@ -10,13 +10,14 @@ frappe.query_reports["Repetitive"] = {
 			"fieldtype":"Link",
 			'options':'Asset Serial No'	
 
-		},	{
-			"label":"Customer",
-			"fieldname":"client_name",
-			"fieldtype":"Link",
-			'options':'Customer'	
-
 		},
+		// {
+		// 	"label":"Customer",
+		// 	"fieldname":"client_name",
+		// 	"fieldtype":"Link",
+		// 	'options':'Customer'	
+
+		// },
 		{
 			"fieldname": "from_date",
 			"label": __("In Date From"),
