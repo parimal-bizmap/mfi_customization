@@ -79,8 +79,11 @@ def get_columns(filters=None):
 
 def prepare_data(filters):
 	data=[]
+	fltr={}
+	if filters.get("company"):
+		fltr.update({"company":filters.get("company")})
 	from datetime import datetime as dt
-	for i in frappe.get_all('Issue',fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","resolution_date"]):
+	for i in frappe.get_all('Issue',filters=fltr,fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","resolution_date"]):
 		import datetime
 		t = i.resolution_date
 		if i.resolution_date:

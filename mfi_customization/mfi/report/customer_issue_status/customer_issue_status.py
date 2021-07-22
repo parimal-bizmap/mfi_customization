@@ -112,8 +112,10 @@ def prepare_data(filters):
 	# 	for a in frappe.get_all('Asset Readings',filters={'parent':t.name,'asset':t.asset},fields=['reading','reading_2']):
 	# 		row.update({'counter_bw':a.reading or '-','counter_color':a.reading_2 or '-','total_counter':int(a.reading or 0)+ int(a.reading_2 or 0)})
 	# 	data.append(row)
-	
-	for i in frappe.get_all('Issue',fields=['name','status','description','asset','project','location','serial_no','issue_type']):
+	fltr={}
+	if filters.get("company"):
+		fltr.update({"company":filters.get("company")})
+	for i in frappe.get_all('Issue',filters=fltr,fields=['name','status','description','asset','project','location','serial_no','issue_type']):
 		row={}
 		row.update(i)
 		row.update({"ticket":i.name,"location":i.location,"complaint":i.issue_type,"ml_number":i.asset,})
