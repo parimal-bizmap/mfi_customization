@@ -60,6 +60,8 @@ def get_data(filters):
 	fltr={}
 	if filters.get("serial_no"):
 		fltr.update({"serial_no":filters.get("serial_no")})
+	if filters.get("company"):
+		fltr.update({"company":filters.get("company")})
 	for ast in frappe.get_all("Asset",fltr,['name','customer','serial_no','item_code','project']):
 		data.append({
 				"customer":frappe.db.get_value("Project",ast.project,"customer"),
