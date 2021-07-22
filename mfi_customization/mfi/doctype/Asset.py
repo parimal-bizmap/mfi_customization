@@ -60,11 +60,13 @@ def get_assets(project):
                 "colour_last_reading":colour_last_reading,
                 "total_mono_charges":(flt(mono_current_reading)- flt(mono_last_reading))*mono_per_click_rate,
                 "total_colourcharges":(flt(colour_current_reading)-flt(colour_last_reading))*colour_per_click_rate,
-                "rate":((flt(mono_current_reading) - flt(mono_last_reading))*mono_per_click_rate)+((flt(colour_current_reading)-flt(colour_last_reading))*colour_per_click_rate)
+                "rate":((flt(mono_current_reading) - flt(mono_last_reading))*mono_per_click_rate)+((flt(colour_current_reading)-flt(colour_last_reading))*colour_per_click_rate),
+                "description":frappe.db.get_value("Item",row.item_code,"description"),
+                "uom":frappe.db.get_value("Item",row.item_code,"stock_uom")
             }
         )
     
     return data
 
 def get_reading(asset):
-    return frappe.get_all("Machine Reading",filters={"asset":asset,"reading_type":"Billing"},fields=["colour_reading","black_and_white_reading"],limit=2)
+    return frappe.get_all("Machine Reading",filters={"asset":asset,"reading_type":"Billing"},fields=["colour_reading","black_and_white_reading"],order_by="reading_date desc",limit=2)

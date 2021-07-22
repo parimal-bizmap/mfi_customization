@@ -73,18 +73,19 @@ def create_stock_entry(doc):
 	se.stock_entry_type="Material Transfer"
 	se.project=doc.project
 	se.asset_delivery_note=doc.name
-	for d in warehouse:
-		for itm in doc.get("model_serial_nos"):
-			se.append("items",{
-				"s_warehouse":d,
-				"t_warehouse":frappe.db.get_value("Customer Warehouse Item",{"parent":"MFI Settings","company":se.company},"warehouse"),
-				"item_code":itm.asset_model,
-				"qty":1,
-				"batch_no":doc.batch,
-				"serial_no":warehouse.get(d),
-				"basic_rate":frappe.db.get_value("Item",itm.asset_model,"valuation_rate") or 0,
-				"valuation_rate":frappe.db.get_value("Item",itm.asset_model,"valuation_rate") or 0
-			})
+	for itm in doc.get("model_serial_nos"):
+		se.append("items",{
+			"s_warehouse":itm.warehouse,
+			"t_warehouse":frappe.db.get_value("Customer Warehouse Item",{"parent":"MFI Settings","company":se.company},"warehouse"),
+			"item_code":itm.asset_model,
+			"qty":1,
+			"batch_no":doc.batch,
+			"serial_no":itm.serial_no,
+			"basic_rate":frappe.db.get_value("Item",itm.asset_model,"valuation_rate") or 0,
+			"valuation_rate":frappe.db.get_value("Item",itm.asset_model,"valuation_rate") or 0
+		})
+
+
 	se.save()
 	se.submit()
 
@@ -112,7 +113,7 @@ def create_assets(doc):
 		asset.save()
 		asset_installation_note=frappe.new_doc("Asset Installation Note")
 		asset_installation_note.company=asset.company
-		asset_installation_note.customer=doc.customer
+		asset_installation_note.customer=doc.get('customer')
 		asset_installation_note.asset=asset.name
 		asset_installation_note.asset_name=asset.asset_name
 		asset_installation_note.location=asset.location
