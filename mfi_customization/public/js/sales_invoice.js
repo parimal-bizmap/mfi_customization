@@ -48,10 +48,14 @@ frappe.ui.form.on('Sales Invoice', {
 frappe.ui.form.on('Sales Invoice Item','mono_per_click_rate',function(frm,cdt,cdn){
     var d = locals[cdt][cdn];
     d.total_mono_charges=(parseFloat(d.monocurrent_reading)- parseFloat(d.mono_last_reading))*parseFloat(d.mono_per_click_rate)
+    d.rate=parseFloat(d.total_mono_charges)+parseFloat(d.total_colourcharges)
+    refresh_field("rate", d.name, d.parentfield);
     refresh_field("total_mono_charges", d.name, d.parentfield);
 });
 frappe.ui.form.on('Sales Invoice Item','colour_per_click_rate',function(frm,cdt,cdn){
     var d = locals[cdt][cdn];
     d.total_colourcharges=(parseFloat(d.colour_current_reading)- parseFloat(d.colour_last_reading))*parseFloat(d.colour_per_click_rate)
+    d.rate=parseFloat(d.total_mono_charges)+parseFloat(d.total_colourcharges)
+    refresh_field("rate", d.name, d.parentfield);2
     refresh_field("total_colourcharges", d.name, d.parentfield);
 });
