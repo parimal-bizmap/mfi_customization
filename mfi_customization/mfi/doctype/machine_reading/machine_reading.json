@@ -12,6 +12,7 @@
   "task",
   "project",
   "column_break_4",
+  "billing_status",
   "reading_type",
   "machine_type",
   "colour_reading",
@@ -80,11 +81,17 @@
    "fieldtype": "Select",
    "label": "Reading Type",
    "options": "\nBilling\nMaintenance"
+  },
+  {
+   "fieldname": "billing_status",
+   "fieldtype": "Select",
+   "label": "Billing Status",
+   "options": "\nBilled"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-07-19 16:59:51.466260",
+ "modified": "2021-07-26 13:31:04.863652",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Machine Reading",

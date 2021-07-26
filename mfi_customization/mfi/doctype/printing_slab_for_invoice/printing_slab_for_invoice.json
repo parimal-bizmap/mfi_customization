@@ -1,0 +1,67 @@
+{
+ "actions": [],
+ "creation": "2021-07-26 18:13:43.274731",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "rage_from",
+  "range_to",
+  "printer_type",
+  "no_of_copies",
+  "rate",
+  "total_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "rage_from",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Rage From"
+  },
+  {
+   "fieldname": "range_to",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Range To"
+  },
+  {
+   "fieldname": "printer_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Printer Type",
+   "options": "\nMono\nColour",
+   "reqd": 1
+  },
+  {
+   "fieldname": "no_of_copies",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "No of Copies"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "total_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-07-26 18:14:08.631443",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Printing Slab For Invoice",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
