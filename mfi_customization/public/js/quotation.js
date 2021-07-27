@@ -128,6 +128,24 @@ frappe.ui.form.on('Quotation', {
                 }
             }
     })
+    },
+    generate_contract_calculation:function(frm){
+        frm.clear_table("printing_slabs");
+        if (frm.doc.mono_volume>0){
+            var row1 = frm.add_child("printing_slabs")
+            row1.rage_from=0
+            row1.range_to=frm.doc.mono_volume
+            row1.printer_type="Mono"
+            row1.rate=frm.doc.mono_per_click_rate
+        }
+        if (frm.doc.colour_volume>0){
+            var row2 = frm.add_child("printing_slabs")
+            row2.rage_from=0
+            row2.range_to=frm.doc.colour_volume
+            row2.printer_type="Colour"
+            row2.rate=frm.doc.colour_per_click_rate
+        }
+        frm.refresh_field("printing_slabs")  
     }
 })
 
