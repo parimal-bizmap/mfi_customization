@@ -7,7 +7,7 @@
  "doctype": "Report",
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2020-09-30 22:20:23.910288",
+ "modified": "2021-07-23 13:17:51.983801",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Issue Timelines",
@@ -24,7 +24,7 @@
    "role": "Customer"
   },
   {
-   "role": "Technincian"
+   "role": "Morocco Technical head"
   }
  ]
 }
