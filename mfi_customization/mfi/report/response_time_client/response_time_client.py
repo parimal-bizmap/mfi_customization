@@ -67,12 +67,14 @@ def get_columns(filters = None):
 		},{
 			"label":"Call To Fix",
 			"fieldname":"call_to_fix",
-			"fieldtype":"Data"	
+			"fieldtype":"Data",
+			"width":180	
 
 		},{
 			"label":"Resolution time",
 			"fieldname":"call_resolution_time",
-			"fieldtype":"Data"	
+			"fieldtype":"Data",
+			"width":180		
 
 		}
 		]
@@ -103,8 +105,8 @@ def get_data(filters):
 		for tk in frappe.db.get_all('Task',{'issue':i.get("name")},['completion_date_time','issue','name','creation','assign_date','attended_date_time']):
 			resolution_date =0
 			attended_date= 0
-			call_to_fix = 0
-			call_resolution_time=0
+			call_to_fix =""
+			call_resolution_time=""
 			if tk.get('completion_date_time'):
 				resolution_date =  tk.get('completion_date_time')
 				resolution_date = resolution_date.strftime("%m/%d/%Y, %H:%M:%S")
@@ -124,19 +126,27 @@ def get_data(filters):
 			
 			else:
 				response_time = 0
+			# if tk.get('completion_date_time') and tk.get('creation'):
+			# 	call_to_fix_diff = (tk.get('completion_date_time')- tk.get("creation"))
+			# 	hrs2 = ((call_to_fix_diff.seconds//60)%60)/60
+			# 	call_to_fix = round(((call_to_fix_diff.days * 24) + (((call_to_fix_diff.seconds//3600)) + hrs2)),2)	
+			# else:
+			# 	call_to_fix = 0
 			if tk.get('completion_date_time') and tk.get('creation'):
-				call_to_fix_diff = (tk.get('completion_date_time')- tk.get("creation"))
-				hrs2 = ((call_to_fix_diff.seconds//60)%60)/60
-				call_to_fix = round(((call_to_fix_diff.days * 24) + (((call_to_fix_diff.seconds//3600)) + hrs2)),2)	
-			else:
-				call_to_fix = 0
-
+				call_to=tk.get('completion_date_time') - tk.get('creation')
+				call_to_fix=("<b>days:</b>"+str(call_to.days)+"  <b>hours:</b>"+str(call_to.seconds//3600)+" <b>minutes:</b>"+str((call_to.seconds//60)%60))
+			
 			if tk.get('completion_date_time') and tk.get('attended_date_time'):
-				call_res_time_diff = (tk.get('completion_date_time')- tk.get('attended_date_time'))
-				hrs3 = ((call_res_time_diff.seconds//60)%60)/60
-				call_resolution_time = round(((call_res_time_diff.days * 24) + (((call_res_time_diff.seconds//3600)) + hrs3)),2)
-			else:
-				call_resolution_time = 0
+				call_resolution=tk.get('completion_date_time') - tk.get('attended_date_time')
+				call_resolution_time=("<b>days:</b>"+str(call_resolution.days)+"  <b>hours:</b>"+str(call_resolution.seconds//3600)+" <b>minutes:</b>"+str((call_resolution.seconds//60)%60))
+				# print({"days":call_to.days,"hours":call_to.seconds//3600, "minutes":(call_to.seconds//60)%60})
+
+			# if tk.get('completion_date_time') and tk.get('attended_date_time'):
+			# 	call_res_time_diff = (tk.get('completion_date_time')- tk.get('attended_date_time'))
+			# 	hrs3 = ((call_res_time_diff.seconds//60)%60)/60
+			# 	call_resolution_time = round(((call_res_time_diff.days * 24) + (((call_res_time_diff.seconds//3600)) + hrs3)),2)
+			# else:
+			# 	call_resolution_time = 0
 
 			#applying filters according to condition set
 			if tk.get('attended_date_time') != None:
@@ -157,7 +167,7 @@ def get_data(filters):
 				'call_resolution_time':call_resolution_time
 						}
 				data.append(row)
-			elif lgc_value == '<' and  int(digit) >= response_time and response_time >= 0 and call_to_fix >= 0 and call_resolution_time >=0 :
+			elif lgc_value == '<' and  int(digit) >= response_time and response_time >= 0  and call_resolution_time:
 				# print("in < ")
 				# print("Logging "+str(tk.get('creation'))+" Attended Time "+str(tk.get('attended_date_time'))+" res time "+str(response_time)+" name "+tk.get("name"))
 
@@ -177,7 +187,7 @@ def get_data(filters):
 						}
 				data.append(row)
 			#if no condition filter is applied
-			elif lgc_value == '' and response_time >= 0 and call_to_fix >= 0 and call_resolution_time >=0:
+			elif lgc_value == '' and response_time >= 0 and call_resolution_time:
 				# print("in no para")
 				# print("Logging "+str(tk.get('creation'))+" Attended Time "+str(tk.get('attended_date_time'))+" res time "+str(response_time)+" name "+tk.get("name"))
 
