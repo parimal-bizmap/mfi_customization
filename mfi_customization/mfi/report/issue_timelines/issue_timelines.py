@@ -64,6 +64,12 @@ def get_columns(filters=None):
 	'width':120
 	},
 	{
+	"label": "Response Time",
+	"fieldtype": "Data",
+	"fieldname": "response_time",
+	'width':150
+	},
+	{
 	"label": "Closing Date",
 	"fieldtype": "Data",
 	"fieldname": "resolution_date",
@@ -85,7 +91,11 @@ def prepare_data(filters):
 	from datetime import datetime as dt
 	for i in frappe.get_all('Issue',filters=fltr,fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","resolution_date"]):
 		import datetime
+		attended_time=frappe.db.get_value("Task",{"issue":i.name},"attended_date_time")
 		t = i.resolution_date
+		formatted_attended_time=""
+		if attended_time:
+			formatted_attended_time=(datetime.timedelta(hours=int(attended_time.strftime('%H')),minutes=int(attended_time.strftime('%M')), seconds=int(attended_time.strftime('%S'))))
 		if i.resolution_date:
 			days=0
 			if getdate(t)==getdate(i.opening_date):
@@ -105,7 +115,14 @@ def prepare_data(filters):
 				h = totsec//3600
 				m = (totsec%3600) // 60
 				sec =(totsec%3600)%60 
-				i.update({'time_resolution':"D:%d  H: %d M: %d S: %d" %(days,h,m,sec)})
+				
+
+				# print(i.name,i.opening_time,attended_time,formatted_attended_time )
+				i.update({
+					'time_resolution':"D:%d  H: %d M: %d S: %d" %(days,h,m,sec),
+					'first_responded':attended_time,
+					'response_time':i.opening_time-formatted_attended_time if formatted_attended_time else "",
+					})
 		data.append(i)
 	return data
 

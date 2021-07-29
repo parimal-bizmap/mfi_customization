@@ -92,6 +92,14 @@ frappe.ui.form.on('Issue', {
 		} 
 	},
 	setup:function(frm){
+		frm.set_query("issue_type", function() {
+			return {
+				query: 'mfi_customization.mfi.doctype.issue.get_issue_types',
+				filters: {
+					"type_of_call":frm.doc.type_of_call
+			}
+			}
+		});
 		frm.set_query("asset", "current_reading", function() {
 			
 			return {
@@ -249,7 +257,7 @@ frappe.ui.form.on('Issue', {
 	}
 
 
-	}
+	},
 	
 })
 
