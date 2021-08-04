@@ -216,6 +216,4 @@ def get_issue_types(doctype, txt, searchfield, start, page_len, filters):
 	fltr={"name":("IN",[d.parent for d in frappe.get_all("Call Type List",{"call_type":filters.get("type_of_call")},['parent'])])}
 	if txt:
 		fltr.update({"name": ("like", "{0}%".format(txt))})
-	print("*************")
-	print(fltr)
 	return frappe.get_all("Issue Type",filters=fltr,fields = ["name"], as_list=1)

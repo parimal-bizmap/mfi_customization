@@ -126,12 +126,7 @@ def get_data(filters):
 			
 			else:
 				response_time = 0
-			# if tk.get('completion_date_time') and tk.get('creation'):
-			# 	call_to_fix_diff = (tk.get('completion_date_time')- tk.get("creation"))
-			# 	hrs2 = ((call_to_fix_diff.seconds//60)%60)/60
-			# 	call_to_fix = round(((call_to_fix_diff.days * 24) + (((call_to_fix_diff.seconds//3600)) + hrs2)),2)	
-			# else:
-			# 	call_to_fix = 0
+	
 			if tk.get('completion_date_time') and tk.get('creation'):
 				call_to=tk.get('completion_date_time') - tk.get('creation')
 				call_to_fix=("<b>days:</b>"+str(call_to.days)+"  <b>hours:</b>"+str(call_to.seconds//3600)+" <b>minutes:</b>"+str((call_to.seconds//60)%60))
@@ -139,14 +134,6 @@ def get_data(filters):
 			if tk.get('completion_date_time') and tk.get('attended_date_time'):
 				call_resolution=tk.get('completion_date_time') - tk.get('attended_date_time')
 				call_resolution_time=("<b>days:</b>"+str(call_resolution.days)+"  <b>hours:</b>"+str(call_resolution.seconds//3600)+" <b>minutes:</b>"+str((call_resolution.seconds//60)%60))
-				# print({"days":call_to.days,"hours":call_to.seconds//3600, "minutes":(call_to.seconds//60)%60})
-
-			# if tk.get('completion_date_time') and tk.get('attended_date_time'):
-			# 	call_res_time_diff = (tk.get('completion_date_time')- tk.get('attended_date_time'))
-			# 	hrs3 = ((call_res_time_diff.seconds//60)%60)/60
-			# 	call_resolution_time = round(((call_res_time_diff.days * 24) + (((call_res_time_diff.seconds//3600)) + hrs3)),2)
-			# else:
-			# 	call_resolution_time = 0
 
 			#applying filters according to condition set
 			if tk.get('attended_date_time') != None:
@@ -168,8 +155,6 @@ def get_data(filters):
 						}
 				data.append(row)
 			elif lgc_value == '<' and  int(digit) >= response_time and response_time >= 0  and call_resolution_time:
-				# print("in < ")
-				# print("Logging "+str(tk.get('creation'))+" Attended Time "+str(tk.get('attended_date_time'))+" res time "+str(response_time)+" name "+tk.get("name"))
 
 				row = {
 				'name': tk.get('name'),
@@ -186,10 +171,9 @@ def get_data(filters):
 				'call_resolution_time':call_resolution_time
 						}
 				data.append(row)
+
 			#if no condition filter is applied
 			elif lgc_value == '' and response_time >= 0 and call_resolution_time:
-				# print("in no para")
-				# print("Logging "+str(tk.get('creation'))+" Attended Time "+str(tk.get('attended_date_time'))+" res time "+str(response_time)+" name "+tk.get("name"))
 
 				row = {
 				'name': tk.get('name'),
@@ -207,8 +191,5 @@ def get_data(filters):
 						}
 				data.append(row)
 			
-			
-		
-		
 
 	return data
