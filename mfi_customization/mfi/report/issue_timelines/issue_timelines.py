@@ -88,47 +88,46 @@ def prepare_data(filters):
 	fltr={}
 	if filters.get("company"):
 		fltr.update({"company":filters.get("company")})
-	from datetime import datetime as dt
-	for i in frappe.get_all('Issue',filters=fltr,fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","resolution_date"]):
-		import datetime
-		attended_time=frappe.db.get_value("Task",{"issue":i.name},"attended_date_time")
-		t = i.resolution_date
-		formatted_attended_time=""
-		if attended_time:
-			formatted_attended_time=(datetime.timedelta(hours=int(attended_time.strftime('%H')),minutes=int(attended_time.strftime('%M')), seconds=int(attended_time.strftime('%S'))))
-		if i.resolution_date:
-			days=0
-			if getdate(t)==getdate(i.opening_date):
-				time_resolution=datetime.timedelta(hours=int(t.strftime('%H')),minutes=int(t.strftime('%M')), seconds=int(t.strftime('%S')))-i.opening_time
-				totsec = time_resolution.total_seconds()
-				h = totsec//3600
-				m = (totsec%3600) // 60
-				sec =(totsec%3600)%60 
-				i.update({'time_resolution':"D:%d  H: %d M: %d S: %d" %(days,h,m,sec)})
-			else:
-				days=(getdate(t)-getdate(i.opening_date)).days
-				close=datetime.timedelta(hours=int(t.strftime('%H')),minutes=int(t.strftime('%M')), seconds=int(t.strftime('%S')))
-				time_resolution=i.opening_time-close
-				if close>i.opening_time:
-					time_resolution=close-i.opening_time
-				totsec = time_resolution.total_seconds()
-				h = totsec//3600
-				m = (totsec%3600) // 60
-				sec =(totsec%3600)%60 
-				
 
-				# print(i.name,i.opening_time,attended_time,formatted_attended_time )
+	for i in frappe.get_all('Issue',filters=fltr,fields=["name","status","issue_type","description","failure_date_and_time","opening_date","opening_time","first_responded_on","resolution_date","opening_date_time", "company"]):
+		attended_time=frappe.db.get_value("Task",{"issue":i.name},"attended_date_time")
+		if i.opening_date_time :
+			company = fltr.get("company") if fltr.get("company") else ( i.get('company') if  i.get('company') else 'MFI MAROC SARL')
+			if attended_time:
 				i.update({
-					'time_resolution':"D:%d  H: %d M: %d S: %d" %(days,h,m,sec),
-					'first_responded':attended_time,
-					'response_time':i.opening_time-formatted_attended_time if formatted_attended_time else "",
-					})
+					'first_responded': attended_time
+				})
+				response_time = attended_time - i.opening_date_time
+				i.update({
+					'response_time':get_working_hrs(response_time, i.opening_date_time, attended_time, company)
+				})
+			if i.resolution_date:
+				time_resolution = i.resolution_date - i.opening_date_time
+				i.update({
+					'time_resolution':get_working_hrs(time_resolution, i.opening_date_time,i.resolution_date, company),
+				})
 		data.append(i)
 	return data
 
-
-
-
-
-
-
+#calculate response_time_diff in hours with holiday validation 
+def get_working_hrs(call_to,opening_date_time, attended_time, company):
+	holidays = frappe.db.sql("""select count(distinct holiday_date) from `tabHoliday` h1, `tabHoliday List` h2
+	where h1.parent = h2.name and h1.holiday_date between %s and %s
+	and h2.company = %s""", (opening_date_time, attended_time, company))[0][0]
+	if holidays:
+		days = call_to.days - holidays
+	else:
+		days = call_to.days
+	hrs = call_to.seconds//3600
+	daily_hrs_data = frappe.db.get_all("Support Hours", {'parent': 'Support Setting', 'company':company}, ['start_time', 'end_time'])
+	if daily_hrs_data:
+		daily_hrs = daily_hrs_data[0].get('end_time') - daily_hrs_data[0].get('start_time')  
+		daily_hrs = daily_hrs.seconds//3600
+		daily_hrs = daily_hrs if daily_hrs else 9
+		if days != 0 :
+			total_hours = (days * daily_hrs) + hrs
+		else:
+			total_hours = hrs
+	else:
+		frappe.msgprint("Please set start time and end time in Support Setting for '{0}'".format(company))
+	return total_hours
