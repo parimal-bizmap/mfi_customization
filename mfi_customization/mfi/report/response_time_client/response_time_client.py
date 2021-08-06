@@ -79,6 +79,30 @@ def get_columns(filters = None):
 		}
 		]
 
+#calculate call to fix and call to resolution in hours with holiday validation - 05/08/21[Anuradha]
+def get_working_hrs(call_to, creation, completion_date_time, company):
+	holidays = frappe.db.sql("""select count(distinct holiday_date) from `tabHoliday` h1, `tabHoliday List` h2
+	where h1.parent = h2.name and h1.holiday_date between %s and %s
+	and h2.company = %s""", (creation, completion_date_time, company))[0][0]
+	if holidays:
+		days = call_to.days - holidays
+	else:
+		days = call_to.days
+	hrs = call_to.seconds//3600
+	daily_hrs_data = frappe.db.get_all("Support Hours", {'parent': 'Support Setting', 'company':company}, ['start_time', 'end_time'])
+	if daily_hrs_data:
+		daily_hrs = daily_hrs_data[0].get('end_time') - daily_hrs_data[0].get('start_time')  
+		daily_hrs = daily_hrs.seconds//3600
+		daily_hrs = daily_hrs if daily_hrs else 9
+		if days != 0 :
+			total_hours = (days * daily_hrs) + hrs
+		else:
+			total_hours = hrs
+	else:
+		frappe.msgprint("Please set start time and end time in Support Setting for '{0}'".format(company))
+	result=("<b>hours : </b> "+str(total_hours))
+	return result
+
 def get_data(filters):
 	data = []
 	response_time = 0
@@ -129,11 +153,11 @@ def get_data(filters):
 	
 			if tk.get('completion_date_time') and tk.get('creation'):
 				call_to=tk.get('completion_date_time') - tk.get('creation')
-				call_to_fix=("<b>days:</b>"+str(call_to.days)+"  <b>hours:</b>"+str(call_to.seconds//3600)+" <b>minutes:</b>"+str((call_to.seconds//60)%60))
+				call_to_fix = get_working_hrs(call_to, tk.get('creation'), tk.get('completion_date_time'), i.get('company'))
 			
 			if tk.get('completion_date_time') and tk.get('attended_date_time'):
 				call_resolution=tk.get('completion_date_time') - tk.get('attended_date_time')
-				call_resolution_time=("<b>days:</b>"+str(call_resolution.days)+"  <b>hours:</b>"+str(call_resolution.seconds//3600)+" <b>minutes:</b>"+str((call_resolution.seconds//60)%60))
+				call_resolution_time = get_working_hrs(call_resolution, tk.get('attended_date_time'), tk.get('completion_date_time'), i.get('company'))
 
 			#applying filters according to condition set
 			if tk.get('attended_date_time') != None:
