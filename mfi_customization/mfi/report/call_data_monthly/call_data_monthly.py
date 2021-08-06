@@ -109,17 +109,16 @@ def get_data(filters):
 				productivity_by_wtg = 0
 				response_time_diff = 0
 				fltr2.update({"completed_by":usr.get("email")})
-				fltr2.update({'type_of_waitage':filters.get("type_of_call")})
+				fltr2.update({'type_of_call':filters.get("type_of_call")})
 				no_of_day_productivity = date_diff(filters.get("to_date"),filters.get("from_date"))
 				type_of_call = len(frappe.get_all("Task",{'type_of_waitage':filters.get("type_of_call")}))
-				
 				for tk2 in frappe.get_all('Task',fltr2,['completed_by','"completion_date_time"','attended_date_time','status','completion_date_time']):
 					total_calls_cnt += 1
-					
 					if tk2.get('completion_date_time') and tk2.get('attended_date_time'):
 						response_time_diff = (tk2.get("completion_date_time") - tk2.get('attended_date_time')) 
 						hrs = ((response_time_diff.seconds//60)%60)/60
-						response_time = round(((response_time_diff.days * 24) + (((response_time_diff.seconds//3600)) + hrs)),2) 
+						productivity_by_wtg+=round(( float(type_of_call)* float(frappe.db.get_value("Type of Call",filters.get("type_of_call"),"waitage")) *  float(hrs)),2)
+						# response_time = round(((response_time_diff.days * 24) + (((response_time_diff.seconds//3600)) + hrs)),2) 
 						# productivity_by_wtg11 = round((float(response_time) * float(type_of_call) * float(waitage)),2)
 					if tk2.get("attended_date_time") and tk2.get("assign_date"):
 						cnt += 1
@@ -148,7 +147,7 @@ def get_data(filters):
 					'pending_calls': pending_calls_cnt,
 					'prod_per_day': prod_per_day,
 					'average_time_on_call': avg_time_on_call,
-					# 'productivity':productivity_by_wtg
+					'productivity':productivity_by_wtg
 
 				})
 				
