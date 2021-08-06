@@ -105,8 +105,7 @@ def get_working_hrs(call_to, creation, completion_date_time, company):
 
 def get_data(filters):
 	data = []
-	response_time = 0
-	call_assign_date = 0
+	call_assign_date = ""
 	fltr = ""
 	lgc_value = ""
 	digit = 0
@@ -127,8 +126,8 @@ def get_data(filters):
 	for i in frappe.get_all('Issue',fltr2,['name','company','failure_date_and_time','response_date_time','resolution_date','customer','asset','serial_no','issue_type']):
 		
 		for tk in frappe.db.get_all('Task',{'issue':i.get("name")},['completion_date_time','issue','name','creation','assign_date','attended_date_time']):
-			resolution_date =0
-			attended_date= 0
+			resolution_date =""
+			attended_date= ""
 			call_to_fix =""
 			call_resolution_time=""
 			if tk.get('completion_date_time'):
@@ -153,11 +152,11 @@ def get_data(filters):
 	
 			if tk.get('completion_date_time') and tk.get('creation'):
 				call_to=tk.get('completion_date_time') - tk.get('creation')
-				call_to_fix = get_working_hrs(call_to, tk.get('creation'), tk.get('completion_date_time'), i.get('company'))
+				call_to_fix = get_working_hrs(call_to, tk.get('creation'), tk.get('completion_date_time'), i.get('company') or "MFI MAROC SARL")
 			
 			if tk.get('completion_date_time') and tk.get('attended_date_time'):
 				call_resolution=tk.get('completion_date_time') - tk.get('attended_date_time')
-				call_resolution_time = get_working_hrs(call_resolution, tk.get('attended_date_time'), tk.get('completion_date_time'), i.get('company'))
+				call_resolution_time = get_working_hrs(call_resolution, tk.get('attended_date_time'), tk.get('completion_date_time'), i.get('company') or "MFI MAROC SARL")
 
 			#applying filters according to condition set
 			if tk.get('attended_date_time') != None:

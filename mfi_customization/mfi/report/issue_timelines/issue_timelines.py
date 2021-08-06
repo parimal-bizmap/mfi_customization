@@ -114,6 +114,7 @@ def get_working_hrs(call_to,opening_date_time, attended_time, company):
 	holidays = frappe.db.sql("""select count(distinct holiday_date) from `tabHoliday` h1, `tabHoliday List` h2
 	where h1.parent = h2.name and h1.holiday_date between %s and %s
 	and h2.company = %s""", (opening_date_time, attended_time, company))[0][0]
+	total_hours=0
 	if holidays:
 		days = call_to.days - holidays
 	else:

@@ -96,7 +96,7 @@ def get_data(filters):
         for tk in frappe.get_all("Task",fltr,['attended_date_time','assign_date','asset','completed_by', 'issue']):
             if tk.get('attended_date_time') and tk.get('assign_date'):
                 response_time_diff = (tk.get("attended_date_time") - tk.get('assign_date')) 
-                company = fltr.get('company') if fltr.get('company') else frappe.db.get_value('Issue', {'name': tk.issue}, 'company')
+                company = fltr.get('company') if fltr.get('company') else frappe.db.get_value('Issue', {'name': tk.issue}, 'company') or "MFI MAROC SARL"
                 response_time = get_working_hrs(response_time_diff, tk.get('assign_date'), tk.get('attended_date_time'), company)
                 if response_time > 4:
                     gt4_count+=1
