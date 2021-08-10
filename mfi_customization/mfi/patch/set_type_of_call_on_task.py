@@ -1,5 +1,5 @@
 import frappe
-
+# bench execute mfi_customization.mfi.patch.set_type_of_call_on_task.execute
 def execute():
 	for d in frappe.get_all("Task"):
 		task=frappe.get_doc("Task",d.name)
