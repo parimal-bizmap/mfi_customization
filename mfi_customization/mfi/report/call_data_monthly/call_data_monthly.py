@@ -78,7 +78,6 @@ def get_data(filters):
 		if filters.get("c_name"):
 			fltr3.update({'company':filters.get("c_name")})
 			fltr2.update({'company':filters.get("c_name")})
-
 		for i in frappe.get_all('Issue',fltr3,['name','customer']):	
 			for tk in frappe.get_all('Task',{'issue':i.get("name")},['completed_by','assign_date','attended_date_time']):
 				assign_issue_cnt+=1
@@ -108,15 +107,18 @@ def get_data(filters):
 				prod_per_day = 0
 				productivity_by_wtg = 0
 				response_time_diff = 0
+				company = fltr3.get("company") if fltr3.get("company") else ( i.get('company') if  i.get('company') else 'MFI MAROC SARL')
+
 				fltr2.update({"completed_by":usr.get("email")})
 				fltr2.update({'type_of_call':filters.get("type_of_call")})
 				no_of_day_productivity = date_diff(filters.get("to_date"),filters.get("from_date"))
 				type_of_call = len(frappe.get_all("Task",{'type_of_waitage':filters.get("type_of_call")}))
 				for tk2 in frappe.get_all('Task',fltr2,['completed_by','"completion_date_time"','attended_date_time','status','completion_date_time']):
 					total_calls_cnt += 1
+					company = fltr3.get("company") if fltr3.get("company") else ( frappe.db.get_value("Issue", {'name':tk2.issue}, 'company') if tk2.issue else 'MFI MAROC SARL')
 					if tk2.get('completion_date_time') and tk2.get('attended_date_time'):
 						response_time_diff = (tk2.get("completion_date_time") - tk2.get('attended_date_time')) 
-						hrs = ((response_time_diff.seconds//60)%60)/60
+						hrs = get_working_hrs(response_time_diff,tk2.get('attended_date_time'), tk2.get('completion_date_time'), company)
 						productivity_by_wtg+=round(( float(type_of_call)* float(frappe.db.get_value("Type of Call",filters.get("type_of_call"),"waitage")) *  float(hrs)),2)
 						# response_time = round(((response_time_diff.days * 24) + (((response_time_diff.seconds//3600)) + hrs)),2) 
 						# productivity_by_wtg11 = round((float(response_time) * float(type_of_call) * float(waitage)),2)
@@ -135,7 +137,7 @@ def get_data(filters):
 					prod_per_day = round(((resolved_call_cnt/no_of_day_productivity) * 100),2)
 					
 				if cnt != 0:
-		 			avg_wait_time = (avg_wt/cnt)
+					avg_wait_time = (avg_wt/cnt)
 				if on_call_cnt != 0:
 					avg_time_on_call = (avg_on_call_cnt/on_call_cnt)
 				
@@ -157,3 +159,26 @@ def get_data(filters):
 		return data
 
 
+def get_working_hrs(call_to,opening_date_time, attended_time, company):
+	holidays = frappe.db.sql("""select count(distinct holiday_date) from `tabHoliday` h1, `tabHoliday List` h2
+	where h1.parent = h2.name and h1.holiday_date between %s and %s
+	and h2.company = %s""", (opening_date_time, attended_time, company))[0][0]
+	total_hours=0
+	if holidays:
+		days = call_to.days - holidays
+	else:
+		days = call_to.days
+	hrs = call_to.seconds//3600
+	daily_hrs_data = frappe.db.get_all("Support Hours", {'parent': 'Support Setting', 'company':company}, ['start_time', 'end_time'])
+	if daily_hrs_data:
+		daily_hrs = daily_hrs_data[0].get('end_time') - daily_hrs_data[0].get('start_time')  
+		daily_hrs = daily_hrs.seconds//3600
+		daily_hrs = daily_hrs if daily_hrs else 9
+		if days != 0 :
+			total_hours = (days * daily_hrs) + hrs
+		else:
+			total_hours = hrs
+	else:
+		frappe.msgprint("Please set start time and end time in Support Setting for '{0}'".format(company))
+	
+	return total_hours
