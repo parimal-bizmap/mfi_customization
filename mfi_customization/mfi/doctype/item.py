@@ -1,10 +1,9 @@
 import frappe
 
 def validate(doc,method):
-    print("**")
-    # if doc.is_renting_item==1:
-    #     create_item("AST-",doc,1,"Copy Machines")
-    #     create_item("RNT-",doc)
+    if doc.is_renting_item==1:
+        create_item("AST-",doc,1,"Copy Machines")
+        create_item("RNT-",doc)
 
 def create_item(prefix,doc,fixed_asset=0,asset_category=""):
     new_item=frappe.new_doc("Item")

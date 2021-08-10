@@ -111,7 +111,7 @@ doc_events = {
         "on_change":"mfi_customization.mfi.doctype.issue.on_change"
     },
     "Material Request":{
-        "on_change":"mfi_customization.mfi.doctype.task.set_item_from_material_req"
+        "on_change":"mfi_customization.mfi.doctype.material_request.set_item_from_material_req"
     },
     "Comment":{
 		"validate":"mfi_customization.mfi.doctype.comment.comment"
@@ -122,9 +122,9 @@ doc_events = {
     "File":{
         "after_insert":"mfi_customization.mfi.doctype.communication.after_insert_file"
     },
-    "Item":{
-        "after_insert":"mfi_customization.mfi.doctype.item.validate"
-    },
+    # "Item":{
+    #     "after_insert":"mfi_customization.mfi.doctype.item.validate"
+    # },
     "Quotation":{
         "validate":"mfi_customization.mfi.doctype.quotation.validate"
     }

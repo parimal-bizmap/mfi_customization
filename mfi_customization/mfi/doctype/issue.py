@@ -211,7 +211,9 @@ def validate_reading(doc):
 				if getdate(lst.date)>getdate(cur.date):
 					frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
 
-
 @frappe.whitelist()
-def filter_toner_from_mfi_setting(doctype, txt, searchfield, start, page_len, filters):
-    return frappe.get_all("Toner Group List",{"parent":"MFI Setting"},["toner_group"],as_list=1)
+def get_issue_types(doctype, txt, searchfield, start, page_len, filters):
+	fltr={"name":("IN",[d.parent for d in frappe.get_all("Call Type List",{"call_type":filters.get("type_of_call")},['parent'])])}
+	if txt:
+		fltr.update({"name": ("like", "{0}%".format(txt))})
+	return frappe.get_all("Issue Type",filters=fltr,fields = ["name"], as_list=1)

@@ -41,7 +41,7 @@ def validate(doc,method):
 	# 	docperm.save(ignore_permissions=True)
 
 	#User Permission For Approver  
-def after_insert(doc,method):
+# def after_insert(doc,method):
 	
 	# if doc.approver :
 	# 	docperm = frappe.new_doc("User Permission")
@@ -52,7 +52,7 @@ def after_insert(doc,method):
 	# 	})
 	# 	docperm.save(ignore_permissions=True)
 	# if doc.approver and doc.is_new():
-	docperm = frappe.new_doc("DocShare")
+	# docperm = frappe.new_doc("DocShare")
 	# docperm.update({
 	# 		"user": doc.approver,
 	# 		"share_doctype": 'Material Request',
@@ -150,5 +150,19 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
 			}, as_dict=as_dict)
 
 
-					
+def set_item_from_material_req(doc,method):
+	if doc.get('task_') and doc.status=="Issued":
+		task=frappe.get_doc('Task',doc.get('task_'))
+		items=[]
+		for t in task.get('refilled__items'):
+			items.append(t.item)
+		for d in doc.get('items'):
+			if d.get('item_code') not in items:
+				task.append("refilled__items", {
+							"item": d.get('item_code'),
+							"warehouse": d.get('warehouse'),
+							"qty": d.get('qty')
+						})
+		task.material_request=doc.name
+		task.save()					
 

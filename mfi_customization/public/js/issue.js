@@ -92,6 +92,14 @@ frappe.ui.form.on('Issue', {
 		} 
 	},
 	setup:function(frm){
+		frm.set_query("issue_type", function() {
+			return {
+				query: 'mfi_customization.mfi.doctype.issue.get_issue_types',
+				filters: {
+					"type_of_call":frm.doc.type_of_call
+			}
+			}
+		});
 		frm.set_query("asset", "current_reading", function() {
 			
 			return {
@@ -299,26 +307,6 @@ frappe.ui.form.on("Asset Details", "asset", function(frm, cdt, cdn) {
        })
     }
 });
-// frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
-//     var d = locals[cdt][cdn];
-// 	if(d.type == 'Black & White'){
-// 		frm.set_df_property("reading_2","read_only",1);
-// 		frm.set_df_property("reading","read_only",0);
-// 		console.log("in blk white");
-// 	}
-// 	if(d.type == 'Colour'){
-// 		frm.set_df_property("reading","read_only",1);
-// 		frm.set_df_property("reading_2","read_only",0);
-// 		console.log("in colour");
-// 	}
-// 	if(d.type == 'Both'){
-// 		frm.set_df_property("reading","read_only",0);
-
-// 		frm.set_df_property("reading_2","read_only",0);
-
-// 	}
-   
-// });
 frappe.ui.form.on("Asset Details", "serial_no", function(frm, cdt, cdn) {
     var d = locals[cdt][cdn];
     

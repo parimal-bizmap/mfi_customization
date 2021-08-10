@@ -9,17 +9,17 @@ def validate(doc,method):
 
 def calculation(doc):
 	service_charge=0
-	for itm in doc.get('items'):
+	for itm in doc.get('asset_quotation_selection'):
 		# service_charge+=calculate_service_charge(doc,itm)
 		service_charge+=itm.rate
 
 	total_mono_per_click=0
 	total_colour_per_click=0
-	for itm in doc.get('items'):
-		itm_rate=get_rate_from_item_price(doc,itm.item_code)
-		if doc.order_type=="Per Click" and  (itm.item_code in [d.compatible_with for d in doc.get("compatible_toner_list")] or (itm.item_code in [d.compatible_with for d in doc.get("compatible_accessories_list")])):
+	for itm in doc.get('asset_quotation_selection'):
+		itm_rate=get_rate_from_item_price(doc,itm.asset)
+		if doc.order_type=="Per Click" and  (itm.asset in [d.compatible_with for d in doc.get("compatible_toner_list")] or (itm.asset in [d.compatible_with for d in doc.get("compatible_accessories_list")])):
 			per_click_calculation(doc,itm,itm_rate)
-		elif doc.order_type=="Minimum Volume" and (itm.item_code in [d.compatible_with for d in doc.get("compatible_toner_list")] or (itm.item_code in [d.compatible_with for d in doc.get("compatible_accessories_list")])):
+		elif doc.order_type=="Minimum Volume" and (itm.asset in [d.compatible_with for d in doc.get("compatible_toner_list")] or (itm.asset in [d.compatible_with for d in doc.get("compatible_accessories_list")])):
 			minimum_volume_calculation(doc,itm,service_charge,itm_rate)
 		total_mono_per_click+=itm.mono_net_rate_per_click
 		total_colour_per_click+=itm.colour_net_rate_per_click
@@ -40,7 +40,7 @@ def per_click_calculation(doc,itm,itm_rate):
 	if doc.get("compatible_accessories_list"):
 		for acc in doc.get("compatible_accessories_list"):
 			accessory_type=frappe.db.get_value("Item",{"name":acc.accessory},"accessory_type")
-			if acc.get('compatible_with')==itm.item_code and accessory_type:
+			if acc.get('compatible_with')==itm.asset and accessory_type:
 				if accessory_type=="Mono":
 					acc_monorate+=get_rate_from_item_price(doc,acc.accessory)
 					acc_monoyeild+=acc.yeild
@@ -55,7 +55,7 @@ def per_click_calculation(doc,itm,itm_rate):
 	if doc.get("compatible_toner_list"):
 		for tn in doc.get("compatible_toner_list"):
 			toner_type=frappe.db.get_value("Item",{"name":tn.toner},"toner_type")
-			if tn.get('compatible_with')==itm.item_code and toner_type:
+			if tn.get('compatible_with')==itm.asset and toner_type:
 				if toner_type=="Black":
 					tn_monorate+=get_rate_from_item_price(doc,tn.toner)
 					tn_monoyeild+=tn.yeild
@@ -127,7 +127,7 @@ def minimum_volume_calculation(doc,itm,service_charge,itm_rate):
 	if doc.get("compatible_toner_list"):
 		for tn in doc.get("compatible_toner_list"):
 			toner_type=frappe.db.get_value("Item",{"name":tn.toner},"toner_type")
-			if tn.get('compatible_with')==itm.item_code and toner_type:
+			if tn.get('compatible_with')==itm.asset and toner_type:
 				if toner_type=="Black":
 					cost_of_monotoner+=((colour+mono)/tn.yeild)*get_rate_from_item_price(doc,tn.toner) if ((colour+mono)/tn.yeild)>0 else 0
 					cost_of_monotoner+=((colour+mono)/tn.yeild)*get_rate_from_item_price(doc,tn.toner) if ((colour+mono)/tn.yeild)>0 else 0
@@ -141,7 +141,7 @@ def minimum_volume_calculation(doc,itm,service_charge,itm_rate):
 		for acc in doc.get("compatible_accessories_list"):
 			accessory_type=frappe.db.get_value("Item",{"name":acc.accessory},"accessory_type")
 			landed_cost_if_not_yeild=0
-			if acc.get('compatible_with')==itm.item_code and accessory_type:
+			if acc.get('compatible_with')==itm.asset and accessory_type:
 				if acc.yeild<1:
 					landed_cost_if_not_yeild+=get_rate_from_item_price(doc,acc.accessory)
 				if accessory_type=="Mono":
@@ -158,7 +158,9 @@ def minimum_volume_calculation(doc,itm,service_charge,itm_rate):
 	insurance=(total_cost*(doc.insurance/100))
 	# interest=((total_cost*((doc.interest_rate/100)/12)) / (1 - (pow((1 + ((doc.interest_rate/100)/12)), (-1 * doc.lease_period)))))
 	interest=(-(((npf.pmt((doc.interest_rate/100)/12,doc.lease_period,total_cost,000))*doc.lease_period)+total_cost))
-
+	print("Interest is:{0}".format(interest))
+	print("Total Cost is:{0}".format(total_cost))
+	print("insurance is:{0}".format(insurance))
 	frappe.msgprint("Interest is:{0}".format(interest))
 	frappe.msgprint("Total Cost is:{0}".format(total_cost))
 	frappe.msgprint("insurance is:{0}".format(insurance))
@@ -204,6 +206,6 @@ def get_toner_items(item):
 
 def set_parent_values(doc):
 	total_rent=0
-	for itm in doc.get('items'):
+	for itm in doc.get('asset_quotation_selection'):
 		total_rent+=(itm.net_rent+itm.margin_on_rent)
 	doc.total_rent=total_rent

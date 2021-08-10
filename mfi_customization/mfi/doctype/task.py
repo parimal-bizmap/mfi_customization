@@ -125,22 +125,6 @@ def set_readings(project,asset,target_doc=None):
 	return reading_list
 
 
-def set_item_from_material_req(doc,method):
-	if doc.get('task_') and doc.status=="Issued":
-		task=frappe.get_doc('Task',doc.get('task_'))
-		items=[]
-		for t in task.get('refilled__items'):
-			items.append(t.item)
-		for d in doc.get('items'):
-			if d.get('item_code') not in items:
-				task.append("refilled__items", {
-							"item": d.get('item_code'),
-							"warehouse": d.get('warehouse'),
-							"qty": d.get('qty')
-						})
-		task.material_request=doc.name
-		task.save()
-
 @frappe.whitelist()
 def get_tech(doctype, txt, searchfield, start, page_len, filters):
 	tch_lst = []
@@ -280,7 +264,14 @@ def on_change(doc,method):
 		if doc.status == 'Completed':
 			validate_if_material_request_is_not_submitted(doc)
 			attachment_validation(doc)
-			frappe.db.set_value("Issue",doc.issue,'status',"Task Completed")
+			issue=frappe.get_doc("Issue",doc.issue)
+			issue.status="Task Completed"
+			issue.set("task_attachments",[])
+			for d in doc.get("attachments"):
+				issue.append("task_attachments",{
+					"attach":d.attach
+				})
+			issue.save()	
 
 def create_machine_reading(doc):
 	for d in doc.get('current_reading'):
@@ -341,7 +332,10 @@ def attachment_validation(doc):
 		frappe.throw("Cann't Completed Task Without Attachment")
 	
 def create_user_permission(doc):
-	add_user_permission("Task",doc.name,doc.completed_by)
+	if len(frappe.get_all("User Permission",{"allow":"Task","for_value":doc.name,"user":doc.completed_by}))==0:
+		for d in frappe.get_all("User Permission",{"allow":"Task","for_value":doc.name}):
+			frappe.delete_doc("User Permission",d.name)
+		add_user_permission("Task",doc.name,doc.completed_by)
 
 	for emp in frappe.get_all("Employee",{"user_id":doc.completed_by},['material_request_approver']):
 		if emp.material_request_approver:

@@ -1,0 +1,88 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2021-07-31 11:44:10.296125",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "asset",
+  "asset_name",
+  "qty",
+  "rates_calculation_section",
+  "mono_click_rate",
+  "column_break_10",
+  "colour_click_rate",
+  "rent",
+  "rate",
+  "amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Asset",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "asset.item_name",
+   "fieldname": "asset_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Asset Name"
+  },
+  {
+   "fieldname": "rates_calculation_section",
+   "fieldtype": "Section Break",
+   "label": "Rates Calculation"
+  },
+  {
+   "fieldname": "mono_click_rate",
+   "fieldtype": "Currency",
+   "label": "Mono click Rate"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "colour_click_rate",
+   "fieldtype": "Currency",
+   "label": "Colour click Rate"
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Qty"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Rate"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount"
+  },
+  {
+   "fieldname": "rent",
+   "fieldtype": "Currency",
+   "label": "Rent"
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2021-07-31 12:10:21.954556",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Quotation Asset Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

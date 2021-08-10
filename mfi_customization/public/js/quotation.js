@@ -1,9 +1,9 @@
 frappe.ui.form.on('Quotation', {
     refresh:function(frm){
-        if(frm.doc.items){
+        if(frm.doc.asset_quotation_selection){
 			let parent = '';
-  			(frm.doc.items).forEach(i =>{
-       		parent = parent+"\n"+i.item_code      
+  			(frm.doc.asset_quotation_selection).forEach(i =>{
+       		parent = parent+"\n"+i.asset     
    		 })
     		frm.set_df_property('select_item','options', parent); 
 
@@ -37,6 +37,16 @@ frappe.ui.form.on('Quotation', {
                                         label: __('Accessory'),
                                         options:'Item',
                                         in_list_view:1,
+                                        onchange: () => {
+                                            d.fields_dict.accessories_item.df.data.some(row => { 
+                                                frappe.db.get_value('Item',row.accessory, ["item_name"], function(value) {
+                                                    row.accessory_name=value['item_name']
+                                                    d.fields_dict.accessories_item.refresh();
+                                                })
+                                               
+                                            })
+                                            d.fields_dict.accessories_item.refresh();
+                                        }
                                     },
                                     {
                                         fieldtype:'Data',
@@ -94,6 +104,16 @@ frappe.ui.form.on('Quotation', {
                                         label: __('Toner'),
                                         options:'Item',
                                         in_list_view:1,
+                                        onchange: () => {
+                                            d.fields_dict.toner_item.df.data.some(row => { 
+                                                frappe.db.get_value('Item',row.toner, ["item_name"], function(value) {
+                                                    row.toner_name=value['item_name']
+                                                    d.fields_dict.toner_item.refresh();
+                                                })
+                                               
+                                            })
+                                            d.fields_dict.toner_item.refresh();
+                                        }
                                     },
                                     {
                                         fieldtype:'Data',
@@ -149,11 +169,11 @@ frappe.ui.form.on('Quotation', {
     }
 })
 
-frappe.ui.form.on('Quotation Item','item_code',function(frm){
+frappe.ui.form.on('Quotation Asset Item','asset',function(frm){
 			
         let parent = '';
-        (frm.doc.items).forEach(i =>{
-       		parent = parent+"\n"+i.item_code      
+        (frm.doc.asset_quotation_selection).forEach(i =>{
+       		parent = parent+"\n"+i.asset      
    		 })
     	frm.set_df_property('select_item','options', parent); 
 

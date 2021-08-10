@@ -34,16 +34,3 @@ frappe.ui.form.on('Material Request', {
 
     }
 });
-
-// erpnext.buying.MaterialRequestController = erpnext.buying.BuyingController.extend({
-//     refresh:  function(doc, cdt, cdn) {
-//         this.frm.set_query("item_code", "items", function() {
-//             return {
-// 				query: "mfi_customization.mfi.doctype.material_request.item_query",
-// 				filters:{
-// 					"item_group":["IN",["Consumable","Spares"]]
-// 				}
-// 			}
-// 		});
-//     }
-// })

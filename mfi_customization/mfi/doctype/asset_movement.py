@@ -5,10 +5,6 @@
 from __future__ import unicode_literals
 import frappe
 
-# lst = []
-#     for i in frappe.get_all('Task',filters,['asset']):
-#         lst.append(i.asset)
-#     return [(d,) for d in lst]
 
 @frappe.whitelist()
 def get_asset_filter(doctype, txt, searchfield, start, page_len, filters):
