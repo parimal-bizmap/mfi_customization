@@ -65,6 +65,10 @@ frappe.ui.form.on('Issue', {
 		}  
 	},
 	status:function(frm){
+		if(frm.doc.status == 'Working'){
+			let today = new Date()
+			frm.set_value('first_responded_on',today);
+		}
 		if(frm.doc.status == 'Closed'){
 			frm.set_df_property('current_reading','reqd',1);
 		}
