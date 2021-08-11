@@ -120,8 +120,7 @@ def get_data(filters):
 					response_time_diff = (tk2.get("completion_date_time") - tk2.get('attended_date_time')) 
 					hrs = get_working_hrs(response_time_diff,tk2.get('attended_date_time'), tk2.get('completion_date_time'), company)
 					productivity_by_wtg+=round(( float(type_of_call)* float(frappe.db.get_value("Type of Call",filters.get("type_of_call"),"waitage")) *  float(hrs)),2)
-					# response_time = round(((response_time_diff.days * 24) + (((response_time_diff.seconds//3600)) + hrs)),2) 
-					# productivity_by_wtg11 = round((float(response_time) * float(type_of_call) * float(waitage)),2)
+				
 				if tk2.get("attended_date_time") and tk2.get("assign_date"):
 					cnt += 1
 					avg_wt +=  date_diff(tk2.get("attended_date_time"), tk2.get("assign_date"))
