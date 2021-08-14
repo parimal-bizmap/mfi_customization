@@ -1,10 +1,12 @@
 {
+ "actions": [],
  "creation": "2021-04-28 17:01:14.791928",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "support_setting_details"
+  "support_setting_details",
+  "support_hours"
  ],
  "fields": [
   {
@@ -12,10 +14,17 @@
    "fieldtype": "Table",
    "label": "Support Setting Details",
    "options": "Support Setting Table"
+  },
+  {
+   "fieldname": "support_hours",
+   "fieldtype": "Table",
+   "label": "Support Hours",
+   "options": "Support Hours"
   }
  ],
  "issingle": 1,
- "modified": "2021-04-28 17:01:14.791928",
+ "links": [],
+ "modified": "2021-08-13 13:00:52.208670",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Support Setting",
