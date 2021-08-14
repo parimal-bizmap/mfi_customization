@@ -4,6 +4,11 @@
 
 frappe.query_reports["Customer Issue Status"] = {
 	"filters": [
-
+	    {
+			"label":"Company",
+			"fieldname":"company",
+			"fieldtype":"Link",
+			"options":"Company"	
+		}
 	]
 };
