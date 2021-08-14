@@ -75,6 +75,13 @@ refresh:function(frm){
 		frm.add_custom_button(__('Material Request'), function() {
 			frappe.set_route('List', 'Material Request', {task: frm.doc.name});
 		},__("View"));
+
+        frm.add_custom_button('Material Request', () => {
+            frappe.model.open_mapped_doc({
+                method: "mfi_customization.mfi.doctype.task.make_material_req",
+                frm: me.frm
+            })
+        },__('Make'));
     }
     frm.trigger('customer');
     
@@ -87,15 +94,7 @@ refresh:function(frm){
     //         }, __('Make'))}
     
     
-    frm.add_custom_button('Material Request', () => {
-        frappe.model.open_mapped_doc({
-            method: "mfi_customization.mfi.doctype.task.make_material_req",
-            frm: me.frm
-        })
-
-        },
-        __('Make')
-        )
+    
         frm.set_query("completed_by", function() {
                return {
                     query: 'mfi_customization.mfi.doctype.task.get_tech',
