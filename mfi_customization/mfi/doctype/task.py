@@ -17,7 +17,7 @@ def validate(doc,method):
 
 	last_reading=today()
 	if doc.asset and  len(doc.get("last_readings"))==0:
-		# doc.set("last_readings", [])
+		doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
 		# if machine_reading:
 			# fltr.update({"name":("!=",machine_reading)})
@@ -64,6 +64,7 @@ def on_change(doc,method):
 	if doc.get("issue"):
 		set_reading_from_task_to_issue(doc)
 	validate_reading(doc)
+	existed_mr=[]
 	for d in doc.get('current_reading'):
 		existed_mr = frappe.get_all("Machine Reading",{"task":doc.name,"project":doc.project, 'row_id':d.get('name')}, 'name')
 	if existed_mr :
@@ -77,6 +78,7 @@ def on_change(doc,method):
 			attachment_validation(doc)
 			issue=frappe.get_doc("Issue",doc.issue)
 			issue.status="Task Completed"
+			issue.closing_date_time=doc.completion_date_time
 			issue.set("task_attachments",[])
 			for d in doc.get("attachments"):
 				issue.append("task_attachments",{
