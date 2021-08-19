@@ -14,10 +14,12 @@
  ],
  "fields": [
   {
+   "default": "0",
    "fieldname": "reading",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Black & White Reading "
+   "label": "Black & White Reading ",
+   "reqd": 1
   },
   {
    "fieldname": "date",
@@ -34,17 +36,21 @@
    "read_only": 1
   },
   {
+   "default": "Black & White",
    "fieldname": "type",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "\nBlack & White\nColour"
+   "options": "\nBlack & White\nColour",
+   "reqd": 1
   },
   {
+   "default": "0",
    "fieldname": "reading_2",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Color Reading "
+   "label": "Color Reading ",
+   "reqd": 1
   },
   {
    "fieldname": "total",
