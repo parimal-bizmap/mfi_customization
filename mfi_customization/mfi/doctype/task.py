@@ -60,6 +60,26 @@ def after_insert(doc,method):
 	# 	})
 	# docperm.save(ignore_permissions=True)
 		
+def on_change(doc,method):
+	if doc.get("issue"):
+		set_reading_from_task_to_issue(doc)
+	validate_reading(doc)
+	create_machine_reading(doc)
+	if doc.issue and doc.status != 'Open':
+		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
+		if doc.status == 'Completed':
+			validate_if_material_request_is_not_submitted(doc)
+			attachment_validation(doc)
+			issue=frappe.get_doc("Issue",doc.issue)
+			issue.status="Task Completed"
+			issue.set("task_attachments",[])
+			for d in doc.get("attachments"):
+				issue.append("task_attachments",{
+					"attach":d.attach
+				})
+			issue.save()	
+		elif doc.status=="Working" and doc.attended_date_time:	
+			frappe.db.set_value("Issue",doc.issue,'first_responded_on',doc.attended_date_time)
 
 def after_delete(doc,method):
 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
@@ -80,8 +100,7 @@ def make_material_req(source_name, target_doc=None):
 		target.company=frappe.db.get_value("Employee",{"user_id":frappe.session.user},"company")
 	doclist = get_mapped_doc("Task", source_name, {
 		"Task": {
-			"doctype": "Material Request",
-			"name":"custom_task"
+			"doctype": "Material Request"
 		}
 	}, target_doc,set_missing_values )
 
@@ -253,25 +272,6 @@ def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
 				if ass.name not in lst:
 					lst.append(ass.name)
 		return [(d,) for d in lst]	
-
-def on_change(doc,method):
-	if doc.get("issue"):
-		set_reading_from_task_to_issue(doc)
-	validate_reading(doc)
-	create_machine_reading(doc)
-	if doc.issue and doc.status != 'Open':
-		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
-		if doc.status == 'Completed':
-			validate_if_material_request_is_not_submitted(doc)
-			attachment_validation(doc)
-			issue=frappe.get_doc("Issue",doc.issue)
-			issue.status="Task Completed"
-			issue.set("task_attachments",[])
-			for d in doc.get("attachments"):
-				issue.append("task_attachments",{
-					"attach":d.attach
-				})
-			issue.save()	
 
 def create_machine_reading(doc):
 	for d in doc.get('current_reading'):

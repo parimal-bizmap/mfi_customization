@@ -26,8 +26,8 @@ def validation(doc):
 		for msn in doc.get("model_serial_nos"):
 			if msn.asset_model==am.asset_model:
 				count+=1
-		# if am.qty!=count:
-		# 	frappe.throw("Model Serial No row should be Equal to Asset Model Qty")
+		if am.qty!=count:
+			frappe.throw("Model Serial No row should be Equal to Asset Model Qty")
 
 def set_values(doc):
 	for d in frappe.get_all("Default Asset Accounts",{"parent":"MFI Settings","company":doc.company},["asset_account"]):

@@ -100,9 +100,6 @@ doc_events = {
         "on_trash":"mfi_customization.mfi.doctype.task.after_delete",
         "on_change":"mfi_customization.mfi.doctype.task.on_change"
     },
-    "Project":{
-        "validate":"mfi_customization.mfi.doctype.project.validate"
-    },
     "Asset":{
         "after_insert":"mfi_customization.mfi.doctype.Asset.after_insert",
         "on_cancel":"mfi_customization.mfi.doctype.Asset.on_cancel",
