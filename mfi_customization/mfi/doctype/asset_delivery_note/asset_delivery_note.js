@@ -21,12 +21,12 @@ frappe.ui.form.on('Asset Delivery Note', {
 		if (frm.doc.select_item){
 			args["item_code"]=frm.doc.select_item
 		}
-		if (frm.doc.batch){
-			args["batch"]=frm.doc.batch
-		}
-		if (frm.doc.warehouse){
-			args["warehouse"]=frm.doc.warehouse
-		}
+		// if (frm.doc.batch){
+		// 	args["batch"]=frm.doc.batch
+		// }
+		// if (frm.doc.warehouse){
+		// 	args["warehouse"]=frm.doc.warehouse
+		// }
 		frappe.call({
             method: "mfi_customization.mfi.doctype.asset_delivery_note.asset_delivery_note.get_serial_nos",
             args:{"filters":args},
@@ -38,6 +38,7 @@ frappe.ui.form.on('Asset Delivery Note', {
 				c.asset_model=element.item_code
 				c.model_name=element.item_name
 				c.warehouse=element.warehouse
+				c.batch=element.batch_no
 				})
 				frm.refresh_field("model_serial_nos")
 			}
