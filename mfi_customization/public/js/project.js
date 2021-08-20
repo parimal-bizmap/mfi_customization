@@ -11,17 +11,6 @@ cur_frm.dashboard.add_transactions([
 	},
 ]);
 
-// frappe.ui.form.on('Project', {
-// 	refresh:function(frm){
-// 		frm.add_custom_button(__('Asset Delivery Note'), function() {
-// 			frappe.model.open_mapped_doc({
-// 				method: "mfi_customization.mfi.doctype.project.make_asset_delivery_note",
-// 				frm: frm
-// 			});
-// 		},__("Create"));
-// 	}
-// })
-
 frappe.ui.form.on('Project', {
 	refresh:function(frm){
 		frm.add_custom_button(__('Asset Delivery Note'), function() {
@@ -69,15 +58,6 @@ frappe.ui.form.on('Project', {
 		}
 	}
 })
-
-frappe.ui.form.on("Asset List", "asset", function(frm, cdt, cdn) {
-	var d = locals[cdt][cdn];
-	frappe.db.get_value("Asset", {"name":d.asset},["asset_name","location"], function(r){
-		d.asset_name=r.asset_name
-		d.location=r.location
-		refresh_field("asset_list");
-	})
-});
 
 frappe.ui.form.on("Asset Readings", "asset", function(frm, cdt, cdn) {
 	var d = locals[cdt][cdn];
