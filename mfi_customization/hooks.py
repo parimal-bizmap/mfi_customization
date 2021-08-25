@@ -126,6 +126,9 @@ doc_events = {
     # },
     "Quotation":{
         "validate":"mfi_customization.mfi.doctype.quotation.validate"
+    },
+    "Project":{
+        "validate":"mfi_customization.mfi.doctype.project.validate"
     }
     # "Material Request":{
     #     "validate":"mfi_customization.mfi.doctype.material_request.validate",
