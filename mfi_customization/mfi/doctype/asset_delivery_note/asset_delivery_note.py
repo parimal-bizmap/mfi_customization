@@ -26,8 +26,8 @@ def validation(doc):
 		for msn in doc.get("model_serial_nos"):
 			if msn.asset_model==am.asset_model:
 				count+=1
-		# if am.qty!=count:
-		# 	frappe.throw("Model Serial No row should be Equal to Asset Model Qty")
+		if am.qty!=count:
+			frappe.throw("Model Serial No row should be Equal to Asset Model Qty")
 
 def set_values(doc):
 	for d in frappe.get_all("Default Asset Accounts",{"parent":"MFI Settings","company":doc.company},["asset_account"]):
@@ -129,21 +129,11 @@ def get_serial_nos(filters):
 	if filters.get("item_code"):
 		fltr.update({"item_code":filters.get("item_code")})
 
-	# if filters.get("batch"):
-	# 	fltr.update({"batch_no":filters.get("batch")})
-	# if filters.get("warehouse"):
-	# 	fltr.update({"warehouse":filters.get("warehouse")})
-	serial_no_list = frappe.get_all("Serial No",fltr,['item_code','name','warehouse','batch_no','item_name'])
-	for serial_no in serial_no_list:
-		existed_asset_serial = frappe.db.get_list('Asset Serial No', {'name':serial_no.get('name')}, 'name')
-		if existed_asset_serial:
-			serial_no_list.remove(serial_no)
-		existed_asset_dn = frappe.db.get_list('Asset Delivery Note', {'name':serial_no.get('name'), 'docstatus':1}, 'name')
-		if existed_asset_dn:
-			serial_no_list.remove(serial_no)
-	from operator import itemgetter
-	serial_no_list = sorted(serial_no_list, key=itemgetter('name'))
-	return serial_no_list
+	data=[]
+	for serial_no in frappe.get_all("Serial No",filters=fltr,fields=['item_code','name','warehouse','batch_no','item_name'],order_by="name"):
+		if len(frappe.get_all('Asset Serial No', {'name':serial_no.get('name')}))==0 and len(frappe.get_all('Serial Nos Model wise', {'serial_no':serial_no.get('name'), 'docstatus':1}))==0:
+			data.append(serial_no)
+	return data
 
 
 @frappe.whitelist()

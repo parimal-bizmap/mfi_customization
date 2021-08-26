@@ -21,12 +21,6 @@ def fetch_asset_maintenance_team(maintenance_team):
     resp.update({'team_members_list':team})
     return resp
 
-def validate(doc,method):
-    for a in doc.get('asset_list'):
-        frappe.db.set_value('Asset',a.asset,'asset_owner','Customer')
-        frappe.db.set_value('Asset',a.asset,'customer',doc.customer)
-        frappe.db.set_value('Asset',a.asset,'project',doc.name)
-
 @frappe.whitelist()
 def make_asset_delivery_note(source_name, target_doc=None):
     def set_missing_values(source,target):
@@ -46,3 +40,9 @@ def make_asset_delivery_note(source_name, target_doc=None):
             "doctype": "Asset Delivery Note"
         }
     }, target_doc,set_missing_values)
+
+def validate(doc,method):
+    if doc.sales_order:
+        for d in frappe.get_all("Sales Order",{"name":doc.sales_order},['total_contract_amount']):
+            doc.estimated_costing=d.total_contract_amount
+

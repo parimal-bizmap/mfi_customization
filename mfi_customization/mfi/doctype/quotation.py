@@ -91,6 +91,7 @@ def per_click_calculation(doc,itm,itm_rate):
 	# NET rent of item = total contract with contingency / LP
 	total_contract_cost=total_cost+insurance+interest
 	total_contract_with_contingency = total_contract_cost * (doc.contingency/100)
+	doc.total_contract_amount=total_contract_with_contingency 
 	itm.net_rent=total_contract_with_contingency/doc.lease_period
 
 	# total_cost=(itm_rate+acc_monorate+acc_colourrate)++(itm_rate*(doc.contingency/100))
@@ -166,13 +167,13 @@ def minimum_volume_calculation(doc,itm,service_charge,itm_rate):
 	frappe.msgprint("insurance is:{0}".format(insurance))
 	# print(total_cost,insurance,-((interest*doc.lease_period)+total_cost))
 	contingency_amount_mono =cost_of_monotoner +cost_of_monoaccessory+total_cost+interest+insurance
-	total_cost_of_contract = contingency_amount_mono*(doc.contingency/100)
+	total_cost_of_contract_mono = contingency_amount_mono*(doc.contingency/100)
 
-	itm.mono_net_rate_per_click=total_cost_of_contract/ mono
+	itm.mono_net_rate_per_click=total_cost_of_contract_mono/ mono
 
 	contingency_amount_colour =cost_of_monotoner+cost_of_colourtoner+cost_of_monoaccessory+cost_of_colouraccessory+total_cost+interest+insurance
 	total_cost_of_contract_colour = contingency_amount_colour*(doc.contingency/100)
-
+	doc.total_contract_amount=total_cost_of_contract_mono+total_cost_of_contract_colour
 	itm.colour_net_rate_per_click=total_cost_of_contract_colour/colour
 
 
