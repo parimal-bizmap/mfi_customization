@@ -1,0 +1,32 @@
+<table class="table table-bordered ">
+	<thead>
+		<tr>
+			<th style="width: 30px">Asset</th>
+			<th style="width: 30px">Machine Type</th>
+			<th style="width: 30px">Color Reading</th>
+			<th style="width: 30px">Black and White Reading</th>
+			<th style="width: 30px">Posting Date</th>
+			<th style="width: 30px">Reading Date</th>
+			<th style="width: 30px">Total</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for r in machine_reading_list %}
+		    <!-- {% for asset in r.asset %} -->
+			<tr>
+			    <td> {{ r.asset }}</td>
+				<td>{{ r.machine_type }}</td>
+				<!-- <td>{{ r.colour_reading }}</td> -->
+				<td>
+				<input type="text" class="asset-result-data", data-asset = "{{r.asset}}"
+					value="{{r.colour_reading}}" column = "colour_reading"/>
+				</td>
+				<td>{{ r.black_and_white_reading }}</td>
+				<td>{{ r.posting_date }}</td>
+				<td>{{ r.reading_date }}</td>
+				<td>{{ r.total }}</td>
+	        </tr>
+	        <!-- {% endfor %} -->
+		{% endfor %}
+	</tbody>
+</table>
