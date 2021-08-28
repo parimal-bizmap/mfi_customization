@@ -34,7 +34,6 @@ doctype_js = {
                 "Asset Maintenance":"public/js/asset_maintenance.js",
                 "Location":"public/js/location.js",
                 "Asset Movement":"public/js/asset_movement.js",
-                "Purchase Order":"public/js/purchase_order.js",
                 "Sales Order":"public/js/sales_order.js",
                 "Sales Invoice":"public/js/sales_invoice.js",
                 "Material Request":"public/js/material_request.js",
@@ -129,6 +128,9 @@ doc_events = {
     },
     "Project":{
         "validate":"mfi_customization.mfi.doctype.project.validate"
+    },
+    "Purchase Order":{
+        "on_submit":"mfi_customization.mfi.doctype.purchase_order.on_submit"
     }
     # "Material Request":{
     #     "validate":"mfi_customization.mfi.doctype.material_request.validate",

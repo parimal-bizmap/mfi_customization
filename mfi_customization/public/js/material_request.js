@@ -32,5 +32,14 @@ frappe.ui.form.on('Material Request', {
         });
         }
 
+    },
+    get_items:function(frm){
+        Object.keys(cur_frm.doc.items).forEach(d => {
+            console.log(d);
+            var row=frm.add_child("item_shipment");
+            row.item=cur_frm.doc.items[d].item_code
+            row.qty=cur_frm.doc.items[d].qty
+        });
+        frm.refresh_field("item_shipment")
     }
 });
