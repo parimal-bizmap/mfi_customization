@@ -53,7 +53,7 @@ def get_columns(filters = None):
 			"fieldtype":"Data"	
 
 		},{
-			"label":"Machine Model",
+			"label":"Asset Code",
 			"fieldname":"machine_model",
 			"fieldtype":"Data"	
 
