@@ -16,12 +16,14 @@
   "total_mono_reading",
   "mono_click_rate",
   "total_mono_billing",
+  "machine_reading_current",
   "column_break_10",
   "colour_last_reading",
   "colour_current_reading",
   "total_colour_reading",
   "colour_click_rate",
   "total_colour_billing",
+  "machine_reading_last",
   "total_rate"
  ],
  "fields": [
@@ -111,11 +113,25 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Total Colour Billing"
+  },
+  {
+   "fieldname": "machine_reading_current",
+   "fieldtype": "Link",
+   "label": "Machine Reading Current",
+   "options": "Machine Reading",
+   "read_only": 1
+  },
+  {
+   "fieldname": "machine_reading_last",
+   "fieldtype": "Link",
+   "label": "Machine Reading Last",
+   "options": "Machine Reading",
+   "read_only": 1
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2021-08-28 08:38:08.979781",
+ "modified": "2021-08-30 09:17:23.536811",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Assets Rates Item",

@@ -20,6 +20,7 @@ frappe.ui.form.on('Asset Delivery Note', {
 		var args={};
 		if (frm.doc.select_item){
 			args["item_code"]=frm.doc.select_item
+			args["items"]=frm.doc.items
 		}
 		// if (frm.doc.batch){
 		// 	args["batch"]=frm.doc.batch

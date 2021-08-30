@@ -1,6 +1,8 @@
 {
  "actions": [],
- "autoname": "MCN-RDG-.####S",
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "MCN-RDG-.####",
  "creation": "2021-05-26 21:07:49.333414",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -91,7 +93,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-07-26 13:31:04.863652",
+ "modified": "2021-08-30 17:22:39.548579",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Machine Reading",
@@ -112,5 +114,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "track_changes": 1
+ "track_changes": 1,
+ "track_seen": 1
 }

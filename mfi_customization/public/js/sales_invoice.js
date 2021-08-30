@@ -31,7 +31,9 @@ frappe.ui.form.on('Sales Invoice', {
                                 row.colour_last_reading=d.colour_last_reading
                                 row.total_rate=d.total_rate
                                 row.total_mono_billing=d.total_mono_billing
-                                row.total_colour_billing=d.total_colour_billing
+                                row.total_colour_billing=d.total_colour_billing,
+                                row.machine_reading_current=d.machine_reading_current
+                                row.machine_reading_last=d.machine_reading_last
                                 total_mono+=d.total_mono_reading
                                 total_colour+=d.total_colour_reading
                                 per_click_mono=d.mono_click_rate
@@ -58,11 +60,12 @@ frappe.ui.form.on('Sales Invoice', {
                                 row.rate=d.rate
                                 row.total_amount=parseFloat(row.no_of_copies)*d.rate
                             });
-                            frm.set_value("total_billable_assets",(r.message).length);
+                            frm.set_value("total_billable_assets",(r.message[1]).length);
                             frm.set_value("total_mono_reading",total_mono);
                             frm.set_value("total_color_reading",total_colour);
                             frm.set_value("mono_click_rate",per_click_mono);
                             frm.set_value("colour_click_rate",per_click_colour);
+                            frm.set_value("total_rent",r.message[3]);
                             frm.refresh_field("assets_rates_item")
                             frm.refresh_field("printing_slabs")
                             frm.refresh_field("items")

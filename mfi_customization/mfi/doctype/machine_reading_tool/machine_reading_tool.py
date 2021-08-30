@@ -9,10 +9,10 @@ class MachineReadingTool(Document):
 	pass
 
 @frappe.whitelist()	
-def get_machine_reading(project):
+def get_machine_reading(project,reading_date,reading_type):
 	asset_list=[]
 	for ast in frappe.get_all("Asset",filters={'project':project}, fields=['name',"asset_name"],order_by="name"):
-		asset_list.append(({"asset":ast.name,"asset_name":ast.asset_name}))
+		asset_list.append(({"asset":ast.name,"asset_name":ast.asset_name,"reading_date":reading_date,"reading_type":reading_type}))
 	return asset_list
 
 

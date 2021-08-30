@@ -129,12 +129,15 @@ def get_serial_nos(filters):
 	fltr={"status":"Active"}
 	if filters.get("item_code"):
 		fltr.update({"item_code":filters.get("item_code")})
-
+	qty=0
+	for d in filters.get("items"):
+		if filters.get("item_code")==d.item_code:
+			qty=d.qty
 	data=[]
 	for serial_no in frappe.get_all("Serial No",filters=fltr,fields=['item_code','name','warehouse','batch_no','item_name'],order_by="name"):
 		if len(frappe.get_all('Asset Serial No', {'name':serial_no.get('name')}))==0 and len(frappe.get_all('Serial Nos Model wise', {'serial_no':serial_no.get('name'), 'docstatus':1}))==0:
 			data.append(serial_no)
-	return data[:5]
+	return data[:qty]
 
 
 @frappe.whitelist()
