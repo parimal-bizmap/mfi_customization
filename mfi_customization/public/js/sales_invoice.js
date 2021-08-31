@@ -45,10 +45,6 @@ frappe.ui.form.on('Sales Invoice', {
                                 Object.keys(d).forEach(fieldname => {
                                     row[fieldname]=d[fieldname]
                                 });
-                                row.uom=d.stock_uom
-                                row.qty=1
-                                row.rate=total_rate
-                                row.amount=total_rate*1
                             })
 
                             $.each(r.message[2] || [], function(i, d) {
@@ -60,7 +56,7 @@ frappe.ui.form.on('Sales Invoice', {
                                 row.rate=d.rate
                                 row.total_amount=parseFloat(row.no_of_copies)*d.rate
                             });
-                            frm.set_value("total_billable_assets",(r.message[1]).length);
+                            frm.set_value("total_billable_assets",(r.message[0]).length);
                             frm.set_value("total_mono_reading",total_mono);
                             frm.set_value("total_color_reading",total_colour);
                             frm.set_value("mono_click_rate",per_click_mono);

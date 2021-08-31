@@ -13,6 +13,8 @@ def get_assets(project,company):
     mono_per_click_rate=0
     colour_per_click_rate=0
     total_rent=0
+    total_mono_reading_diff=0
+    total_colour_reading_diff=0
     if frappe.db.get_value("Project",{"name":project},"sales_order"):
         sales_order_doc=frappe.get_doc("Sales Order",frappe.db.get_value("Project",{"name":project},"sales_order"))
         total_rent=sales_order_doc.get("total_rent")
@@ -55,6 +57,8 @@ def get_assets(project,company):
         total_mono_rate=mono_diff
         total_colour_rate=colour_diff*colour_per_click_rate
 
+        total_mono_reading_diff+=mono_diff
+        total_colour_reading_diff+=colour_diff
 
         #Comapre Reading In Printing Slabs
         mono_not_in_range=True
@@ -75,7 +79,7 @@ def get_assets(project,company):
                         colour_per_click_rate=ps.rate
                         if ps.rage_from==0 and sales_order_doc.get("order_type")=="Minimum Volume":
                             total_colour_rate=(ps.range_to*ps.rate)
-            print(row.name)
+        
             # Reading Not In Range then get Last slab rate
             if mono_not_in_range:
                 for ps in sales_order_doc.get("printing_slabs"):
@@ -115,9 +119,40 @@ def get_assets(project,company):
         )
 
     item_details=[]
-    for d in frappe.get_all("Rental Contract Item",{"parent":"MFI Settings","company":company},["item"]):
-        item=get_item_details(d.item,company)
-        item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+
+    
+    if sales_order_doc.get("mono_per_click_rate")>0:
+        for d in frappe.get_all("Mono Billing Item",{"parent":"MFI Settings","company":company,'parentfield': 'mono_billing_item'},["item"]):
+            item=get_item_details(d.item,company)
+            per_click,rate=get_mono_rate_calculation(sales_order_doc,total_mono_reading_diff)
+            item.update(
+                        {
+                            "mono_click_rate":per_click,
+                            "total_mono_reading":flt(total_mono_reading_diff),
+                            "rate":rate,
+                            "amount":rate,
+                            "uom":d.stock_uom,
+                            "qty":1
+                        }
+                    )
+            item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+
+    if sales_order_doc.get("colour_per_click_rate")>0:
+        for d in frappe.get_all("Colour Billing Item",{"parent":"MFI Settings","company":company},["item"]):
+            item=get_item_details(d.item,company)
+            per_click,rate=get_colour_rate_calculation(sales_order_doc,total_colour_reading_diff)
+            item.update(
+                        {
+                            "colour_click_rate":per_click,
+                            "total_color_reading":flt(total_colour_reading_diff),
+                            "rate":rate,
+                            "amount":rate,
+                            "uom":d.stock_uom,
+                            "qty":1
+                        }
+                        )
+            item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+  
     return data1,item_details,data2,total_rent
 
 def get_reading(asset):
@@ -144,3 +179,55 @@ def update_machine_reading_status(doc):
             mr=frappe.get_doc("Machine Reading",ai.machine_reading_last)
             mr.billing_status="Billed"
             mr.save()
+
+def get_mono_rate_calculation(sales_order_doc,diff):
+    mono_not_in_range=True
+    mono_per_click_rate=0
+    total_mono_rate=0
+    if sales_order_doc.get("order_type")=="Minimum Volume":
+        for i,ps in enumerate(sales_order_doc.get("printing_slabs")):
+            if ps.printer_type=="Mono":
+                if diff>ps.rage_from and diff<ps.range_to:
+                    mono_not_in_range=False
+                    mono_per_click_rate=ps.rate
+                    if ps.rage_from==0 and sales_order_doc.get("order_type")=="Minimum Volume":
+                        total_mono_rate=(ps.range_to*ps.rate)
+    
+        # Reading Not In Range then get Last slab rate
+        if mono_not_in_range:
+            for ps in sales_order_doc.get("printing_slabs"):
+                if ps.printer_type=="Mono":
+                    mono_per_click_rate=ps.rate
+                    total_mono_rate=(diff*ps.rate)
+
+    elif sales_order_doc.get("order_type")=="Per Click":
+        mono_per_click_rate=sales_order_doc.get("mono_per_click_rate")
+        total_mono_rate=(diff*mono_per_click_rate)
+
+    return mono_per_click_rate,total_mono_rate
+
+def get_colour_rate_calculation(sales_order_doc,diff):
+    colour_not_in_range=True
+    colour_per_click_rate=0
+    total_colour_rate=0
+    if sales_order_doc.get("order_type")=="Minimum Volume":
+        for i,ps in enumerate(sales_order_doc.get("printing_slabs")):     
+            if ps.printer_type=="Colour":
+                if diff>ps.rage_from and diff<ps.range_to:
+                    colour_not_in_range=False
+                    colour_per_click_rate=ps.rate
+                    if ps.rage_from==0 and sales_order_doc.get("order_type")=="Minimum Volume":
+                        total_colour_rate=(ps.range_to*ps.rate)
+    
+        # Reading Not In Range then get Last slab rate
+        if colour_not_in_range:
+            for ps in sales_order_doc.get("printing_slabs"):
+                if ps.printer_type=="Colour":
+                    colour_per_click_rate=ps.rate
+                    total_colour_rate=(diff*ps.rate)
+
+    elif sales_order_doc.get("order_type")=="Per Click":
+        colour_per_click_rate=sales_order_doc.get("colour_per_click_rate")
+        total_colour_rate=(diff*colour_per_click_rate)
+    
+    return colour_per_click_rate,total_colour_rate
