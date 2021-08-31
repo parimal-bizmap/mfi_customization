@@ -24,12 +24,14 @@
    "label": "Range To"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "rate",
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Rate"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "printer_type",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -41,7 +43,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-07-25 10:37:34.179120",
+ "modified": "2021-08-31 12:04:48.833407",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Printing Slabs",
