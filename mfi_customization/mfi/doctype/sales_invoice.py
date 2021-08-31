@@ -1,8 +1,10 @@
 import frappe
-from frappe.utils import flt
+from frappe.utils import flt,nowdate
+from erpnext.stock.get_item_details import get_bin_details, get_default_cost_center, get_conversion_factor, get_reserved_qty_for_so
+
 
 @frappe.whitelist()
-def get_assets(project):
+def get_assets(project,company):
     data1=[]
     data2=[]
     sales_order_doc=""
@@ -10,8 +12,6 @@ def get_assets(project):
     colour_per_click_rate=0
     if frappe.db.get_value("Project",{"name":project},"sales_order"):
         sales_order_doc=frappe.get_doc("Sales Order",frappe.db.get_value("Project",{"name":project},"sales_order"))
-        mono_per_click_rate=sales_order_doc.mono_per_click_rate
-        colour_per_click_rate=sales_order_doc.colour_per_click_rate
         for d in sales_order_doc.get("printing_slabs"):
             data2.append({
                 "range_from":d.rage_from,
@@ -32,6 +32,41 @@ def get_assets(project):
             else:
                 mono_last_reading=d.black_and_white_reading
                 colour_last_reading=d.colour_reading
+
+        mono_diff=(flt(mono_current_reading)- flt(mono_last_reading))
+        colour_diff=(flt(colour_current_reading)-flt(colour_last_reading))
+        total_mono_rate=mono_diff
+        total_colour_rate=colour_diff*colour_per_click_rate
+
+
+        #Comapre Reading In Printing Slabs
+        mono_not_in_range=True
+        colour_not_in_range=True
+        for i,ps in enumerate(sales_order_doc.get("printing_slabs")):
+            if ps.printer_type=="Mono":
+                if mono_diff>ps.rage_from and mono_diff<ps.range_to:
+                    mono_not_in_range=False
+                    mono_per_click_rate=ps.rate
+                    if ps.rage_from==0 and sales_order_doc.get("order_type")=="Minimum Volume":
+                        total_mono_rate=ps.range_to
+                     
+            if ps.printer_type=="Colour":
+                if colour_diff>ps.rage_from and colour_diff<ps.range_to:
+                    colour_not_in_range=False
+                    colour_per_click_rate=ps.rate
+                    if ps.rage_from==0 and sales_order_doc.get("order_type")=="Minimum Volume":
+                        total_colour_rate=ps.range_to
+
+        # Reading Not In Range then get Last slab rate
+        if mono_not_in_range:
+            for ps in sales_order_doc.get("printing_slabs"):
+                if ps.printer_type=="Mono":
+                    mono_per_click_rate=ps.rate
+        if colour_not_in_range:
+            for ps in sales_order_doc.get("printing_slabs"):
+                if ps.printer_type=="Colour":
+                    colour_per_click_rate=ps.rate
+
         data1.append(
             {
                 "location":row.location,
@@ -44,13 +79,30 @@ def get_assets(project):
                 "mono_last_reading":mono_last_reading,
                 "colour_current_reading":colour_current_reading,
                 "colour_last_reading":colour_last_reading,
-                "total_mono_reading":(flt(mono_current_reading)- flt(mono_last_reading))*mono_per_click_rate,
-                "total_colour_reading":(flt(colour_current_reading)-flt(colour_last_reading))*colour_per_click_rate,
-                "total_rate":((flt(mono_current_reading) - flt(mono_last_reading))*mono_per_click_rate)+((flt(colour_current_reading)-flt(colour_last_reading))*colour_per_click_rate),
+                "total_mono_reading":mono_diff,
+                "total_colour_reading":colour_diff,
+                "total_mono_billing":(total_mono_rate*mono_per_click_rate),
+                "total_colour_billing":(total_colour_rate*colour_per_click_rate),
+                "total_rate":(total_mono_rate*mono_per_click_rate)+(total_colour_rate*colour_per_click_rate),
             }
         )
-    
-    return data1,data2
+
+    item_details=[]
+    for d in frappe.get_all("Rental Contract Item",{"parent":"MFI Settings","company":company},["item"]):
+        item=get_item_details(d.item,company)
+        item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+    return data1,item_details,data2
 
 def get_reading(asset):
     return frappe.get_all("Machine Reading",filters={"asset":asset,"reading_type":"Billing"},fields=["colour_reading","black_and_white_reading"],order_by="reading_date desc",limit=2)
+
+def get_item_details(item,company):
+    item = frappe.db.sql("""select i.name as item_code, i.stock_uom,i.item_name, i.item_group,
+            i.has_batch_no, i.sample_quantity, i.has_serial_no, i.allow_alternative_item,
+            id.expense_account, id.buying_cost_center,id.income_account
+        from `tabItem` i LEFT JOIN `tabItem Default` id ON i.name=id.parent and id.company=%s
+        where i.name=%s
+            and i.disabled=0
+            and (i.end_of_life is null or i.end_of_life='0000-00-00' or i.end_of_life > %s)""",
+        (company,item, nowdate()), as_dict = 1)
+    return item[0] if item else {}

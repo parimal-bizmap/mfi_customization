@@ -28,11 +28,11 @@ def make_asset_delivery_note(source_name, target_doc=None):
             target.customer_name=frappe.db.get_value("Customer",source.customer,"customer_name")
         if source.sales_order:
             sales_order_doc=frappe.get_doc("Sales Order",source.sales_order)
-            for d in sales_order_doc.get("items"):
-                if frappe.db.get_value("Item",d.item_code,'is_fixed_asset'):
+            for d in sales_order_doc.get("asset_quotation_selection"):
+                if frappe.db.get_value("Item",d.asset,'is_fixed_asset'):
                     target.append("asset_models",{
-                        "asset_model":frappe.db.get_value("Item",d.item_code,'stock_item'),
-                        "model_name":d.item_name,
+                        "asset_model":frappe.db.get_value("Item",d.asset,'stock_item'),
+                        "model_name":d.asset_name,
                         "qty":d.qty
                     })
     return get_mapped_doc("Project", source_name, {

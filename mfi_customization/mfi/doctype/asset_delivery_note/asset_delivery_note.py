@@ -79,7 +79,7 @@ def create_stock_entry(doc):
 			"t_warehouse":frappe.db.get_value("Customer Warehouse Item",{"parent":"MFI Settings","company":se.company},"warehouse"),
 			"item_code":itm.asset_model,
 			"qty":1,
-			"batch_no":doc.batch,
+			"batch_no":itm.batch,
 			"serial_no":itm.serial_no,
 			"basic_rate":frappe.db.get_value("Item",itm.asset_model,"valuation_rate") or 0,
 			"valuation_rate":frappe.db.get_value("Item",itm.asset_model,"valuation_rate") or 0
@@ -110,6 +110,7 @@ def create_assets(doc):
 		asset.available_for_use_date=today()
 		asset.asset_delivery_note=doc.get("name")
 		asset.serial_no=d.get("serial_no")
+		asset.project=doc.get("project")
 		asset.save()
 		asset_installation_note=frappe.new_doc("Asset Installation Note")
 		asset_installation_note.company=asset.company
@@ -133,7 +134,7 @@ def get_serial_nos(filters):
 	for serial_no in frappe.get_all("Serial No",filters=fltr,fields=['item_code','name','warehouse','batch_no','item_name'],order_by="name"):
 		if len(frappe.get_all('Asset Serial No', {'name':serial_no.get('name')}))==0 and len(frappe.get_all('Serial Nos Model wise', {'serial_no':serial_no.get('name'), 'docstatus':1}))==0:
 			data.append(serial_no)
-	return data
+	return data[:5]
 
 
 @frappe.whitelist()

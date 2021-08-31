@@ -24,6 +24,7 @@
    "parenttype": null,
    "property": "columns",
    "property_type": "Int",
+   "row_name": null,
    "value": "2"
   },
   {
@@ -47,6 +48,7 @@
    "parenttype": null,
    "property": "print_width",
    "property_type": "Data",
+   "row_name": null,
    "value": "80px"
   },
   {
@@ -70,6 +72,7 @@
    "parenttype": null,
    "property": "width",
    "property_type": "Data",
+   "row_name": null,
    "value": "80px"
   },
   {
@@ -93,6 +96,7 @@
    "parenttype": null,
    "property": "columns",
    "property_type": "Int",
+   "row_name": null,
    "value": "2"
   },
   {
@@ -116,6 +120,7 @@
    "parenttype": null,
    "property": "print_width",
    "property_type": "Data",
+   "row_name": null,
    "value": "70px"
   },
   {
@@ -139,6 +144,7 @@
    "parenttype": null,
    "property": "width",
    "property_type": "Data",
+   "row_name": null,
    "value": "70px"
   },
   {
@@ -162,6 +168,7 @@
    "parenttype": null,
    "property": "in_list_view",
    "property_type": "Check",
+   "row_name": null,
    "value": "1"
   },
   {
@@ -185,6 +192,7 @@
    "parenttype": null,
    "property": "in_list_view",
    "property_type": "Check",
+   "row_name": null,
    "value": "0"
   }
  ],

@@ -15,12 +15,13 @@
   "mono_current_reading",
   "total_mono_reading",
   "mono_click_rate",
-  "total_rates",
+  "total_mono_billing",
   "column_break_10",
   "colour_last_reading",
   "colour_current_reading",
   "total_colour_reading",
   "colour_click_rate",
+  "total_colour_billing",
   "total_rate"
  ],
  "fields": [
@@ -71,12 +72,6 @@
    "label": "Mono click Rate"
   },
   {
-   "fieldname": "total_rates",
-   "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Total Rates"
-  },
-  {
    "fieldname": "column_break_10",
    "fieldtype": "Column Break"
   },
@@ -92,7 +87,7 @@
   },
   {
    "fieldname": "total_colour_reading",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Total Colour Reading"
   },
@@ -104,13 +99,23 @@
   {
    "fieldname": "total_rate",
    "fieldtype": "Currency",
-   "in_list_view": 1,
    "label": "Total Rate"
+  },
+  {
+   "fieldname": "total_mono_billing",
+   "fieldtype": "Currency",
+   "label": "Total Mono Billing"
+  },
+  {
+   "fieldname": "total_colour_billing",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Colour Billing"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2021-07-26 14:19:20.656292",
+ "modified": "2021-08-28 08:38:08.979781",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Assets Rates Item",

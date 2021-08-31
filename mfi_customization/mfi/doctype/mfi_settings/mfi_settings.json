@@ -13,7 +13,9 @@
   "section_break_6",
   "service_item_group",
   "default_asset_accounts",
-  "company_customer_warehouse"
+  "company_customer_warehouse",
+  "rental_item_details_section",
+  "rental_contract_item"
  ],
  "fields": [
   {
@@ -63,12 +65,23 @@
    "fieldtype": "Table",
    "label": "Company Customer Warehouse ",
    "options": "Customer Warehouse Item"
+  },
+  {
+   "fieldname": "rental_item_details_section",
+   "fieldtype": "Section Break",
+   "label": "Rental Item Details"
+  },
+  {
+   "fieldname": "rental_contract_item",
+   "fieldtype": "Table",
+   "label": "Rental Contract Item",
+   "options": "Rental Contract Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-07-10 22:00:28.251705",
+ "modified": "2021-08-28 09:01:16.960814",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "MFI Settings",

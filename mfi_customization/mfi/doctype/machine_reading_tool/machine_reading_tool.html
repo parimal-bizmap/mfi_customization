@@ -1,32 +1,55 @@
-<table class="table table-bordered ">
+<table class="table table-bordered">
 	<thead>
 		<tr>
-			<th style="width: 30px">Asset</th>
-			<th style="width: 30px">Machine Type</th>
-			<th style="width: 30px">Color Reading</th>
-			<th style="width: 30px">Black and White Reading</th>
-			<th style="width: 30px">Posting Date</th>
-			<th style="width: 30px">Reading Date</th>
-			<th style="width: 30px">Total</th>
+			<th style="width: 90px" >Asset</th>
+			<th style="width: 170px" >Asset Name</th>
+			<th style="width: 90px" >Reading Date</th>
+			<th style="width: 90px" >Machine Type</th>
+			<th style="width: 140px" >Black and White Reading</th>
+			<th style="width: 140px" >Colour Reading</th>
+			<th style="width: 90px" >Total Reading</th>
 		</tr>
 	</thead>
 	<tbody>
-		{% for r in machine_reading_list %}
-		    <!-- {% for asset in r.asset %} -->
-			<tr>
-			    <td> {{ r.asset }}</td>
-				<td>{{ r.machine_type }}</td>
-				<!-- <td>{{ r.colour_reading }}</td> -->
-				<td>
-				<input type="text" class="asset-result-data", data-asset = "{{r.asset}}"
-					value="{{r.colour_reading}}" column = "colour_reading"/>
-				</td>
-				<td>{{ r.black_and_white_reading }}</td>
-				<td>{{ r.posting_date }}</td>
-				<td>{{ r.reading_date }}</td>
-				<td>{{ r.total }}</td>
-	        </tr>
-	        <!-- {% endfor %} -->
+		{% for s in assets %}
+		<tr data-asset="{{s.asset}}">
+
+			<td>{{ s.asset }}</td>
+			<td>{{ s.asset_name }}</td>
+			<td>
+				<input type="date" class="result-date" data-asset="{{s.asset}}" value="2021-02-06" style="width:65%;">
+			</td>
+			<td>
+				  <input type="text" class="result-reading_type"  data-asset="{{s.asset}}" list="readingname" style="width:80%;">
+					<datalist id="readingname">
+						<option value="Black & White">
+						<option value="Colour">
+					</datalist>
+			</td>
+			
+			<td>
+				<input type="text" class="result-bw-reading" data-asset="{{s.asset}}" style="width:100%;"
+				{% if(s.reading_details && s.docstatus && s.docstatus == 1) { %} disabled {% } %}
+				{% if(s.reading_details) { %}
+					value="{{s.reading_details.bw_reading}}"
+				{% } %}>
+			</td>
+			<td>
+				<input type="text" class="result-colour-reading" data-asset="{{s.asset}}" style="width:100%;"
+				{% if(s.reading_details && s.docstatus && s.docstatus == 1) { %} disabled {% } %}
+				{% if(s.reading_details) { %}
+					value="{{s.reading_details.colour}}"
+				{% } %}>
+			</td>
+			<td>
+				<input type="text" class="result-total-reading" data-asset="{{s.asset}}" style="width:70%;"
+				{% if(s.reading_details && s.docstatus && s.docstatus == 1) { %} disabled {% } %}
+				{% if(s.reading_details) { %}
+					value="{{s.reading_details.total_reading}}"
+				{% } %}>
+			</td>
+			
+		</tr>
 		{% endfor %}
 	</tbody>
 </table>

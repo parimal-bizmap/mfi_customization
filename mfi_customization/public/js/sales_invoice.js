@@ -5,7 +5,8 @@ frappe.ui.form.on('Sales Invoice', {
                 frappe.call({
                     method: "mfi_customization.mfi.doctype.sales_invoice.get_assets",
                     args: {
-                        "project": frm.doc.project
+                        "project": frm.doc.project,
+                        "company":frm.doc.company
                     },
                     callback: function(r) {
                        if (r.message){
@@ -14,6 +15,7 @@ frappe.ui.form.on('Sales Invoice', {
                             var total_colour=0;
                             var per_click_mono=0;
                             var per_click_colour=0;
+                            var total_rate=0;
                             $.each(r.message[0] || [], function(i, d) {
                                 var row=frm.add_child("assets_rates_item")
                                 row.asset=d.asset
@@ -28,13 +30,26 @@ frappe.ui.form.on('Sales Invoice', {
                                 row.colour_current_reading=d.colour_current_reading
                                 row.colour_last_reading=d.colour_last_reading
                                 row.total_rate=d.total_rate
+                                row.total_mono_billing=d.total_mono_billing
+                                row.total_colour_billing=d.total_colour_billing
                                 total_mono+=d.total_mono_reading
                                 total_colour+=d.total_colour_reading
                                 per_click_mono=d.mono_click_rate
                                 per_click_colour=d.colour_click_rate
-                                    
+                                total_rate+=d.total_rate
                             });
                             $.each(r.message[1] || [], function(i, d) {
+                                var row=frm.add_child("items")
+                                Object.keys(d).forEach(fieldname => {
+                                    row[fieldname]=d[fieldname]
+                                });
+                                row.uom=d.stock_uom
+                                row.qty=1
+                                row.rate=total_rate
+                                row.amount=total_rate*1
+                            })
+
+                            $.each(r.message[2] || [], function(i, d) {
                                 var row=frm.add_child("printing_slabs")
                                 row.rage_from=d.range_from
                                 row.range_to=d.range_to
@@ -50,6 +65,7 @@ frappe.ui.form.on('Sales Invoice', {
                             frm.set_value("colour_click_rate",per_click_colour);
                             frm.refresh_field("assets_rates_item")
                             frm.refresh_field("printing_slabs")
+                            frm.refresh_field("items")
                        }
                     }
             

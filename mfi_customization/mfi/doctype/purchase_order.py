@@ -4,16 +4,16 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.utils import flt, nowdate, getdate
 from frappe import _
 
-@frappe.whitelist()
-def set_data_sales_order(source_name, target_doc=None):
-    def set_missing_values(source,target):
-        customer=frappe.db.get_value("Customer", {'represents_company': source.company},'name')
-        target.customer =customer if customer else ''
-        company=frappe.db.get_value("Supplier", {'name': source.supplier, 'is_internal_supplier':1},'represents_company')
-        target.company =company if company else ''
-    doc = get_mapped_doc("Purchase Order", source_name, {
+def on_submit(doc,method):
+    create_sales_order(doc)
+
+def create_sales_order(doc):
+    sales_doc = get_mapped_doc("Purchase Order", doc.name, {
         "Purchase Order": {
             "doctype": "Sales Order",
+            "field_map": {
+                "schedule_date":"delivery_date"
+            },
             "validation": {
                 "docstatus": ["=", 1]
             }
@@ -21,5 +21,12 @@ def set_data_sales_order(source_name, target_doc=None):
         "Purchase Order Item": {
             "doctype": "Sales Order Item"
             }
-        },target_doc, set_missing_values)
-    return doc
+        }, ignore_permissions=True)
+    customer=frappe.db.get_value("Customer", {'represents_company': doc.company},'name')
+    sales_doc.customer =customer if customer else ''
+    company=frappe.db.get_value("Supplier", {'name': doc.supplier, 'is_internal_supplier':1},'represents_company')
+    sales_doc.company =company if company else ''
+    for d in sales_doc.get("items"):
+        d.warehouse="Stores - MFIINTL"
+    sales_doc.save()
+    frappe.db.set_value("Sales Order",{"name":sales_doc.name},"delivery_date",doc.schedule_date)
