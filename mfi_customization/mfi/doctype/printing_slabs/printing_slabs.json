@@ -5,18 +5,12 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "rage_from",
+  "range_from",
   "range_to",
   "printer_type",
   "rate"
  ],
  "fields": [
-  {
-   "fieldname": "rage_from",
-   "fieldtype": "Int",
-   "in_list_view": 1,
-   "label": "Rage From"
-  },
   {
    "fieldname": "range_to",
    "fieldtype": "Int",
@@ -38,12 +32,19 @@
    "label": "Printer Type",
    "options": "\nMono\nColour",
    "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "range_from",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Range From"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-08-31 12:04:48.833407",
+ "modified": "2021-09-02 17:03:25.261021",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Printing Slabs",

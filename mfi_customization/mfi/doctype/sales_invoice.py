@@ -5,6 +5,9 @@ from erpnext.stock.get_item_details import get_conversion_factor
 def on_submit(doc,method):
 	update_machine_reading_status(doc)
 
+def on_cancel(doc,method):
+	cancel_billing_machine_reading_status(doc)
+
 @frappe.whitelist()
 def get_assets(project,company):
 	data1=[]
@@ -42,15 +45,6 @@ def get_assets(project,company):
 			mono_last_reading=readings[-1].black_and_white_reading
 			colour_last_reading=readings[-1].colour_reading
 			machine_reading_last=readings[-1].name
-
-		# for i,d in enumerate(get_reading(row.name)):
-		#     if i==0:
-		#         mono_current_reading=d.black_and_white_reading
-		#         colour_current_reading=d.colour_reading
-
-		#     else:
-		#         mono_last_reading=d.black_and_white_reading
-		#         colour_last_reading=d.colour_reading
 
 		mono_diff=(flt(mono_current_reading)- flt(mono_last_reading))
 		colour_diff=(flt(colour_current_reading)-flt(colour_last_reading))
@@ -136,7 +130,7 @@ def get_assets(project,company):
 									"actual_quantity":total_mono_reading_diff,
 									"rate":mono_per_click_rate,
 									"amount":total_mono_reading_diff*mono_per_click_rate,
-									"uom":d.stock_uom,
+									"uom":item.stock_uom,
 									"qty":total_mono_reading_diff,
 								}
 							)
@@ -193,12 +187,24 @@ def get_assets(project,company):
 									"actual_quantity":total_colour_reading_diff,
 									"rate":colour_per_click_rate,
 									"amount":total_colour_reading_diff*colour_current_reading,
-									"uom":d.stock_uom,
+									"uom":item.stock_uom,
 									"qty":total_colour_reading_diff
 								}
 							)
 				item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
 
+	if sales_order_doc.get("order_type")=="Per Click":
+		for d in frappe.get_all("Rental Contract Item",{"parent":"MFI Settings","company":company},["item"]):
+			item=get_item_details(d.item,company)
+			item.update(
+							{
+								"rate":total_rent,
+								"amount":total_rent*1,
+								"uom":item.stock_uom,
+								"qty":1
+							}
+						)
+			item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
    
 	return data1,item_details,data2,total_rent
 
@@ -218,59 +224,62 @@ def get_item_details(item,company):
 
 def update_machine_reading_status(doc):
 	for ai in doc.get("assets_rates_item"):
-		if ai.machine_reading_current:
-			mr=frappe.get_doc("Machine Reading",ai.machine_reading_current)
-			mr.billing_status="Billed"
-			mr.save()
 		if ai.machine_reading_last:
 			mr=frappe.get_doc("Machine Reading",ai.machine_reading_last)
 			mr.billing_status="Billed"
 			mr.save()
 
-def get_mono_rate_calculation(sales_order_doc,diff):
-	mono_not_in_range=True
-	mono_per_click_rate=0
-	total_mono_rate=0
-	qty=0
-	for i,ps in enumerate(sales_order_doc.get("printing_slabs")):
-		if ps.printer_type=="Mono":
-			if diff>ps.range_from and diff<ps.range_to:
-				mono_not_in_range=False
-				mono_per_click_rate=ps.rate
-				if ps.range_from==0:
-					total_mono_rate=(ps.range_to*ps.rate)
+def cancel_billing_machine_reading_status(doc):
+	for ai in doc.get("assets_rates_item"):
+		if ai.machine_reading_last:
+			mr=frappe.get_doc("Machine Reading",ai.machine_reading_last)
+			mr.billing_status=""
+			mr.save()
 
-	# Reading Not In Range then get Last slab rate
-	if mono_not_in_range:
-		for ps in sales_order_doc.get("printing_slabs"):
-			if ps.printer_type=="Mono":
-				mono_per_click_rate=ps.rate
-				total_mono_rate=(diff*ps.rate)
+# def get_mono_rate_calculation(sales_order_doc,diff):
+# 	mono_not_in_range=True
+# 	mono_per_click_rate=0
+# 	total_mono_rate=0
+# 	qty=0
+# 	for i,ps in enumerate(sales_order_doc.get("printing_slabs")):
+# 		if ps.printer_type=="Mono":
+# 			if diff>ps.range_from and diff<ps.range_to:
+# 				mono_not_in_range=False
+# 				mono_per_click_rate=ps.rate
+# 				if ps.range_from==0:
+# 					total_mono_rate=(ps.range_to*ps.rate)
 
-	return mono_per_click_rate,total_mono_rate
+# 	# Reading Not In Range then get Last slab rate
+# 	if mono_not_in_range:
+# 		for ps in sales_order_doc.get("printing_slabs"):
+# 			if ps.printer_type=="Mono":
+# 				mono_per_click_rate=ps.rate
+# 				total_mono_rate=(diff*ps.rate)
 
-def get_colour_rate_calculation(sales_order_doc,diff):
-	colour_not_in_range=True
-	colour_per_click_rate=0
-	total_colour_rate=0
-	if sales_order_doc.get("order_type")=="Minimum Volume":
-		for i,ps in enumerate(sales_order_doc.get("printing_slabs")):     
-			if ps.printer_type=="Colour":
-				if diff>ps.range_from and diff<ps.range_to:
-					colour_not_in_range=False
-					colour_per_click_rate=ps.rate
-					if ps.range_from==0 and sales_order_doc.get("order_type")=="Minimum Volume":
-						total_colour_rate=(ps.range_to*ps.rate)
+# 	return mono_per_click_rate,total_mono_rate
+
+# def get_colour_rate_calculation(sales_order_doc,diff):
+# 	colour_not_in_range=True
+# 	colour_per_click_rate=0
+# 	total_colour_rate=0
+# 	if sales_order_doc.get("order_type")=="Minimum Volume":
+# 		for i,ps in enumerate(sales_order_doc.get("printing_slabs")):     
+# 			if ps.printer_type=="Colour":
+# 				if diff>ps.range_from and diff<ps.range_to:
+# 					colour_not_in_range=False
+# 					colour_per_click_rate=ps.rate
+# 					if ps.range_from==0 and sales_order_doc.get("order_type")=="Minimum Volume":
+# 						total_colour_rate=(ps.range_to*ps.rate)
 	
-		# Reading Not In Range then get Last slab rate
-		if colour_not_in_range:
-			for ps in sales_order_doc.get("printing_slabs"):
-				if ps.printer_type=="Colour":
-					colour_per_click_rate=ps.rate
-					total_colour_rate=(diff*ps.rate)
+# 		# Reading Not In Range then get Last slab rate
+# 		if colour_not_in_range:
+# 			for ps in sales_order_doc.get("printing_slabs"):
+# 				if ps.printer_type=="Colour":
+# 					colour_per_click_rate=ps.rate
+# 					total_colour_rate=(diff*ps.rate)
 
-	elif sales_order_doc.get("order_type")=="Per Click":
-		colour_per_click_rate=sales_order_doc.get("colour_per_click_rate")
-		total_colour_rate=(diff*colour_per_click_rate)
+# 	elif sales_order_doc.get("order_type")=="Per Click":
+# 		colour_per_click_rate=sales_order_doc.get("colour_per_click_rate")
+# 		total_colour_rate=(diff*colour_per_click_rate)
 	
-	return colour_per_click_rate,total_colour_rate
+# 	return colour_per_click_rate,total_colour_rate

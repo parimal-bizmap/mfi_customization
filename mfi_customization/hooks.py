@@ -133,7 +133,8 @@ doc_events = {
         "on_submit":"mfi_customization.mfi.doctype.purchase_order.on_submit"
     },
     "Sales Invoice":{
-        "on_submit":"mfi_customization.mfi.doctype.sales_invoice.on_submit"
+        "on_submit":"mfi_customization.mfi.doctype.sales_invoice.on_submit",
+        "on_cancel":"mfi_customization.mfi.doctype.sales_invoice.on_cancel"
     }
     # "Material Request":{
     #     "validate":"mfi_customization.mfi.doctype.material_request.validate",

@@ -134,7 +134,7 @@ def get_serial_nos(filters):
 		if filters.get("item_code")==d.get("asset_model"):
 			qty=d.get("qty")
 	data=[]
-	for serial_no in frappe.get_all("Serial No",filters=fltr,fields=['item_code','name','warehouse','batch_no','item_name'],order_by="name"):
+	for serial_no in frappe.get_all("Serial No",filters=fltr,fields=['item_code','name','warehouse','batch_no','item_name'],order_by="creation"):
 		if len(frappe.get_all('Asset Serial No', {'name':serial_no.get('name')}))==0 and len(frappe.get_all('Serial Nos Model wise', {'serial_no':serial_no.get('name'), 'docstatus':1}))==0:
 			data.append(serial_no)
 	return data[:qty]
