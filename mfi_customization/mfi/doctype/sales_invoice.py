@@ -85,11 +85,14 @@ def get_assets(project,company):
 			if sales_order_doc.get("order_type")=="Minimum Volume":
 				updated_diff=total_mono_reading_diff
 				not_in_first_slab=True
+				only_one_slab=False
 				for i,ps in enumerate(mono_slabs):
 					item=get_item_details(d.item,company)
 					if ps.range_from==0 and total_mono_reading_diff<=ps.range_to:
 						not_in_first_slab=False
-					if not_in_first_slab:
+					if ps.range_from==0 and total_mono_reading_diff>=ps.range_to and len(mono_slabs)==1:
+						only_one_slab=True
+					if not_in_first_slab and not only_one_slab:
 						if updated_diff!=0:
 							if i==0:
 								slab_diff=ps.range_to
@@ -111,15 +114,26 @@ def get_assets(project,company):
 							})
 							item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
 					else:
-						item.update({
-								"actual_quantity":total_mono_reading_diff,
-								"qty":ps.range_to,
-								"rate":ps.rate,
-								"amount":flt(ps.range_to*ps.rate),
-								"uom":item.stock_uom,
-								"description":"{0} Billing of Slab Range From {1} To {2}".format(ps.printer_type,ps.range_from,ps.range_to)
-							})
-						item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+						if only_one_slab:
+							item.update({
+									"actual_quantity":total_mono_reading_diff,
+									"qty":total_mono_reading_diff,
+									"rate":ps.rate,
+									"amount":flt(total_mono_reading_diff*ps.rate),
+									"uom":item.stock_uom,
+									"description":"{0} Billing of Slab Range From {1} To {2}".format(ps.printer_type,ps.range_from,ps.range_to)
+								})
+							item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+						else:
+							item.update({
+									"actual_quantity":total_mono_reading_diff,
+									"qty":ps.range_to,
+									"rate":ps.rate,
+									"amount":flt(ps.range_to*ps.rate),
+									"uom":item.stock_uom,
+									"description":"{0} Billing of Slab Range From {1} To {2}".format(ps.printer_type,ps.range_from,ps.range_to)
+								})
+							item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
 							
 			
 			elif sales_order_doc.get("order_type")=="Per Click":
@@ -142,11 +156,14 @@ def get_assets(project,company):
 			if sales_order_doc.get("order_type")=="Minimum Volume":
 				updated_diff=total_colour_reading_diff
 				not_in_first_slab=True
+				only_one_slab=False
 				for i,ps in enumerate(colour_slabs):
 					item=get_item_details(d.item,company)
 					if ps.range_from==0 and total_colour_reading_diff<=ps.range_to:
 						not_in_first_slab=False
-					if not_in_first_slab:
+					if ps.range_from==0 and total_colour_reading_diff>=ps.range_to and len(colour_slabs)==1:
+						only_one_slab=True
+					if not_in_first_slab and not only_one_slab:
 						if updated_diff!=0:
 							if i==0:
 								slab_diff=ps.range_to
@@ -168,15 +185,26 @@ def get_assets(project,company):
 							})
 							item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
 					else:
-						item.update({
-								"actual_quantity":total_colour_reading_diff,
-								"qty":ps.range_to,
-								"rate":ps.rate,
-								"amount":flt(ps.range_to*ps.rate),
-								"uom":item.stock_uom,
-								"description":"{0} Billing of Slab Range From {1} To  {2}".format(ps.printer_type,ps.range_from,ps.range_to)
-							})
-						item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+						if only_one_slab:
+							item.update({
+									"actual_quantity":total_colour_reading_diff,
+									"qty":total_colour_reading_diff,
+									"rate":ps.rate,
+									"amount":flt(total_colour_reading_diff*ps.rate),
+									"uom":item.stock_uom,
+									"description":"{0} Billing of Slab Range From {1} To {2}".format(ps.printer_type,ps.range_from,ps.range_to)
+								})
+							item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+						else:
+							item.update({
+									"actual_quantity":total_colour_reading_diff,
+									"qty":ps.range_to,
+									"rate":ps.rate,
+									"amount":flt(ps.range_to*ps.rate),
+									"uom":item.stock_uom,
+									"description":"{0} Billing of Slab Range From {1} To  {2}".format(ps.printer_type,ps.range_from,ps.range_to)
+								})
+							item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
 							
 			
 			elif sales_order_doc.get("order_type")=="Per Click":
