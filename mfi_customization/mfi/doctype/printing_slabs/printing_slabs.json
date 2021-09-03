@@ -12,6 +12,7 @@
  ],
  "fields": [
   {
+   "allow_on_submit": 1,
    "fieldname": "range_to",
    "fieldtype": "Int",
    "in_list_view": 1,
@@ -44,7 +45,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-09-02 17:03:25.261021",
+ "modified": "2021-09-03 09:00:57.417672",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Printing Slabs",
