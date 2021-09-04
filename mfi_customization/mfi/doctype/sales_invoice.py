@@ -209,12 +209,13 @@ def get_assets(project,company):
 			
 			elif sales_order_doc.get("order_type")=="Per Click":
 				colour_per_click_rate=sales_order_doc.get("colour_per_click_rate")
+				print()
 				item=get_item_details(d.item,company)
 				item.update(
 								{
 									"actual_quantity":total_colour_reading_diff,
 									"rate":colour_per_click_rate,
-									"amount":total_colour_reading_diff*flt(colour_current_reading),
+									"amount":total_colour_reading_diff*flt(colour_per_click_rate),
 									"uom":item.stock_uom,
 									"qty":total_colour_reading_diff
 								}
