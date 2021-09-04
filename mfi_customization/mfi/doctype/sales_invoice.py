@@ -143,7 +143,7 @@ def get_assets(project,company):
 								{
 									"actual_quantity":total_mono_reading_diff,
 									"rate":mono_per_click_rate,
-									"amount":total_mono_reading_diff*mono_per_click_rate,
+									"amount":total_mono_reading_diff*flt(mono_per_click_rate),
 									"uom":item.stock_uom,
 									"qty":total_mono_reading_diff,
 								}
@@ -214,7 +214,7 @@ def get_assets(project,company):
 								{
 									"actual_quantity":total_colour_reading_diff,
 									"rate":colour_per_click_rate,
-									"amount":total_colour_reading_diff*colour_current_reading,
+									"amount":total_colour_reading_diff*flt(colour_current_reading),
 									"uom":item.stock_uom,
 									"qty":total_colour_reading_diff
 								}
