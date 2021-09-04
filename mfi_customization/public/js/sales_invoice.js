@@ -16,6 +16,7 @@ frappe.ui.form.on('Sales Invoice', {
                             var per_click_mono=0;
                             var per_click_colour=0;
                             var total_rate=0;
+                            var asset_non_zero_values=0;
                             $.each(r.message[0] || [], function(i, d) {
                                 var row=frm.add_child("assets_rates_item")
                                 row.asset=d.asset
@@ -39,6 +40,9 @@ frappe.ui.form.on('Sales Invoice', {
                                 per_click_mono=d.mono_click_rate
                                 per_click_colour=d.colour_click_rate
                                 total_rate+=d.total_rate
+                                if (d.total_mono_reading>0 || d.total_colour_reading>0){
+                                    asset_non_zero_values+=1
+                                }
                             });
                             $.each(r.message[1] || [], function(i, d) {
                                 var row=frm.add_child("items")
@@ -56,7 +60,8 @@ frappe.ui.form.on('Sales Invoice', {
                                 row.rate=d.rate
                                 row.total_amount=parseFloat(row.no_of_copies)*d.rate
                             });
-                            frm.set_value("total_billable_assets",(r.message[0]).length);
+                            frm.set_value("total_billable_assets",asset_non_zero_values);
+                            frm.set_value("total_contract_assets",(r.message[0]).length);
                             frm.set_value("total_mono_reading",total_mono);
                             frm.set_value("total_color_reading",total_colour);
                             frm.set_value("mono_click_rate",per_click_mono);

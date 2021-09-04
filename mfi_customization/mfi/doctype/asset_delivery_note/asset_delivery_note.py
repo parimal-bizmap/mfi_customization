@@ -117,6 +117,7 @@ def create_assets(doc):
 		asset_installation_note.customer=doc.get('customer')
 		asset_installation_note.asset=asset.name
 		asset_installation_note.asset_name=asset.asset_name
+		asset_installation_note.project=doc.get("project")
 		asset_installation_note.location=asset.location
 		asset_installation_note.asset_serial_no=asset.serial_no
 		asset_installation_note.save()

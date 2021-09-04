@@ -18,6 +18,7 @@
   "contact_mobile",
   "contact_email",
   "location",
+  "project",
   "asset",
   "asset_name",
   "asset_serial_no",
@@ -228,13 +229,19 @@
    "fieldtype": "Link",
    "label": "Asset Serial No",
    "options": "Asset Serial No"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
   }
  ],
  "icon": "fa fa-wrench",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-07-08 16:58:21.398952",
+ "modified": "2021-09-04 08:40:28.533567",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Installation Note",
