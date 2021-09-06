@@ -6,6 +6,7 @@ frappe.ui.form.on('Machine Reading Tool', {
 		frm.disable_save();
 		frm.page.clear_indicator();
 		frm.set_value("reading_date",frappe.datetime.get_today())
+		frm.set_value("reading_type",'Black & White')
 	},
 	project: function(frm) {
 		frm.doc.show_submit = false;
@@ -13,7 +14,9 @@ frappe.ui.form.on('Machine Reading Tool', {
 			frappe.call({
 				method: "mfi_customization.mfi.doctype.machine_reading_tool.machine_reading_tool.get_machine_reading",
 				args: {
-					"project": frm.doc.project
+					"project": frm.doc.project,
+					"reading_date":frm.doc.reading_date,
+					"reading_type":frm.doc.reading_type
 				},
 				callback: function(r) {
 					if (r.message) {
@@ -42,9 +45,8 @@ frappe.ui.form.on('Machine Reading Tool', {
 			assets: asset_list,
 		}));
 		result_table.appendTo(frm.fields_dict.reading_items.wrapper);
-
+		console.log(result_table)
 		result_table.on('change', 'input', function(e) {
-			
 			let $input = $(e.target);
 			let asset = $input.data().asset;
 			let max_score = $input.data().maxScore;
@@ -64,6 +66,9 @@ frappe.ui.form.on('Machine Reading Tool', {
 			});
 			result_table.find(`[data-asset=${asset}].result-colour-reading`).each(function(el, input){
 				asset_readings["reading_details"]["colour"] = $(input).val();
+			});
+			result_table.find(`[data-asset=${asset}].result-reading_date`).each(function(el, input){
+				asset_readings["reading_details"]["reading_date"] = $(input).val();
 			});
 			result_table.find(`[data-asset=${asset}].result-reading_type`).each(function(el, input){
 				asset_readings["reading_details"]["reading_type"] = $(input).val();
@@ -135,6 +140,7 @@ frappe.ui.form.on('Machine Reading Tool', {
 
 	submit_result: function(frm) {
 		if (frm.doc.show_submit) {
+			console.log("******************")
 			frm.page.set_primary_action(__("Submit"), function() {
 				frappe.call({
 					method: "mfi_customization.mfi.doctype.machine_reading_tool.machine_reading_tool.create_machine_reading",

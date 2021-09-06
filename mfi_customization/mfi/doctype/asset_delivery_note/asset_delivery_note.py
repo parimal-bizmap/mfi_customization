@@ -117,6 +117,7 @@ def create_assets(doc):
 		asset_installation_note.customer=doc.get('customer')
 		asset_installation_note.asset=asset.name
 		asset_installation_note.asset_name=asset.asset_name
+		asset_installation_note.project=doc.get("project")
 		asset_installation_note.location=asset.location
 		asset_installation_note.asset_serial_no=asset.serial_no
 		asset_installation_note.save()
@@ -129,12 +130,15 @@ def get_serial_nos(filters):
 	fltr={"status":"Active"}
 	if filters.get("item_code"):
 		fltr.update({"item_code":filters.get("item_code")})
-
+	qty=0
+	for d in filters.get("asset_models"):
+		if filters.get("item_code")==d.get("asset_model"):
+			qty=d.get("qty")
 	data=[]
-	for serial_no in frappe.get_all("Serial No",filters=fltr,fields=['item_code','name','warehouse','batch_no','item_name'],order_by="name"):
+	for serial_no in frappe.get_all("Serial No",filters=fltr,fields=['item_code','name','warehouse','batch_no','item_name'],order_by="creation"):
 		if len(frappe.get_all('Asset Serial No', {'name':serial_no.get('name')}))==0 and len(frappe.get_all('Serial Nos Model wise', {'serial_no':serial_no.get('name'), 'docstatus':1}))==0:
 			data.append(serial_no)
-	return data[:5]
+	return data[:qty]
 
 
 @frappe.whitelist()

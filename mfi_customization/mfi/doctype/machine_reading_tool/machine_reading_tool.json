@@ -43,6 +43,7 @@
    "fieldtype": "Section Break"
   },
   {
+   "default": "Black & White",
    "fieldname": "reading_type",
    "fieldtype": "Select",
    "label": "Reading Type",
@@ -56,7 +57,7 @@
  "hide_toolbar": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-08-28 17:37:11.220869",
+ "modified": "2021-08-30 10:02:52.130768",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Machine Reading Tool",

@@ -1,38 +1,38 @@
 {
  "actions": [],
- "creation": "2021-09-02 17:34:11.433038",
+ "creation": "2020-09-19 00:42:19.141745",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "item",
-  "company"
+  "asset",
+  "asset_name"
  ],
  "fields": [
   {
-   "fieldname": "item",
+   "fieldname": "asset",
    "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Item",
-   "options": "Item"
+   "label": "Asset ",
+   "options": "Asset"
   },
   {
-   "fieldname": "company",
-   "fieldtype": "Link",
+   "fieldname": "asset_name",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Company",
-   "options": "Company"
+   "label": "Asset Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-09-02 17:34:11.433038",
+ "modified": "2021-09-03 07:55:24.596721",
  "modified_by": "Administrator",
  "module": "mfi",
- "name": "Rental Contract Item",
+ "name": "Asset List",
  "owner": "Administrator",
  "permissions": [],
+ "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "track_changes": 1

@@ -15,6 +15,8 @@
   "default_asset_accounts",
   "company_customer_warehouse",
   "rental_item_details_section",
+  "colour_billing_item",
+  "mono_billing_item",
   "rental_contract_item"
  ],
  "fields": [
@@ -72,6 +74,18 @@
    "label": "Rental Item Details"
   },
   {
+   "fieldname": "colour_billing_item",
+   "fieldtype": "Table",
+   "label": "Colour Billing Item",
+   "options": "Colour Billing Item"
+  },
+  {
+   "fieldname": "mono_billing_item",
+   "fieldtype": "Table",
+   "label": "Mono Billing Item",
+   "options": "Mono Billing Item"
+  },
+  {
    "fieldname": "rental_contract_item",
    "fieldtype": "Table",
    "label": "Rental Contract Item",
@@ -81,7 +95,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-08-28 09:01:16.960814",
+ "modified": "2021-09-02 17:34:29.855512",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "MFI Settings",
