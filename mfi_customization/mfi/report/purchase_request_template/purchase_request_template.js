@@ -5,11 +5,11 @@
 frappe.query_reports["Purchase Request Template"] = {
 	"filters": [
 		{
-			"label":"Part Number",
-			"fieldname":"part_number",
+			"label":"Company",
+			"fieldname":"company",
 			"fieldtype":"Link",
-			"options":"Item"	
+			"options":"Company",
+			"reqd": 1
 		}
-
 	]
 };
