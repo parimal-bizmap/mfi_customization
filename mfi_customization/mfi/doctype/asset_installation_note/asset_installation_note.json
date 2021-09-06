@@ -24,11 +24,11 @@
   "asset_serial_no",
   "column_break1",
   "inst_date",
-  "inst_time",
   "status",
   "company",
   "remarks",
   "item_details",
+  "asset_delivery_note",
   "amended_from"
  ],
  "fields": [
@@ -133,20 +133,11 @@
   },
   {
    "fieldname": "inst_date",
-   "fieldtype": "Date",
-   "label": "Installation Date",
+   "fieldtype": "Datetime",
+   "label": "Installation Date &Time",
    "oldfieldname": "inst_date",
    "oldfieldtype": "Date",
-   "reqd": 1,
    "search_index": 1
-  },
-  {
-   "fieldname": "inst_time",
-   "fieldtype": "Time",
-   "label": "Installation Time",
-   "oldfieldname": "inst_time",
-   "oldfieldtype": "Time",
-   "reqd": 1
   },
   {
    "default": "Draft",
@@ -237,13 +228,19 @@
    "fieldtype": "Link",
    "label": "Project",
    "options": "Project"
+  },
+  {
+   "fieldname": "asset_delivery_note",
+   "fieldtype": "Link",
+   "label": "Asset Delivery Note",
+   "options": "Asset Delivery Note"
   }
  ],
  "icon": "fa fa-wrench",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-09-06 11:35:37.083966",
+ "modified": "2021-09-06 15:06:02.269127",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Installation Note",
