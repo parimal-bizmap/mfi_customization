@@ -8,7 +8,7 @@ from frappe.utils import today
 class AssetInstallationNote(Document):
 	def on_submit(self):
 		submit_asset(self)
-		# create_stock_entry(self)
+		create_stock_entry(self)
 		# create_journal_entry(self)
 
 def create_stock_entry(doc):
