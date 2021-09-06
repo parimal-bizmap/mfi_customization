@@ -209,7 +209,6 @@ def get_assets(project,company):
 			
 			elif sales_order_doc.get("order_type")=="Per Click":
 				colour_per_click_rate=sales_order_doc.get("colour_per_click_rate")
-				print()
 				item=get_item_details(d.item,company)
 				item.update(
 								{
@@ -223,17 +222,18 @@ def get_assets(project,company):
 				item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
 
 	if sales_order_doc.get("order_type")=="Per Click":
-		for d in frappe.get_all("Rental Contract Item",{"parent":"MFI Settings","company":company},["item"]):
-			item=get_item_details(d.item,company)
-			item.update(
-							{
-								"rate":total_rent,
-								"amount":total_rent*1,
-								"uom":item.stock_uom,
-								"qty":1
-							}
-						)
-			item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
+		if total_rent>0:
+			for d in frappe.get_all("Rental Contract Item",{"parent":"MFI Settings","company":company},["item"]):
+				item=get_item_details(d.item,company)
+				item.update(
+								{
+									"rate":total_rent,
+									"amount":total_rent*1,
+									"uom":item.stock_uom,
+									"qty":1
+								}
+							)
+				item_details.append(item.update(get_conversion_factor(item.item_code, item.stock_uom)))
    
 	return data1,item_details,data2,total_rent
 
