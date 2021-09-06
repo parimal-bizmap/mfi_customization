@@ -137,6 +137,7 @@
    "label": "Installation Date",
    "oldfieldname": "inst_date",
    "oldfieldtype": "Date",
+   "reqd": 1,
    "search_index": 1
   },
   {
@@ -144,7 +145,8 @@
    "fieldtype": "Time",
    "label": "Installation Time",
    "oldfieldname": "inst_time",
-   "oldfieldtype": "Time"
+   "oldfieldtype": "Time",
+   "reqd": 1
   },
   {
    "default": "Draft",
@@ -241,7 +243,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-09-04 08:40:28.533567",
+ "modified": "2021-09-06 11:35:37.083966",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Installation Note",
