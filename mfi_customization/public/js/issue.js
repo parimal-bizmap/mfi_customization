@@ -1,12 +1,30 @@
 frappe.ui.form.on('Issue', {
+	before_save:function(frm){
+		if(!frm.doc.first_responded_on && frm.doc.status == 'Closed'){
+			frappe.throw("Status Cannot be Closed before working")
+		}
+	},
+
 	raised_by: function ( frm ) {
 	
 	if (!(frappe.utils.validate_type(frm.doc.raised_by, "email")) && !(frappe.utils.validate_type(frm.doc.raised_by, "number"))) {
 		frappe.msgprint('Please Enter valid email or contact');
 		
 	}
-   }
-	,
+   },
+
+   type_of_call: function (frm) {
+		if(frm.doc.type_of_call){
+			frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
+				if(r.ignore_reading == 1){
+					frm.set_df_property('current_reading','hidden',1);
+				}
+				else{
+					frm.set_df_property('current_reading','hidden',0);
+				}
+			});
+		}
+	},
 
 	serial_no:function(frm){
 		if(frm.doc.serial_no){
@@ -70,7 +88,28 @@ frappe.ui.form.on('Issue', {
 			frm.set_value('first_responded_on',today);
 		}
 		if(frm.doc.status == 'Closed'){
-			frm.set_df_property('current_reading','reqd',1);
+			if(frm.doc.type_of_call){
+                frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
+                    if(r.ignore_reading == 1){
+                        frm.set_df_property('current_reading','hidden',1);
+                    }
+                    else{
+                        frm.set_df_property('current_reading','hidden',0);
+                        frm.set_df_property('current_reading','reqd',1);
+                    }
+                });
+            }
+			let today = new Date()
+			frm.set_value('closing_date_time',today);
+		}
+		if (!["Cancelled","Closed"].includes(frm.doc.status)){
+			frm.add_custom_button(__('Cancel'), function() {
+				frm.set_value("status","Cancelled")
+				frm.save()
+			})
+		}
+		if (["Cancelled","Closed"].includes(frm.doc.status)){
+			frm.remove_custom_button("Cancelled");
 		}
 	},
 	details_available:function(frm){
@@ -104,15 +143,15 @@ frappe.ui.form.on('Issue', {
 			}
 			}
 		});
-		frm.set_query("asset", "current_reading", function() {
+		// frm.set_query("asset", "current_reading", function() {
 			
-			return {
-				filters: {
-					"name": frm.doc.asset || ""
-				}
+		// 	return {
+		// 		filters: {
+		// 			"name": frm.doc.asset || ""
+		// 		}
 			
-		}
-		});
+		// }
+		// });
 		frm.set_query("asset", function() {
 			if (frm.doc.project) {
 				return {
@@ -186,6 +225,12 @@ frappe.ui.form.on('Issue', {
 	refresh: function (frm) {
 
 		if (!frm.doc.__islocal ){
+		if (!["Cancelled","Closed"].includes(frm.doc.status)){
+			frm.add_custom_button(__('Cancel'), function() {
+				frm.set_value("status","Cancelled")
+				frm.save()
+			})
+		}
 		frm.add_custom_button(__('Task'), function() {
 			frappe.set_route('List', 'Task', {issue: frm.doc.name});
 		},__("View"));
@@ -197,6 +242,19 @@ frappe.ui.form.on('Issue', {
 					frm: frm
 				});
 			}, __("Make"));
+		}
+		if (frm.doc.status == "Closed" || frm.doc.status == "Task Completed"){
+            if(frm.doc.type_of_call){
+                frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
+                    if(r.ignore_reading == 1){
+                        frm.set_df_property('current_reading','hidden',1);
+                    }
+                    else{
+                        frm.set_df_property('current_reading','hidden',0);
+                        frm.set_df_property('current_reading','read_only',1);
+                    }
+                });
+            }
 		}
 	}
 	else{
@@ -219,11 +277,7 @@ frappe.ui.form.on('Issue', {
 			{
 				frm.set_value('response_date_time',val.attended_date_time);
 			});
-
-
 		}
-		
-
 	},
 	customer:function(frm){
 		if (frm.doc.customer){
@@ -232,37 +286,34 @@ frappe.ui.form.on('Issue', {
 					frm.set_value("project",val.name);
 				}
 			})
+		}
+		if(frm.doc.customer){
+			frm.set_query('location', 'asset_details', function() {
+				if(frm.doc.customer){return {
+					query: 'mfi_customization.mfi.doctype.issue.get_location',
+					filters: {
+						"customer":frm.doc.customer
+					}
+				};}
+			});	
+			frm.set_query('asset', 'asset_details', function() {
+				if(frm.doc.customer){return {
+					query: 'mfi_customization.mfi.doctype.issue.get_asset_on_cust',
+					filters: {
+						"customer":frm.doc.customer
+					}
+				};}
+			});
+			frm.set_query('serial_no', 'asset_details', function() {
+				if(frm.doc.customer){return {
+					query: 'mfi_customization.mfi.doctype.issue.get_asset_serial_on_cust',
+					filters: {
+						"customer":frm.doc.customer
+					}
+				};}
+			});
+		}
 	}
-	if(frm.doc.customer){
-		frm.set_query('location', 'asset_details', function() {
-			if(frm.doc.customer){return {
-				query: 'mfi_customization.mfi.doctype.issue.get_location',
-				filters: {
-					"customer":frm.doc.customer
-				}
-			};}
-		});	
-		frm.set_query('asset', 'asset_details', function() {
-			if(frm.doc.customer){return {
-				query: 'mfi_customization.mfi.doctype.issue.get_asset_on_cust',
-				filters: {
-					"customer":frm.doc.customer
-				}
-			};}
-		});
-		frm.set_query('serial_no', 'asset_details', function() {
-			if(frm.doc.customer){return {
-				query: 'mfi_customization.mfi.doctype.issue.get_asset_serial_on_cust',
-				filters: {
-					"customer":frm.doc.customer
-				}
-			};}
-		});
-	}
-
-
-	}
-	
 })
 
 frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
