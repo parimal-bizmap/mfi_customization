@@ -9,9 +9,8 @@ from frappe.utils.data import today,getdate
 
 def validate(doc,method):
 	email_validation(doc)
-	# machine_reading=""
+	# validate_issue(doc)
 	for d in doc.get("current_reading"):
-		# machine_reading=d.machine_reading
 		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
@@ -26,8 +25,6 @@ def validate(doc,method):
 	if doc.asset and len(doc.get("last_readings"))==0:
 		# doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
-		# if machine_reading:
-		# 	fltr.update({"name":("!=",machine_reading)})
 		for d in frappe.get_all("Machine Reading",filters=fltr,fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc,name desc"):
 			doc.append("last_readings", {
 				"date" : d.get('reading_date'),
@@ -40,6 +37,7 @@ def validate(doc,method):
 
 def on_change(doc,method):
 	validate_reading(doc)
+	set_task_status_cancelled(doc)
 
 def email_validation(doc):
 	if doc.email_conact and "@" not in 	doc.email_conact:
@@ -63,22 +61,6 @@ def get_asset_list(doctype, txt, searchfield, start, page_len, filters):
 		from `tabAsset`  {location}"""
 		.format(location=location))
 
-# @frappe.whitelist()
-# def get_asset_in_issue(doctype, txt, searchfield, start, page_len, filters):
-# 	cond1=''
-# 	cond2=''
-# 	if filters.get("customer"):
-# 			print(filters.get("customer"),"***************")
-# 			cond2+="where customer ='{0}'".format(filters.get("customer"))
-
-# 	if filters.get("location"):
-# 			cond1+="where location='{0}'".format(filters.get("location"))
-		
-# 	data = frappe.db.sql("""select asset from `tabAsset Serial No` where asset IN (select name from `tabAsset` {0} and project = (select name
-# 		from `tabProject`  {1}))
-# 		""".format(cond1,cond2))
-# 	print(data)
-# 	return data
 @frappe.whitelist()
 def get_asset_in_issue(doctype, txt, searchfield, start, page_len, filters):
 	fltr1 = {}
@@ -142,8 +124,6 @@ def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
 				if ass.name not in lst:
 					lst.append(ass.name)
 		return [(d,) for d in lst]	
-		
-
 
 @frappe.whitelist()
 def get_asset_serial_on_cust(doctype, txt, searchfield, start, page_len, filters):
@@ -164,7 +144,6 @@ def get_asset_serial_on_cust(doctype, txt, searchfield, start, page_len, filters
 
 @frappe.whitelist()
 def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
-	# data = frappe.db.sql("""select name from `tabProject` """)
 	fltr1 = {}
 	fltr2 = {}
 	lst = []
@@ -217,3 +196,14 @@ def get_issue_types(doctype, txt, searchfield, start, page_len, filters):
 	if txt:
 		fltr.update({"name": ("like", "{0}%".format(txt))})
 	return frappe.get_all("Issue Type",filters=fltr,fields = ["name"], as_list=1)
+
+def validate_issue(doc):
+	for issue in frappe.get_all("Issue",{"asset":doc.asset,"name":("!=",doc.name),"status":["NOT IN",["Closed","Cancelled"]]}):
+		frappe.throw("Issue already exists with <b>{0}</b>".format(issue.name))
+
+def set_task_status_cancelled(doc):
+	if doc.status=="Cancelled":
+		for tk in frappe.get_all("Task",{"issue":doc.name}):
+			task=frappe.get_doc("Task",tk.name)
+			task.status="Cancelled"
+			task.save()

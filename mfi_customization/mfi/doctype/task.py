@@ -9,18 +9,14 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.permissions import add_user_permission
 
 def validate(doc,method):
-	# machine_reading=""
 	for d in doc.get("current_reading"):
-		# machine_reading=d.machine_reading
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
 
 	last_reading=today()
 	if doc.asset and  len(doc.get("last_readings"))==0:
-		# doc.set("last_readings", [])
+		doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
-		# if machine_reading:
-			# fltr.update({"name":("!=",machine_reading)})
 		for d in frappe.get_all("Machine Reading",filters=fltr,fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc,name desc"):
 			doc.append("last_readings", {
 				"date" : d.get('reading_date'),
@@ -32,6 +28,7 @@ def validate(doc,method):
 				})
 
 	set_field_values(doc)
+	assign_task_validation(doc)
 
 	if doc.get('__islocal'):
 		for d in frappe.get_all("Task",{"issue":doc.issue}):
@@ -50,36 +47,33 @@ def after_insert(doc,method):
 	
 	create_user_permission(doc)
 
-	# docperm = frappe.new_doc("DocShare")
-	# docperm.update({
-	# 		"user": doc.completed_by,
-	# 		"share_doctype": 'Task',
-	# 		"share_name": doc.name ,
-	# 		"read": 1,
-	# 		"write": 1
-	# 	})
-	# docperm.save(ignore_permissions=True)
-		
 def on_change(doc,method):
 	if doc.get("issue"):
 		set_reading_from_task_to_issue(doc)
 	validate_reading(doc)
-	create_machine_reading(doc)
+	existed_mr=[]
+	for d in doc.get('current_reading'):
+		existed_mr = frappe.get_all("Machine Reading",{"task":doc.name,"project":doc.project, 'row_id':d.get('name')}, 'name')
+	if existed_mr :
+		update_machine_reading(doc, existed_mr)
+	else:
+		create_machine_reading(doc)
 	if doc.issue and doc.status != 'Open':
-		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
+		frappe.db.set_value("Issue",doc.issue,'status',doc.status)	
 		if doc.status == 'Completed':
 			validate_if_material_request_is_not_submitted(doc)
 			attachment_validation(doc)
 			issue=frappe.get_doc("Issue",doc.issue)
 			issue.status="Task Completed"
+			issue.closing_date_time=doc.completion_date_time
 			issue.set("task_attachments",[])
 			for d in doc.get("attachments"):
 				issue.append("task_attachments",{
 					"attach":d.attach
 				})
-			issue.save()	
+			issue.save()
 		elif doc.status=="Working" and doc.attended_date_time:	
-			frappe.db.set_value("Issue",doc.issue,'first_responded_on',doc.attended_date_time)
+			frappe.db.set_value("Issue",doc.issue,'first_responded_on',doc.attended_date_time)	
 
 def after_delete(doc,method):
 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
@@ -115,8 +109,6 @@ def make_asset_movement(source_name, target_doc=None, ignore_permissions=False):
 	   target.purpose = "Transfer"
 	   target.company = company
 	   target.task=source_name
-
-
 
 	doclist = get_mapped_doc("Task", source_name, {
 		"Task": {
@@ -285,8 +277,20 @@ def create_machine_reading(doc):
 			mr.total=d.get("total")
 			mr.project=doc.project
 			mr.task=doc.name
+			mr.row_id = d.name
 			mr.save()
-			# d.machine_reading=mr.name
+
+def update_machine_reading(doc, existed_mr):
+	for d in doc.get('current_reading'):
+		for mr in existed_mr:
+			mr_doc=frappe.get_doc("Machine Reading", mr)
+			mr_doc.reading_date=d.get('date')
+			mr_doc.asset=d.get('asset')
+			mr_doc.black_and_white_reading=d.get("reading")
+			mr_doc.colour_reading=d.get("reading_2")
+			mr_doc.machine_type=d.get('type')
+			mr_doc.total=d.get("total")
+			mr_doc.save()
 	
 def set_reading_from_task_to_issue(doc):
 	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
@@ -342,3 +346,8 @@ def create_user_permission(doc):
 			for emp2 in frappe.get_all("Employee",{"name":emp.material_request_approver},['user_id']):
 				if emp2.user_id:
 					add_user_permission("Task",doc.name,emp2.user_id)
+
+def assign_task_validation(doc):
+	if doc.status=="Working":
+		for d in frappe.get_all("Task",{"status":"Working","completed_by":doc.completed_by,"name":("!=",doc.name)}):
+			frappe.throw("Task <b>{0}</b> is already in working".format(d.name))
