@@ -3,7 +3,7 @@ from frappe.desk.reportview import get_match_cond, get_filters_cond
 from frappe.utils import nowdate, getdate, flt
 from frappe import msgprint, _
 from frappe.model.mapper import get_mapped_doc
- 
+import json
 
 
 def validate(doc,method):
@@ -177,92 +177,18 @@ def get_material_request():
     print("///////MR_list", MR_list)
     return MR_list
 
+@frappe.whitelist() 
+def make_po(doc, checked_values):
+    checked_values = json.loads(checked_values)
+    doc = json.loads(doc)
+    print("########## checked_values", checked_values)
+    for mr in checked_values:
+        mr_doc = frappe.get_all('Material Request', mr.get('name'))
+        for ship_item in mr_doc.item_shipment:
+            print("/////// ship_item",ship_item)
+            if ship_item.get('price_list') and frappe.db.get_value("Price List",{'name': ship_item.get('price_list')}, 'default_supplier')=='MFI INTERNATIONAL':
+                
 
-# def update_item(obj, target, source_parent):
-#     target.conversion_factor = obj.conversion_factor
-#     target.qty = flt(flt(obj.stock_qty) - flt(obj.ordered_qty))/ target.conversion_factor
-#     target.stock_qty = (target.qty * target.conversion_factor)
-#     if getdate(target.schedule_date) < getdate(nowdate()):
-#         target.schedule_date = None
 
-# def set_missing_values(source, target_doc):
-#     if target_doc.doctype == "Purchase Order" and getdate(target_doc.schedule_date) <  getdate(nowdate()):
-#         target_doc.schedule_date = None
-#     target_doc.run_method("set_missing_values")
+        
 
-# @frappe.whitelist()
-# def make_purchase_order_based_on_supplier(source_name, target_doc=None, args=None):
-#     mr = source_name
-
-#     # supplier_items = get_items_based_on_default_supplier(args.get("supplier"))
-#     def select_item(d):
-#         return d.ordered_qty < d.stock_qty
-
-#     def postprocess(source, target_doc):
-#         # target_doc.supplier = args.get("supplier")
-#         if getdate(target_doc.schedule_date) < getdate(nowdate()):
-#             target_doc.schedule_date = None
-#         print("......target_doc.get('items')",target_doc.get("items"))
-#         target_doc.set("items", [d for d in target_doc.get("items")
-#              if d.get("qty") > 0])
-
-#         set_missing_values(source, target_doc)
-
-#     target_doc = get_mapped_doc("Material Request", mr, {
-#         "Material Request": {
-#             "doctype": "Purchase Order",
-#         },
-#         "Material Request Item": {
-#             "doctype": "Purchase Order Item",
-#             "field_map": [
-#                 ["name", "material_request_item"],
-#                 ["parent", "material_request"],
-#                 ["uom", "stock_uom"],
-#                 ["uom", "uom"]
-#             ],
-#             # "postprocess": update_item,
-#             "condition": select_item
-#         }
-#     }, target_doc, postprocess)
-
-#     return target_doc
-
-# @frappe.whitelist()
-# @frappe.validate_and_sanitize_search_inputs
-# def get_material_requests_based_on_supplier(doctype, txt, searchfield, start, page_len, filters):
-#     conditions = ""
-#     if txt:
-#         conditions += "and mr.name like '%%"+txt+"%%' "
-
-#     if filters.get("transaction_date"):
-#         date = filters.get("transaction_date")[1]
-#         conditions += "and mr.transaction_date between '{0}' and '{1}' ".format(date[0], date[1])
-
-#     # supplier = filters.get("supplier")
-#     # supplier_items = get_items_based_on_default_supplier(supplier)
-#     supplier_items = []
-#     # if not supplier_items:
-#     #   frappe.throw(_("{0} is not the default supplier for any items.").format(supplier))
-
-#     material_requests = frappe.db.sql("""select distinct mr.name, transaction_date,company
-#         from `tabMaterial Request` mr, `tabMaterial Request Item` mr_item
-#         where mr.name = mr_item.parent
-            
-#             and mr.material_request_type = 'Purchase'
-#             and mr.per_ordered < 99.99
-#             and mr.docstatus = 1
-#             and mr.status != 'Stopped'
-#             and mr.company = '{0}'
-#             {1}
-#         order by mr_item.item_code ASC
-#         limit {2} offset {3} """ \
-#         .format(filters.get("company"), conditions, page_len, start), as_dict=1)
-
-#     return material_requests
-
-# @frappe.whitelist()
-# def get_items_based_on_default_supplier(supplier):
-#     supplier_items = [d.parent for d in frappe.db.get_all("Item Default",
-#         {"default_supplier": supplier, "parenttype": "Item"}, 'parent')]
-
-#     return supplier_items

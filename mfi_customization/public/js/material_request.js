@@ -12,11 +12,11 @@ frappe.ui.form.on('Material Request', {
 		});
     },
 	onload: function ( frm ) {
-        if (frm.doc.docstatus==1) {
-             frm.add_custom_button(__('Create PO'), function () {
+        // if (frm.doc.docstatus==1) {
+             frm.add_custom_button(__('Purchase Order'), function () {
                 get_items_from_MR(frm);
-            }, __("Get Items From"));
-        }
+            }, __("Create"));
+        // }
 
         frm.set_value("material_request_type","Material Issue")
         frm.set_query("item_code", "items", function(doc, cdt, cdn) {
@@ -192,10 +192,10 @@ var make_list_row= function(columns, project_tasks, result={}) {
     };
 
     var make_po = function(frm, checked_values, project_tasks){
-        print("///////make_po project_tasks", project_tasks)
+        console.log("///////make_po project_tasks", project_tasks)
         // if(project_tasks){
             frappe.call({
-                method: "custom_app.custom_app.custom_script.project.project.set_project_tasks",
+                method: "mfi_customization.mfi.doctype.material_request.make_po",
                 args:{
                     doc: frm.doc,
                     checked_values: checked_values
