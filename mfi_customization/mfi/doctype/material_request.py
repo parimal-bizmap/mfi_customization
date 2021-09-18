@@ -1,8 +1,10 @@
-import frappe
+import frappe,json
 from frappe.desk.reportview import get_match_cond, get_filters_cond
-from frappe.utils import nowdate, getdate
-
-
+from frappe.utils import nowdate, getdate,today,add_months
+from six import string_types, iteritems
+from frappe.desk.query_report import run
+from frappe import _
+from frappe.desk.query_report import get_report_doc,get_prepared_report_result,generate_report_result
 
 def validate(doc,method):
 	for emp in frappe.get_all("Employee",{"user_id":frappe.session.user},['material_request_approver']):
@@ -11,56 +13,6 @@ def validate(doc,method):
 				if emp2.user_id:
 					doc.approver=emp2.user_id
 					doc.approver_name=frappe.db.get_value("User",emp2.user_id,"full_name")
-	# if doc.approver and not doc.get("__islocal"):
-	# 	docperm = frappe.new_doc("User Permission")
-	# 	docperm.update({
-	# 		"user": doc.approver,
-	# 		"allow": 'Material Request',
-	# 		"for_value": doc.name
-	# 	})
-	# 	docperm.save(ignore_permissions=True)
-	# if doc.approver and not doc.get("__islocal"):
-	# 	docperm = frappe.new_doc("DocShare")
-	# 	docperm.update({
-    #             "user": doc.approver,
-    #             "share_doctype": 'Material Request',
-    #             "share_name": doc.name ,
-    #             "read": 1,
-    #             "write": 1
-    #         })
-	# 	docperm.save(ignore_permissions=True)
-	# if doc.approver and not doc.is_new():
-	# 	docperm = frappe.new_doc("DocShare")
-	# 	docperm.update({
-    #             "user": doc.approver,
-    #             "share_doctype": 'Material Request',
-    #             "share_name": doc.name ,
-    #             "read": 1,
-    #             "write": 1
-    #         })
-	# 	docperm.save(ignore_permissions=True)
-
-	#User Permission For Approver  
-# def after_insert(doc,method):
-	
-	# if doc.approver :
-	# 	docperm = frappe.new_doc("User Permission")
-	# 	docperm.update({
-	# 		"user": doc.approver,
-	# 		"allow": 'Material Request',
-	# 		"for_value": doc.name
-	# 	})
-	# 	docperm.save(ignore_permissions=True)
-	# if doc.approver and doc.is_new():
-	# docperm = frappe.new_doc("DocShare")
-	# docperm.update({
-	# 		"user": doc.approver,
-	# 		"share_doctype": 'Material Request',
-	# 		"share_name": doc.name ,
-	# 		"read": 1,
-	# 		"write": 1
-	# 	})
-	# docperm.save(ignore_permissions=True)
 
 @frappe.whitelist()
 def get_approver(user):
@@ -166,3 +118,102 @@ def set_item_from_material_req(doc,method):
 		task.material_request=doc.name
 		task.save()					
 
+@frappe.whitelist()
+def make_material_req(source_name):
+	filters=json.loads(source_name)
+	report_data=run(filters.get("report_name"),filters.get("filters"))
+	doclist=frappe.new_doc("Material Request")
+	last_six_months=get_prev_months_consum_columns()
+	last_3_months_shipment=get_shipment_months()
+	doclist.report_name=filters.get("report_name")
+	doclist.filters=filters.get("filters")
+	doclist.prepared_report=filters.get("report_id")
+	# if report_data.get("result"):
+	# 	for resp in report_data.get("result"):
+	# 		doclist.append("items",{
+	# 			"item_code":resp.get("part_number")
+	# 		})
+
+	# 		doclist.append("requisition_analysis_table",{
+	# 			"item_code":resp.get("part_number"),
+	# 			"item_name":resp.get("part_name"),
+	# 			"1st_month":resp.get(last_six_months[0]),
+	# 			"2nd_month":resp.get(last_six_months[1]),
+	# 			"3rd_month":resp.get(last_six_months[2]),
+	# 			"4th_month":resp.get(last_six_months[3]),
+	# 			"5th_month":resp.get(last_six_months[4]),
+	# 			"6th_month":resp.get(last_six_months[5]),
+	# 			"avg_monthly_consumption":resp.get("avg_monthly_consumption"),
+	# 			"90_days":resp.get("last_90_days"),
+	# 			"180_days":resp.get("between_91_to_180"),
+	# 			"365_days":resp.get("between_181_to_365"),
+	# 			"365_above_days":resp.get("greater_than_365"),
+	# 			"in_stock_qty":resp.get("in_stock_qty"),
+	# 			"life_stock_on_hand":resp.get("life_stock_on_hand"),
+	# 			"ship_1st_month":last_3_months_shipment[0],
+	# 			"ship_2nd_month":last_3_months_shipment[1],
+	# 			"ship_3rd_month":last_3_months_shipment[2],
+	# 			"total_eta_unknow":resp.get("total_eta_po"),
+	# 			"total_transit_qty":resp.get("total_transit_qty"),
+	# 			"life_stock_on_hand_plus_transit":resp.get("life_stock_transit"),
+	# 			"qty_on_sales_order":resp.get("qty_on_sales_order"),
+	# 			"purchase_qty_to_order_suggestion":resp.get("purchase_qty to_order_suggestion")
+	# 		})
+	return doclist
+
+
+def get_prev_months_consum_columns():
+	from datetime import datetime
+	from dateutil.relativedelta import relativedelta
+	colms=[]
+	for i in range(0, 6):
+		dt = datetime.now() + relativedelta(months=-i)
+		colms.append(str(dt.month) +'-'+ dt.strftime('%y'))
+	return colms[::-1]
+
+def get_shipment_months():
+	months=[]
+	for d in range(0,3):
+		date=add_months(today(),-d)
+		months.append(getdate(date).strftime("%B"))
+	return months[::-1]
+
+
+@frappe.whitelist()
+@frappe.read_only()
+def run(report_name, filters=None, user=None, ignore_prepared_report=False, custom_columns=None):
+	report = get_report_doc(report_name)
+	if not user:
+		user = frappe.session.user
+	if not frappe.has_permission(report.ref_doctype, "report"):
+		frappe.msgprint(
+			_("Must have report permission to access this report."),
+			raise_exception=True,
+		)
+
+	result = None
+
+	if (
+		report.prepared_report
+		and not report.disable_prepared_report
+		and not ignore_prepared_report
+		and not custom_columns
+	):
+		if filters:
+			if isinstance(filters, string_types):
+				filters = json.loads(filters)
+
+			dn = filters.get("prepared_report_name")
+			filters.pop("prepared_report_name", None)
+		else:
+			dn = ""
+		result = get_prepared_report_result(report, filters, dn, user)
+	else:
+		result = generate_report_result(report, filters, user, custom_columns)
+
+	result["add_total_row"] = report.add_total_row and not result.get(
+		"skip_total_row", False
+	)
+	result["price_list"]=[d.name for d in frappe.get_all("Price List")]
+	result["item_details"]={d.get("part_number"):frappe.db.get_value("Item",d.get("part_number"),["stock_uom","carton_qty"]) for d in result.get("result")}
+	return result
