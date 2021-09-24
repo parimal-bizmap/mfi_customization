@@ -332,7 +332,7 @@ def validate_if_material_request_is_not_submitted(doc):
 		frappe.throw("Material Request is not completed yet. Name <b>{0}</b>".format(mr.name))
 
 def attachment_validation(doc):
-	if not doc.attachment:
+	if not doc.attachments:
 		frappe.throw("Cann't Completed Task Without Attachment")
 	
 def create_user_permission(doc):
