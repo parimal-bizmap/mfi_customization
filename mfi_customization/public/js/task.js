@@ -13,6 +13,7 @@ status:function(frm){
         frappe.model.set_value("Issue", frm.doc.issue, 'first_responded_on',today);
     }
     if (frm.doc.status == "Completed"){
+	frm.set_value("completed_on", frappe.datetime.now_date());
         frm.set_df_property('status','read_only',1);
         if(frm.doc.type_of_call){
             frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
