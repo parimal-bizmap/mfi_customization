@@ -9,6 +9,8 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.permissions import add_user_permission
 
 def validate(doc,method):
+	if len(doc.get("current_reading"))<1:
+   	frappe.throw
 	for d in doc.get("current_reading"):
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")

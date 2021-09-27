@@ -14,7 +14,7 @@ status:function(frm){
     }
     if (frm.doc.status == "Completed"){
 	frm.set_value("completed_on", frappe.datetime.now_date());
-        frm.set_df_property('status','read_only',1);
+//         frm.set_df_property('status','read_only',1);
         if(frm.doc.type_of_call){
             frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
                 if(r.ignore_reading == 1){
