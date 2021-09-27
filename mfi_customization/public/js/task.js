@@ -265,16 +265,16 @@ validate:function(frm){
                 }
                 else{
 //                     frm.set_df_property('current_reading','hidden',0);
-                    frm.set_df_property('current_reading','read_only',1);
+			  if(cur_frm.doc.current_reading.length>=1){
+		frm.set_df_property('current_reading','read_only',1);
+	  
+	  }
 //                     if(!frm.doc.current_reading.length){
 //                         frappe.throw('Current readings missing.');
 //                     }
                 }
             });
-		  if(cur_frm.doc.current_reading.length<1){
-		frm.set_df_property('current_reading','read_only',0);
-	  
-	  }
+
         }
     }
     frm.set_df_property('failure_date_and_time','read_only',1);
