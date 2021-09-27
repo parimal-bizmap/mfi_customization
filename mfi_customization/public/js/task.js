@@ -257,10 +257,7 @@ validate:function(frm){
             frappe.throw('Asset details missing.');
 		
         }
-	  if(cur_frm.doc.current_reading.length<1){
-		frm.set_df_property('current_reading','read_only',0);
-	  
-	  }
+	
         if(frm.doc.type_of_call){
             frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
                 if(r.ignore_reading == 1){
@@ -274,6 +271,10 @@ validate:function(frm){
 //                     }
                 }
             });
+		  if(cur_frm.doc.current_reading.length<1){
+		frm.set_df_property('current_reading','read_only',0);
+	  
+	  }
         }
     }
     frm.set_df_property('failure_date_and_time','read_only',1);
