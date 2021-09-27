@@ -9,8 +9,6 @@ from frappe.model.mapper import get_mapped_doc
 from frappe.permissions import add_user_permission
 
 def validate(doc,method):
-	if len(doc.get("current_reading"))<1:
-   	frappe.throw
 	for d in doc.get("current_reading"):
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
@@ -65,6 +63,8 @@ def on_change(doc,method):
 		if doc.status == 'Completed':
 			validate_if_material_request_is_not_submitted(doc)
 			attachment_validation(doc)
+			if len(doc.get("current_reading"))<1:
+				frappe.throw("Can not complete task without Machine Reading")
 			issue=frappe.get_doc("Issue",doc.issue)
 			issue.status="Task Completed"
 			issue.closing_date_time=doc.completion_date_time
