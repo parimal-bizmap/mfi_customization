@@ -255,7 +255,12 @@ validate:function(frm){
     if(frm.doc.status == 'Completed'  ){
         if(!frm.doc.asset){
             frappe.throw('Asset details missing.');
+		
         }
+	  if(cur_frm.doc.current_reading.length<1){
+		frm.set_df_property('current_reading','read_only',0);
+	  
+	  }
         if(frm.doc.type_of_call){
             frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
                 if(r.ignore_reading == 1){
