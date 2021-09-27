@@ -262,7 +262,7 @@ validate:function(frm){
                     frm.set_df_property('current_reading','hidden',1);
                 }
                 else{
-                    frm.set_df_property('current_reading','hidden',0);
+//                     frm.set_df_property('current_reading','hidden',0);
                     frm.set_df_property('current_reading','read_only',1);
 //                     if(!frm.doc.current_reading.length){
 //                         frappe.throw('Current readings missing.');
