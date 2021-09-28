@@ -11,6 +11,9 @@ from frappe.contacts.doctype.address.address import get_company_address
 from erpnext.stock.doctype.item.item import get_item_defaults
 from erpnext.setup.doctype.item_group.item_group import get_item_group_defaults
 
+def on_submit(doc,method):
+	create_po(doc)
+
 @frappe.whitelist()
 def make_delivery_note(source_name, target_doc=None, skip_item_mapping=False):
 	target_doc=None
@@ -85,3 +88,40 @@ def make_delivery_note(source_name, target_doc=None, skip_item_mapping=False):
 		if d.item_code not in sorted_items:
 			del target_doc.get("items")[i]
 	return target_doc
+
+def create_po(doc):
+	if doc.company=="MFI International FZE":
+		duplicate=[]
+		items=[]
+		for itm in doc.get("items"):
+			rows=[]
+			for itm2 in doc.get("items"):
+				if itm.price_list==itm2.price_list and itm.price_list not in duplicate:
+					rows.append(itm2)
+			duplicate.append(itm.price_list)
+			items.append(rows)
+			
+		for i in items:
+			po=frappe.new_doc("Purchase Order")
+			po.schedule_date=doc.delivery_date
+			po.company=doc.company
+			po.mode_of_shipment=doc.mode_of_shipment
+			for sup in frappe.get_all("Price List Supplier",{"parent":i[0].price_list,"company":doc.company},["supplier"]):
+				po.supplier=sup.supplier
+			for itm in i:
+				row={}
+				for key in ["item_code","item_name","required_date","description","qty","uom","conversion_factor","stock_uom","stock_qty","price_list_rate","base_price_list_rate","rate","rate_amount","base_rate","base_amount","stock_uom_rate","net_rate","net_amount","base_net_rate","base_net_amount","billed_amt","gross_profit","price_list","ship_to","address"]:
+					row[key]=itm.get(key)
+				row["warehouse"]=itm.get("purchase_warehouse")
+				row["price_list_rate"]=itm.get("item_purchase_rate")
+				po.append("items",row)
+
+			po.save()
+
+@frappe.whitelist()
+def get_customer_by_price_list(doctype, txt, searchfield, start, page_len, filters):
+	data=[]
+	for d in frappe.get_all("Price List Country",{"parent":filters.get("price_list")},["customer"]):
+		for cust in frappe.get_all("Customer",{"name":d.customer},["name","customer_name","customer_group","territory", "mobile_no","primary_address"],as_list=1):
+			data.append(cust)
+	return data

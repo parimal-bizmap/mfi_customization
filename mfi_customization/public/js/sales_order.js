@@ -103,5 +103,40 @@ frappe.ui.form.on('Sales Order', {
             }
         });
         d.show();
-    }
+    },
+	setup:function(frm){
+		frm.fields_dict['items'].grid.get_field('ship_to').get_query = function(doc, cdt, cdn) {
+            var child = locals[cdt][cdn];
+            return {    
+				query: 'mfi_customization.mfi.doctype.sales_order.get_customer_by_price_list',
+                filters:
+					{
+						'price_list': child.price_list
+					}
+                
+            }
+        }
+	}
+});
+
+frappe.ui.form.on('Sales Order Item','price_list',function(frm,cdt,cdn){
+	var d = locals[cdt][cdn];
+	frappe.db.get_value('Item Price',{'item_code':d.item_code,"price_list":d.price_list},['price_list_rate'],(val) =>{
+		d.item_purchase_rate=val.price_list_rate||0
+		refresh_field("item_purchase_rate", d.name, d.parentfield);
+	})
+});
+
+frappe.ui.form.on('Sales Order Item','ship_to',function(frm,cdt,cdn){
+	var d = locals[cdt][cdn];
+	if (d.ship_to && d.price_list){
+		frappe.db.get_doc("Price List", d.price_list).then(( pr ) => {
+			(pr.countries).forEach((  pr_row ) => {
+				if (pr_row.customer==d.ship_to){
+					d.address=pr_row.address
+					refresh_field("address", d.name, d.parentfield);
+				 }
+			})
+		});
+	}
 });

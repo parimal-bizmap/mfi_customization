@@ -22,7 +22,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Asset",
-   "options": "Asset"
+   "options": "Asset",
+   "read_only": 1
   },
   {
    "fetch_from": "asset.asset_name",

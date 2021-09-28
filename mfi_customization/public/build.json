@@ -1,0 +1,6 @@
+{
+	"js/mfi_customization.min.js": [
+		"public/js/query_report.js",
+		"public/js/material_request_table.html"
+	]
+}

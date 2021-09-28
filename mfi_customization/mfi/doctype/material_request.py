@@ -116,7 +116,79 @@ def set_item_from_material_req(doc,method):
 							"qty": d.get('qty')
 						})
 		task.material_request=doc.name
-		task.save()					
+		task.save()   
+
+
+@frappe.whitelist() 
+def get_material_request(current_mr):
+	fields = ['name', 'schedule_date', 'status']
+	MR_list = frappe.db.get_all("Material Request", filters={'docstatus': 0,"name":("!=",current_mr)}, fields=fields)
+	return MR_list
+
+@frappe.whitelist() 
+def make_po(checked_values):
+	checked_values = json.loads(checked_values)
+	item_shipment=[]
+	mr_list=[]
+	for mr in checked_values:
+		mr_list.append(mr.get('name'))
+		mr_doc=frappe.get_doc('Material Request',{"name":mr.get('name')})
+		for itm in mr_doc.get("item_shipment"):
+			item_shipment.append(itm)
+
+	duplicate_items=[]
+	status=False
+	po_names=[]
+	for itm in item_shipment:
+		po=frappe.new_doc("Purchase Order")
+		po.supplier=itm.supplier
+		brand=frappe.db.get_value("Item",itm.item,"brand")
+		po.price_list=itm.price_list
+		po.mode_of_shipment=itm.shipment_type
+		if frappe.db.get_value("Item",itm.item,"supplier_category") in ["Toner","Finished Goods"]:
+			for i in frappe.get_all("Item Shipment",{"parent":["IN",mr_list],"shipment_type":itm.shipment_type,"supplier":itm.supplier},["name","item","qty","parent"]):
+				if frappe.db.get_value("Item",i.item,"brand")==brand and frappe.db.get_value("Item",i.item,"supplier_category") in ["Toner","Finished Goods"]:
+					mr_doc=frappe.get_doc('Material Request',{"name":i.get('parent')})
+					po.schedule_date=mr_doc.schedule_date
+					warehouse=""
+					for mr_item in mr_doc.get("items"):
+						if mr_item.item_code==i.item:
+							warehouse=mr_item.warehouse
+					if i.name not in duplicate_items:
+						duplicate_items.append(i.name)
+						po.append("items",{
+							"item_code":i.item,
+							"qty":i.qty,
+							"rate":frappe.db.get_value("Item Price",{"item_code":id,"price_list":itm.price_list},"price_list_rate"),
+							"warehouse":warehouse
+						})
+			if po.get("items"):
+				status=True
+				po.save()
+				po_names.append(po.name)
+		elif frappe.db.get_value("Item",itm.item,"supplier_category")=="Spares":
+			for i in frappe.get_all("Item Shipment",{"parent":["IN",mr_list],"shipment_type":itm.shipment_type,"supplier":itm.supplier},["name","item","qty","parent"]):
+				if frappe.db.get_value("Item",i.item,"brand")==brand and frappe.db.get_value("Item",i.item,"supplier_category") =="Spares":
+					mr_doc=frappe.get_doc('Material Request',{"name":i.get('parent')})
+					po.schedule_date=mr_doc.schedule_date
+					warehouse=""
+					for mr_item in mr_doc.get("items"):
+						if mr_item.item_code==i.item:
+							warehouse=mr_item.warehouse
+					if i.name not in duplicate_items:
+						duplicate_items.append(i.name)
+						po.append("items",{
+							"item_code":i.item,
+							"qty":i.qty,
+							"rate":frappe.db.get_value("Item Price",{"item_code":id,"price_list":itm.price_list},"price_list_rate"),
+							"warehouse":warehouse
+						})
+			if po.get("items"):
+				status=True
+				po.save()
+				po_names.append(po.name)
+	return {"status":status,"po_names":po_names}
+
 
 @frappe.whitelist()
 def make_material_req(source_name):
@@ -215,5 +287,44 @@ def run(report_name, filters=None, user=None, ignore_prepared_report=False, cust
 		"skip_total_row", False
 	)
 	result["price_list"]=[d.name for d in frappe.get_all("Price List")]
-	result["item_details"]={d.get("part_number"):frappe.db.get_value("Item",d.get("part_number"),["stock_uom","carton_qty"]) for d in result.get("result")}
+	item_details={}
+	for d in result.get("result"):
+		for i in frappe.get_all("Item",{"name":d.get("part_number")},["purchase_uom","carton_qty","description","stock_uom","must_buy_in_purchase_uom"]):
+			item_details[d.get("part_number")]=i.update({"uom":i.get("purchase_uom") if i.get("purchase_uom") else i.get("stock_uom")})
+			for uom in frappe.get_all("UOM Conversion Detail",{"parent":d.get("part_number"),"uom":i.get("uom")},['conversion_factor']):
+				(item_details[d.get("part_number")]).update(uom)
+	
+	result["item_details"]=item_details
+	# print(result)
 	return result
+
+@frappe.whitelist()
+def create_requisition_reference(doc,requisition_items,table_format):
+	doc=json.loads(doc)
+	if frappe.db.exists("Requisition Analysis Reference",doc.get("name")):
+		requisition_doc=frappe.get_doc("Requisition Analysis Reference",doc.get("name"))
+		requisition_doc.set("items",[])
+		
+	else:
+		requisition_doc=frappe.new_doc("Requisition Analysis Reference")
+		requisition_doc.material_request=doc.get("name")
+	
+	requisition_doc.html_format=table_format
+	nested_list=json.loads(requisition_items)
+	data={}
+	for d in nested_list:
+		column=nested_list[d]
+		print(column)
+		data[d]=((column.get("courier_qty") or 0)+(column.get("air_qty") or 0)+(column.get("sea_qty") or 0))
+	requisition_doc.sorted_data=data
+	requisition_doc.items__data=requisition_items
+	requisition_doc.save()
+
+@frappe.whitelist()
+def get_requisition_analysis_data(doc):
+	doc=json.loads(doc)
+	if frappe.db.exists("Requisition Analysis Reference",doc.get("name")):
+		requisition_doc=frappe.get_doc("Requisition Analysis Reference",doc.get("name"))
+		return {"html_format":requisition_doc.get("html_format"),"data":json.loads(requisition_doc.get("items__data"))}
+	return ""
+	

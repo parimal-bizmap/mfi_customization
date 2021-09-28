@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "creation": "2021-09-21 17:22:57.505487",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "shipping_address"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "shipping_address",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Shipping address",
+   "options": "Address"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-09-21 17:23:02.872578",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Price List Applicable for",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

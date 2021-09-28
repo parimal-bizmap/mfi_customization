@@ -16,8 +16,9 @@ app_license = "MIT"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/mfi_customization/css/mfi_customization.css"
-# app_include_js = "/assets/mfi_customization/js/mfi_customization.js"
-
+app_include_js = [
+	"/assets/js/mfi_customization.min.js",
+]
 # include js, css files in header of web template
 # web_include_css = "/assets/mfi_customization/css/mfi_customization.css"
 # web_include_js = "/assets/mfi_customization/js/mfi_customization.js"
@@ -130,11 +131,14 @@ doc_events = {
         "validate":"mfi_customization.mfi.doctype.project.validate"
     },
     "Purchase Order":{
-        "on_submit":"mfi_customization.mfi.doctype.purchase_order.on_submit"
+        "after_insert":"mfi_customization.mfi.doctype.purchase_order.on_submit"
     },
     "Sales Invoice":{
         "on_submit":"mfi_customization.mfi.doctype.sales_invoice.on_submit",
         "on_cancel":"mfi_customization.mfi.doctype.sales_invoice.on_cancel"
+    },
+    "Sales Order":{
+        "on_submit":"mfi_customization.mfi.doctype.sales_order.on_submit"
     }
     # "Material Request":{
     #     "validate":"mfi_customization.mfi.doctype.material_request.validate",
