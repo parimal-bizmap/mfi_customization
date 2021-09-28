@@ -12,20 +12,7 @@ status:function(frm){
         let today = new Date()
         frappe.model.set_value("Issue", frm.doc.issue, 'first_responded_on',today);
     }
-    if (frm.doc.status == "Completed"){
-        frm.set_df_property('status','read_only',1);
-        if(frm.doc.type_of_call){
-            frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
-                if(r.ignore_reading == 1){
-                    frm.set_df_property('current_reading','hidden',1);
-                }
-                else{
-                    frm.set_df_property('current_reading','hidden',0);
-                        frm.set_df_property('current_reading','read_only',1);
-                }
-            });
-        }
-    }
+    
 },
 
 asset:function(frm){
@@ -251,24 +238,43 @@ completed_by:function(frm){
     }
 },
 validate:function(frm){
-  
+  if (frm.doc.status == "Completed"){
+	frm.set_value("completed_on", frappe.datetime.now_date());
+//         if(frm.doc.type_of_call){
+//             frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
+//                 if(r.ignore_reading == 1){
+//                     frm.set_df_property('current_reading','hidden',1);
+//                 }
+//                 else{
+//                     frm.set_df_property('current_reading','hidden',0);
+//                         frm.set_df_property('current_reading','read_only',1);
+//                 }
+//             });
+//         }
+    }
     if(frm.doc.status == 'Completed'  ){
         if(!frm.doc.asset){
             frappe.throw('Asset details missing.');
+		
         }
+	
         if(frm.doc.type_of_call){
             frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
                 if(r.ignore_reading == 1){
                     frm.set_df_property('current_reading','hidden',1);
                 }
                 else{
-                    frm.set_df_property('current_reading','hidden',0);
-                    frm.set_df_property('current_reading','read_only',1);
-                    if(!frm.doc.current_reading.length){
-                        frappe.throw('Current readings missing.');
-                    }
+//                     frm.set_df_property('current_reading','hidden',0);
+			  if(cur_frm.doc.current_reading.length>=1){
+		frm.set_df_property('current_reading','read_only',1);
+	  
+	  }
+//                     if(!frm.doc.current_reading.length){
+//                         frappe.throw('Current readings missing.');
+//                     }
                 }
             });
+
         }
     }
     frm.set_df_property('failure_date_and_time','read_only',1);

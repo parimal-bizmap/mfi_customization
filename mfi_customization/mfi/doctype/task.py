@@ -63,6 +63,8 @@ def on_change(doc,method):
 		if doc.status == 'Completed':
 			validate_if_material_request_is_not_submitted(doc)
 			attachment_validation(doc)
+			if len(doc.get("current_reading"))<1:
+				frappe.throw("Can not complete task without Machine Reading")
 			issue=frappe.get_doc("Issue",doc.issue)
 			issue.status="Task Completed"
 			issue.closing_date_time=doc.completion_date_time
@@ -332,7 +334,7 @@ def validate_if_material_request_is_not_submitted(doc):
 		frappe.throw("Material Request is not completed yet. Name <b>{0}</b>".format(mr.name))
 
 def attachment_validation(doc):
-	if not doc.attachment:
+	if not doc.attachments:
 		frappe.throw("Cann't Completed Task Without Attachment")
 	
 def create_user_permission(doc):
