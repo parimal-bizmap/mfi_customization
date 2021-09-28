@@ -238,7 +238,7 @@ def get_assets(project,company):
 	return data1,item_details,data2,total_rent
 
 def get_reading(asset):
-	return frappe.get_all("Machine Reading",filters={"asset":asset,"reading_type":"Billing","billing_status":""},fields=["name","colour_reading","black_and_white_reading"],order_by="reading_date desc")
+	return frappe.get_all("Machine Reading",filters={"asset":asset,"reading_type":["IN",["Billing","Installation"]],"billing_status":""},fields=["name","colour_reading","black_and_white_reading"],order_by="reading_date desc")
 
 def get_item_details(item,company):
 	item = frappe.db.sql("""select i.name as item_code, i.stock_uom,i.item_name, i.item_group,i.description,

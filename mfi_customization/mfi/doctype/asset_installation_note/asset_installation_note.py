@@ -11,6 +11,7 @@ class AssetInstallationNote(Document):
 		create_stock_entry(self)
 		# create_journal_entry(self)
 		validate_date(self)
+		create_machine_reading(self)
 
 def create_stock_entry(doc):
 	se=frappe.new_doc("Stock Entry")
@@ -65,3 +66,13 @@ def validate_date(doc):
 	if not doc.inst_date:
 		frappe.throw("Please Fill Installation Date")
 
+def create_machine_reading(doc):
+	mr=frappe.new_doc("Machine Reading")
+	mr.reading_date=doc.inst_date
+	mr.asset=doc.asset
+	mr.reading_type="Installation"
+	mr.machine_type=doc.machine_type
+	mr.colour_reading=doc.color_reading
+	mr.black_and_white_reading=doc.black_and_white_reading
+	mr.project=doc.project
+	mr.save()

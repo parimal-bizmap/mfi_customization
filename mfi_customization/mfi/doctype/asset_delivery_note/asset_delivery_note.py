@@ -95,7 +95,7 @@ def create_assets(doc):
 	# if len(frappe.get_all("Asset",{"asset_delivery_note":doc.name}))==0:
 	for i,d in enumerate(doc.get("model_serial_nos")):
 		# frappe.publish_realtime('update_progress',{"progress": [i, len(doc.get("model_serial_nos"))]}, user=frappe.session.user)
-		frappe.publish_progress(i / len(doc.get("model_serial_nos"))* 100, title=("Updating Assets..."))
+		# frappe.publish_progress(i / len(doc.get("model_serial_nos"))* 100, title=("Updating Assets..."))
 		asset=frappe.new_doc("Asset")
 		asset.company=frappe.db.get_value("Sales Order",{"name":doc.get('sales_order')},"company")
 		asset.item_code=frappe.db.get_value("Item",{"stock_item":d.get("asset_model")},'name')
@@ -120,6 +120,7 @@ def create_assets(doc):
 		asset_installation_note.project=doc.get("project")
 		asset_installation_note.location=asset.location
 		asset_installation_note.asset_serial_no=asset.serial_no
+		asset_installation_note.asset_delivery_note=doc.get("name")
 		asset_installation_note.save()
 
 

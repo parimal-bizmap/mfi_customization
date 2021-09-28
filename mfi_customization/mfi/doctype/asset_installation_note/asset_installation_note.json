@@ -27,7 +27,7 @@
   "company",
   "remarks",
   "machine_reading_section",
-  "mono",
+  "machine_type",
   "black_and_white_reading",
   "color_reading",
   "asset_delivery_note",
@@ -139,7 +139,6 @@
    "label": "Installation Date &Time",
    "oldfieldname": "inst_date",
    "oldfieldtype": "Date",
-   "reqd": 1,
    "search_index": 1
   },
   {
@@ -225,12 +224,6 @@
    "label": "Machine Reading"
   },
   {
-   "fieldname": "mono",
-   "fieldtype": "Select",
-   "label": "Machine Type",
-   "options": "\nBlack & White\nColour"
-  },
-  {
    "fieldname": "black_and_white_reading",
    "fieldtype": "Data",
    "label": "Black & white reading"
@@ -239,13 +232,19 @@
    "fieldname": "color_reading",
    "fieldtype": "Data",
    "label": "Color Reading"
+  },
+  {
+   "fieldname": "machine_type",
+   "fieldtype": "Select",
+   "label": "Machine Type",
+   "options": "\nBlack & White\nColour"
   }
  ],
  "icon": "fa fa-wrench",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-09-28 10:28:34.505780",
+ "modified": "2021-09-28 11:12:06.856598",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Installation Note",
