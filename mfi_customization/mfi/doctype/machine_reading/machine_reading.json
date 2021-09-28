@@ -40,7 +40,8 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Asset",
-   "options": "Asset"
+   "options": "Asset",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_4",
@@ -55,12 +56,14 @@
   {
    "fieldname": "colour_reading",
    "fieldtype": "Data",
-   "label": "Colour reading"
+   "label": "Colour reading",
+   "reqd": 1
   },
   {
    "fieldname": "black_and_white_reading",
    "fieldtype": "Data",
-   "label": "Black and white Reading"
+   "label": "Black and white Reading",
+   "mandatory_depends_on": "eval:doc.machine_type==\"Black & White\""
   },
   {
    "fieldname": "total",
@@ -83,7 +86,7 @@
    "fieldname": "reading_type",
    "fieldtype": "Select",
    "label": "Reading Type",
-   "options": "\nBilling\nMaintenance"
+   "options": "\nBilling\nMaintenance\nInstallation"
   },
   {
    "fieldname": "billing_status",
@@ -99,7 +102,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-09-24 10:25:27.883978",
+ "modified": "2021-09-28 10:25:37.701378",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Machine Reading",

@@ -24,10 +24,12 @@
   "asset_serial_no",
   "column_break1",
   "inst_date",
-  "status",
   "company",
   "remarks",
-  "item_details",
+  "machine_reading_section",
+  "mono",
+  "black_and_white_reading",
+  "color_reading",
   "asset_delivery_note",
   "amended_from"
  ],
@@ -137,21 +139,8 @@
    "label": "Installation Date &Time",
    "oldfieldname": "inst_date",
    "oldfieldtype": "Date",
+   "reqd": 1,
    "search_index": 1
-  },
-  {
-   "default": "Draft",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_standard_filter": 1,
-   "label": "Status",
-   "no_copy": 1,
-   "oldfieldname": "status",
-   "oldfieldtype": "Select",
-   "options": "Draft\nSubmitted\nCancelled",
-   "print_hide": 1,
-   "read_only": 1,
-   "reqd": 1
   },
   {
    "fieldname": "company",
@@ -182,12 +171,6 @@
    "oldfieldname": "remarks",
    "oldfieldtype": "Small Text",
    "print_hide": 1
-  },
-  {
-   "fieldname": "item_details",
-   "fieldtype": "Section Break",
-   "oldfieldtype": "Section Break",
-   "options": "Simple"
   },
   {
    "fieldname": "amended_from",
@@ -233,14 +216,36 @@
    "fieldname": "asset_delivery_note",
    "fieldtype": "Link",
    "label": "Asset Delivery Note",
-   "options": "Asset Delivery Note"
+   "options": "Asset Delivery Note",
+   "read_only": 1
+  },
+  {
+   "fieldname": "machine_reading_section",
+   "fieldtype": "Section Break",
+   "label": "Machine Reading"
+  },
+  {
+   "fieldname": "mono",
+   "fieldtype": "Select",
+   "label": "Machine Type",
+   "options": "\nBlack & White\nColour"
+  },
+  {
+   "fieldname": "black_and_white_reading",
+   "fieldtype": "Data",
+   "label": "Black & white reading"
+  },
+  {
+   "fieldname": "color_reading",
+   "fieldtype": "Data",
+   "label": "Color Reading"
   }
  ],
  "icon": "fa fa-wrench",
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-09-06 15:06:02.269127",
+ "modified": "2021-09-28 10:28:34.505780",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Installation Note",
