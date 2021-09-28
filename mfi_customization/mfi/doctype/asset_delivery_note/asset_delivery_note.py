@@ -127,7 +127,7 @@ def create_assets(doc):
 @frappe.whitelist()
 def get_serial_nos(filters):
 	filters=json.loads(filters)
-	fltr={"status":"Active"}
+	fltr={"status":"Active","company":filters.get("company")}
 	if filters.get("item_code"):
 		fltr.update({"item_code":filters.get("item_code")})
 	qty=0
