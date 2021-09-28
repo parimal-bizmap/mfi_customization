@@ -15,7 +15,7 @@ class AssetInstallationNote(Document):
 
 def create_stock_entry(doc):
 	se=frappe.new_doc("Stock Entry")
-	se.company=frappe.db.get_value("Sales Order",{"name":doc.get('sales_order')},"company")
+	se.company=doc.company
 	se.stock_entry_type="Material Issue"
 	se.project=doc.project
 	se.asset_delivery_note=doc.asset_delivery_note
