@@ -16,7 +16,7 @@ def validate(doc,method):
 	last_reading=today()
 	if doc.asset and  len(doc.get("last_readings"))==0:
 		doc.set("last_readings", [])
-		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
+		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading),"reading_type":"Maintenance"}
 		for d in frappe.get_all("Machine Reading",filters=fltr,fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc,name desc"):
 			doc.append("last_readings", {
 				"date" : d.get('reading_date'),

@@ -143,15 +143,14 @@ frappe.ui.form.on('Issue', {
 			}
 			}
 		});
-		// frm.set_query("asset", "current_reading", function() {
+		frm.set_query("asset", "current_reading", function() {
+			return {
+				filters: {
+					"name": frm.doc.asset || ""
+				}
 			
-		// 	return {
-		// 		filters: {
-		// 			"name": frm.doc.asset || ""
-		// 		}
-			
-		// }
-		// });
+		}
+		});
 		frm.set_query("asset", function() {
 			if (frm.doc.project) {
 				return {
