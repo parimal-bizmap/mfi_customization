@@ -309,14 +309,8 @@ def create_requisition_reference(doc,requisition_items,table_format):
 		requisition_doc=frappe.new_doc("Requisition Analysis Reference")
 		requisition_doc.material_request=doc.get("name")
 	
+	print(requisition_items)
 	requisition_doc.html_format=table_format
-	nested_list=json.loads(requisition_items)
-	data={}
-	for d in nested_list:
-		column=nested_list[d]
-		print(column)
-		data[d]=((column.get("courier_qty") or 0)+(column.get("air_qty") or 0)+(column.get("sea_qty") or 0))
-	requisition_doc.sorted_data=data
 	requisition_doc.items__data=requisition_items
 	requisition_doc.save()
 
@@ -325,6 +319,21 @@ def get_requisition_analysis_data(doc):
 	doc=json.loads(doc)
 	if frappe.db.exists("Requisition Analysis Reference",doc.get("name")):
 		requisition_doc=frappe.get_doc("Requisition Analysis Reference",doc.get("name"))
-		return {"html_format":requisition_doc.get("html_format"),"data":json.loads(requisition_doc.get("items__data"))}
+		data=json.loads(requisition_doc.get("items__data"))
+		sorted_list=sorted(data.items(), key = lambda x: x[1]['total_qty'],reverse=True)
+		html_format=json.loads(requisition_doc.get("html_format"))
+
+		html_format_data={}
+		for d in html_format.get("result"):
+			html_format_data[d.get("part_number")]=d
+
+		data={}
+		html_format_result=[]
+		for d in sorted_list:
+			data[d[0]]=d[1]
+			html_format_result.append(html_format_data[d[0]])
+			
+		html_format["result"]=html_format_result
+		return {"html_format":html_format,"data":data}
 	return ""
 	

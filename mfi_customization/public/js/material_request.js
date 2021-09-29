@@ -33,7 +33,7 @@ frappe.ui.form.on('Material Request', {
                     },
                     callback: function(r) {
                         if (r.message){
-                            frm.events.render_table(frm, JSON.parse(r.message['html_format']),r.message['data']);
+                            frm.events.render_table(frm, r.message['html_format'],r.message['data']);
                         }
                     } 
                 });
@@ -339,7 +339,8 @@ var make_list_row= function(columns, project_tasks, result={}) {
         }
     },
     after_save:function(frm){
-                   frappe.call({
+        if (cur_frm.doc.report_name && cur_frm.doc.filters){
+                frappe.call({
                 method: 'mfi_customization.mfi.doctype.material_request.run',
                 type: 'GET',
                 args: {
@@ -352,10 +353,22 @@ var make_list_row= function(columns, project_tasks, result={}) {
                         ((r.message).result).forEach(resp => {
                             requisition_items[String(resp.part_number)]={};
                             var row={};
+                            var total_qty=0;
                             $(cur_frm.fields_dict.requisition_analysis_html.wrapper).find(`[data-item_code="${resp.part_number}"]`).each(function(el, input){
                                 row[String((input.className).replace("result-",""))]=$(input).val();
                             })
+                            $(cur_frm.fields_dict.requisition_analysis_html.wrapper).find(`[data-item_code="${resp.part_number}"].result-courier_qty`).each(function(el, input){
+                                total_qty+=parseFloat($(input).val() || 0);
+                            })
+                            $(cur_frm.fields_dict.requisition_analysis_html.wrapper).find(`[data-item_code="${resp.part_number}"].result-air_qty`).each(function(el, input){
+                                total_qty+=parseFloat($(input).val() || 0);
+                            })
+                            $(cur_frm.fields_dict.requisition_analysis_html.wrapper).find(`[data-item_code="${resp.part_number}"].result-sea_qty`).each(function(el, input){
+                                total_qty+=parseFloat($(input).val() || 0);
+                            })
+                            row["total_qty"]=total_qty
                             requisition_items[resp.part_number]=row;
+                            console.log(row)
                         }) 
                         frappe.call({
                             method: 'mfi_customization.mfi.doctype.material_request.create_requisition_reference',
@@ -372,8 +385,10 @@ var make_list_row= function(columns, project_tasks, result={}) {
                     }
                 } 
             });
+        }
     },
     create_requisition_doc:function(frm){
+        if (cur_frm.doc.report_name && cur_frm.doc.filters){
             frappe.call({
                 method: 'mfi_customization.mfi.doctype.material_request.run',
                 type: 'GET',
@@ -387,10 +402,22 @@ var make_list_row= function(columns, project_tasks, result={}) {
                         ((r.message).result).forEach(resp => {
                             requisition_items[String(resp.part_number)]={};
                             var row={};
+                            var total_qty=0;
                             $(cur_frm.fields_dict.requisition_analysis_html.wrapper).find(`[data-item_code="${resp.part_number}"]`).each(function(el, input){
                                 row[String((input.className).replace("result-",""))]=$(input).val();
                             })
+                            $(cur_frm.fields_dict.requisition_analysis_html.wrapper).find(`[data-item_code="${resp.part_number}"].result-courier_qty`).each(function(el, input){
+                                total_qty+=parseFloat($(input).val() || 0);
+                            })
+                            $(cur_frm.fields_dict.requisition_analysis_html.wrapper).find(`[data-item_code="${resp.part_number}"].result-air_qty`).each(function(el, input){
+                                total_qty+=parseFloat($(input).val() || 0);
+                            })
+                            $(cur_frm.fields_dict.requisition_analysis_html.wrapper).find(`[data-item_code="${resp.part_number}"].result-sea_qty`).each(function(el, input){
+                                total_qty+=parseFloat($(input).val() || 0);
+                            })
+                            row["total_qty"]=total_qty
                             requisition_items[resp.part_number]=row;
+                            console.log(row)
                         }) 
                         frappe.call({
                             method: 'mfi_customization.mfi.doctype.material_request.create_requisition_reference',
@@ -407,6 +434,7 @@ var make_list_row= function(columns, project_tasks, result={}) {
                     }
                 } 
             });
+        }
     },
     update_title:function(frm){
         frappe.xcall("frappe.model.rename_doc.update_document_title", {
@@ -421,4 +449,11 @@ var make_list_row= function(columns, project_tasks, result={}) {
     }
 });
 
-   
+frappe.ui.form.on('Material Request Item', {
+	items_add: function(frm, cdt, cdn){
+        var d = locals[cdt][cdn]
+        if (frm.doc.project){
+            d.project=frm.doc.project
+        }
+	}
+})
