@@ -53,7 +53,7 @@ frappe.ui.form.on('Material Request', {
 			}
 		});
         if (frm.doc.__islocal) {
-            frm.set_value("material_request_type","Material Issue")
+            frm.set_value("material_request_type","Purchase")
             frappe.call({
                 method: "mfi_customization.mfi.doctype.material_request.get_approver",
                 args: {
