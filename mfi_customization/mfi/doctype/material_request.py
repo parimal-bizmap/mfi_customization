@@ -290,7 +290,7 @@ def run(report_name, filters=None, user=None, ignore_prepared_report=False, cust
 	item_details={}
 	for d in result.get("result"):
 		for i in frappe.get_all("Item",{"name":d.get("part_number")},["purchase_uom","carton_qty","description","stock_uom","must_buy_in_purchase_uom"]):
-			item_details[d.get("part_number")]=i.update({"uom":i.get("purchase_uom") if i.get("purchase_uom") else i.get("stock_uom")})
+			item_details[d.get("part_number")]=i.update({"uom":i.get("purchase_uom") if i.get("purchase_uom") else i.get("stock_uom"),'conversion_factor':0})
 			for uom in frappe.get_all("UOM Conversion Detail",{"parent":d.get("part_number"),"uom":i.get("uom")},['conversion_factor']):
 				(item_details[d.get("part_number")]).update(uom)
 	

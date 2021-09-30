@@ -33,7 +33,6 @@ frappe.ui.form.on('Asset Delivery Note', {
             method: "mfi_customization.mfi.doctype.asset_delivery_note.asset_delivery_note.get_serial_nos",
             args:{"filters":args},
             callback: function(r) {
-				frm.clear_table("model_serial_nos");
 				(r.message).forEach(element => {
 				var c = frm.add_child("model_serial_nos")
 				c.serial_no=element.name
