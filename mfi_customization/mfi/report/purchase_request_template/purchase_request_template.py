@@ -59,7 +59,7 @@ def get_column(filters = None):
 
 def get_data(filters, columns,months_list,warehouse_list,shipment_list_by_month,po):
 	data = []
-	fltr={"company":filters.get("company"),"is_stock_item":1}
+	fltr={"is_stock_item":1}
 
 	if filters.get('item_list'):
 		fltr.update({"name":["IN",[d for d in (filters.get('item_list')).split(',')]]})
