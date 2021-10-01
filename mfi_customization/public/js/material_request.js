@@ -273,11 +273,13 @@ var make_list_row= function(columns, project_tasks, result={}) {
                         $(html_values).find(`[data-item_code="${resp.part_number}"].result-must_buy_in_purchase_uom`).each(function(el, input){
                             is_puchase_uom=$(input).is(":checked");
                         })
+                        $(html_values).find(`[data-item_code="${resp.part_number}"].result-uom`).each(function(el, input){
+                            uom=$(input).val();
+                        })
                         Object.keys(qty_field_mapping).forEach(shipment_type=>{
                             $(html_values).find(`[data-item_code="${resp.part_number}"].result-${qty_field_mapping[shipment_type]}`).each(function(el, input){
                                 if ($(input).val()>0){
                                     var qty=parseFloat($(input).val());
-                                    console.log(is_puchase_uom);
                                     if (is_puchase_uom){
                                         qty=(parseFloat($(input).val())/parseFloat(carton_qty));
                                         if(parseFloat($(input).val())%parseFloat(carton_qty)!=0){
@@ -314,7 +316,7 @@ var make_list_row= function(columns, project_tasks, result={}) {
                                 item_row.item_code=resp.part_number
                                 item_row.item_name=resp.part_name
                                 item_row.qty=item_qty
-                                item_row.uom=((r.message).item_details)[resp.part_number]['purchase_uom']
+                                item_row.uom=((r.message).item_details)[resp.part_number]['uom']
                                 item_row.price_list=price_list
                                 item_row.description=((r.message).item_details)[resp.part_number]['description']
                                 item_row.conversion_factor=((r.message).item_details)[resp.part_number]['conversion_factor']
@@ -368,7 +370,6 @@ var make_list_row= function(columns, project_tasks, result={}) {
                             })
                             row["total_qty"]=total_qty
                             requisition_items[resp.part_number]=row;
-                            console.log(row)
                         }) 
                         frappe.call({
                             method: 'mfi_customization.mfi.doctype.material_request.create_requisition_reference',
@@ -417,7 +418,6 @@ var make_list_row= function(columns, project_tasks, result={}) {
                             })
                             row["total_qty"]=total_qty
                             requisition_items[resp.part_number]=row;
-                            console.log(row)
                         }) 
                         frappe.call({
                             method: 'mfi_customization.mfi.doctype.material_request.create_requisition_reference',
