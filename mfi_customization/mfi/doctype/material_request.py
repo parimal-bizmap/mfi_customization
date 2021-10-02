@@ -140,6 +140,8 @@ def make_po(checked_values):
 	status=False
 	po_names=[]
 	for itm in item_shipment:
+		print("#############")
+		print(itm.price_list)
 		po=frappe.new_doc("Purchase Order")
 		po.supplier=itm.supplier
 		brand=frappe.db.get_value("Item",itm.item,"brand")
@@ -160,7 +162,8 @@ def make_po(checked_values):
 							"item_code":i.item,
 							"qty":i.qty,
 							"rate":frappe.db.get_value("Item Price",{"item_code":id,"price_list":itm.price_list},"price_list_rate"),
-							"warehouse":warehouse
+							"warehouse":warehouse,
+							"price_list":itm.price_list
 						})
 			if po.get("items"):
 				status=True
@@ -181,7 +184,8 @@ def make_po(checked_values):
 							"item_code":i.item,
 							"qty":i.qty,
 							"rate":frappe.db.get_value("Item Price",{"item_code":id,"price_list":itm.price_list},"price_list_rate"),
-							"warehouse":warehouse
+							"warehouse":warehouse,
+							"price_list":itm.price_list
 						})
 			if po.get("items"):
 				status=True
