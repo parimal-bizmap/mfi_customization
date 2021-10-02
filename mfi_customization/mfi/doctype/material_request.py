@@ -140,12 +140,10 @@ def make_po(checked_values):
 	status=False
 	po_names=[]
 	for itm in item_shipment:
-		print("#############")
-		print(itm.price_list)
 		po=frappe.new_doc("Purchase Order")
 		po.supplier=itm.supplier
 		brand=frappe.db.get_value("Item",itm.item,"brand")
-		po.price_list=itm.price_list
+		po.buying_price_list=itm.price_list
 		po.mode_of_shipment=itm.shipment_type
 		if frappe.db.get_value("Item",itm.item,"supplier_category") in ["Toner","Finished Goods"]:
 			for i in frappe.get_all("Item Shipment",{"parent":["IN",mr_list],"shipment_type":itm.shipment_type,"supplier":itm.supplier},["name","item","qty","parent"]):
