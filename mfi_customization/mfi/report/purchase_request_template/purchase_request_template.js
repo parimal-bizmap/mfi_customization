@@ -116,5 +116,12 @@ frappe.query_reports["Purchase Request Template"] = {
 			"options":"Company",
 			"reqd": 1
 		},
+		{
+			"label":"Price List",
+			"fieldname":"price_list",
+			"fieldtype":"Link",
+			"options":"Price List",
+			"reqd": 1
+		},
 	]
 };
