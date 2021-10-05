@@ -90,6 +90,7 @@ def make_delivery_note(source_name, target_doc=None, skip_item_mapping=False):
 	return target_doc
 
 def create_po(doc):
+	from frappe.contacts.doctype.address.address import get_address_display
 	if doc.company=="MFI International FZE":
 		duplicate=[]
 		items=[]
@@ -102,21 +103,28 @@ def create_po(doc):
 			items.append(rows)
 			
 		for i in items:
-			po=frappe.new_doc("Purchase Order")
-			po.schedule_date=doc.delivery_date
-			po.company=doc.company
-			po.mode_of_shipment=doc.mode_of_shipment
-			for sup in frappe.get_all("Price List Supplier",{"parent":i[0].price_list,"company":doc.company},["supplier"]):
-				po.supplier=sup.supplier
-			for itm in i:
-				row={}
-				for key in ["item_code","item_name","required_date","description","qty","uom","conversion_factor","stock_uom","stock_qty","price_list_rate","base_price_list_rate","rate","rate_amount","base_rate","base_amount","stock_uom_rate","net_rate","net_amount","base_net_rate","base_net_amount","billed_amt","gross_profit","price_list","ship_to","address"]:
-					row[key]=itm.get(key)
-				row["warehouse"]=itm.get("purchase_warehouse")
-				row["price_list_rate"]=itm.get("item_purchase_rate")
-				po.append("items",row)
+			if i:
+				po=frappe.new_doc("Purchase Order")
+				po.schedule_date=doc.delivery_date
+				po.company=doc.company
+				po.mode_of_shipment=doc.mode_of_shipment
+				for row in i:
+					po.ship_to=row.ship_to
+					po.address=row.address
+					po.address_detail=get_address_display({"address_dict": row.address})
+					po.currency=frappe.db.get_value("Price List",row.price_list,"currency")
+					po.buying_price_list=row.price_list
+					for sup in frappe.get_all("Price List Supplier",{"parent":row.price_list,"company":doc.company},["supplier"]):
+						po.supplier=sup.supplier
+				for itm in i:
+					row={}
+					for key in ["item_code","item_name","required_date","description","qty","uom","conversion_factor","stock_uom","stock_qty","price_list_rate","base_price_list_rate","rate","rate_amount","base_rate","base_amount","stock_uom_rate","net_rate","net_amount","base_net_rate","base_net_amount","billed_amt","gross_profit","price_list","ship_to","address"]:
+						row[key]=itm.get(key)
+					row["warehouse"]=doc.get("set_warehouse")
+					row["price_list_rate"]=itm.get("item_purchase_rate")
+					po.append("items",row)
 
-			po.save()
+				po.save()
 
 @frappe.whitelist()
 def get_customer_by_price_list(doctype, txt, searchfield, start, page_len, filters):

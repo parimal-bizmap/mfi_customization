@@ -116,6 +116,15 @@ frappe.ui.form.on('Sales Order', {
                 
             }
         }
+		frm.fields_dict['items'].grid.get_field('price_list').get_query = function(doc, cdt, cdn) {
+            return {    
+                filters:
+					{
+						'company': frm.doc.company
+					}
+                
+            }
+        }
 	}
 });
 

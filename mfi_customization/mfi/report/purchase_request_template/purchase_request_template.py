@@ -2,7 +2,8 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe.utils import data, today,add_days
+from frappe.utils import data, today,add_days,fmt_money
+
 
 def execute(filters=None):
 	columns  = get_column(filters)
@@ -147,6 +148,7 @@ def get_data(filters, columns,months_list,warehouse_list,shipment_list_by_month,
 		purchase_qty_calculation(itm.item_code,row)
 		row["price_list"]=filters.get('price_list')
 		for d in frappe.get_all("Item Price",{"item_code":itm.item_code,"price_list":filters.get('price_list')},["currency","price_list_rate"]):
+			d['price_list_rate']=fmt_money(d.price_list_rate, currency=d.currency)
 			row.update(d)
 		data.append(row)
 	return data

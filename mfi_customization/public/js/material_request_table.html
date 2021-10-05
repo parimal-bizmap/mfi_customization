@@ -50,13 +50,7 @@
 			z-index: 50;
 
 		}
-		
-		.result-price_list {
-		width: 200px;
-		border: 1px solid black;
-		outline: 0;
-		border-radius: 2px;
-		}
+
 
 		.close-icon {
 			border:1px solid transparent;
@@ -67,9 +61,7 @@
 		cursor: pointer;
 		}
 
-		.result-price_list:not(:valid) ~ .close-icon {
-			display: none;
-		}
+
 
 		table tr:nth-child(1){
 		counter-reset: rowNumber;
@@ -269,13 +261,7 @@
 			<th style="width: 90px" >Life - Stock on hand plus transit plus request Qty</th>
 			<th style="width: 90px" >Carton Qty</th>
 			<th style="width: 90px" >Purchase UOM</th>
-			<th style="width: 90px" ><div class="dropdown">Price List Name
-				<div class="dropdown-content">
-					{% for pr in price_list %}
-						<p onclick="setPriceList(`{{pr}}`)">{{pr}}</p>
-					{% endfor %}
-				</div>
-			</div></th>
+			<th style="width: 90px" >Price List Name</th>
 			<th style="width: 90px" >Currency</th>
 			<th style="width: 90px" >Unit Price</th>
 			<th style="width: 90px" >Courier - Amount</th>
@@ -320,7 +306,7 @@
 			<td><input type="checkbox" class="result-must_buy_in_purchase_uom" 		data-item_code="{{r.part_number}}" id="must_buy_in_purchase_uom+{{r.part_number}}" style="width:100%;" {% if(item_details[r.part_number][`must_buy_in_purchase_uom`]) { %} checked  {% } %}  disabled {% if(data[r.part_number]) { %}  value="{{data[r.part_number].must_buy_in_purchase_uom}}" {% } %}></td>
 			<td><input type="text" class="result-price_list"          data-item_code="{{r.part_number}}"  id="price_list+{{r.part_number}}"	                        disabled                                  value="{{r.price_list}}"></td>
 			<td><input type="text" 	 class="result-currency" 		    data-item_code="{{r.part_number}}" id="currency+{{r.part_number}}" 			style="width:100%;" disabled                                  value="{{r.currency}}"></td>
-			<td><input type="text" 	 class="result-unit_price" 		    data-item_code="{{r.part_number}}" id="unit_price+{{r.part_number}}" 		style="width:100%;" disabled 								  value="{{r.price_list_rate}}"></td>
+			<td><input type="text" 	 class="result-unit_price" 		    data-item_code="{{r.part_number}}" id="unit_price+{{r.part_number}}" 		style="width:100%;" disabled 				  value="{{r.price_list_rate}}"></td>
 			<td><input type="text" class="result-courier_amount" 	    data-item_code="{{r.part_number}}" id="courier_amount+{{r.part_number}}" 	style="width:100%;" disabled {% if(data[r.part_number]) { %}  value="{{data[r.part_number].courier_amount}}" {% } %}></td>
 			<td><input type="text" class="result-air_amount" 		    data-item_code="{{r.part_number}}" id="air_amount+{{r.part_number}}" 		style="width:100%;" disabled {% if(data[r.part_number]) { %}  value="{{data[r.part_number].air_amount}}" {% } %}></td>
 			<td><input type="text" class="result-sea_amount" 		    data-item_code="{{r.part_number}}" id="sea_amount+{{r.part_number}}" 		style="width:100%;" disabled {% if(data[r.part_number]) { %}  value="{{data[r.part_number].sea_amount}}" {% } %}></td>

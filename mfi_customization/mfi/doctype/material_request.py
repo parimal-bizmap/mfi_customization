@@ -297,7 +297,6 @@ def run(report_name, filters=None, user=None, ignore_prepared_report=False, cust
 				(item_details[d.get("part_number")]).update(uom)
 	
 	result["item_details"]=item_details
-	print(result)
 	return result
 
 @frappe.whitelist()

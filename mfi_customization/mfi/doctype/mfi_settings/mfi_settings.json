@@ -17,7 +17,9 @@
   "rental_item_details_section",
   "colour_billing_item",
   "mono_billing_item",
-  "rental_contract_item"
+  "rental_contract_item",
+  "section_break_14",
+  "company_purchase_warehouse"
  ],
  "fields": [
   {
@@ -90,12 +92,22 @@
    "fieldtype": "Table",
    "label": "Rental Contract Item",
    "options": "Rental Contract Item"
+  },
+  {
+   "fieldname": "section_break_14",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company_purchase_warehouse",
+   "fieldtype": "Table",
+   "label": "Company Purchase Warehouse",
+   "options": "Company Purchase Warehouse"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-09-02 17:34:29.855512",
+ "modified": "2021-10-04 14:02:58.295598",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "MFI Settings",

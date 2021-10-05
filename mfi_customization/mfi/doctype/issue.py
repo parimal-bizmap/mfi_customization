@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.mapper import get_mapped_doc
 from frappe.utils.data import today,getdate
+from frappe import format
 
 def validate(doc,method):
 	email_validation(doc)

@@ -41,6 +41,13 @@ frappe.ui.form.on('Material Request', {
         }
     },
 	onload: function ( frm ) {
+        frappe.db.get_doc("MFI Settings","MFI Settings").then(( setting ) => {
+            (setting.company_purchase_warehouse).forEach((  row ) => {
+                if (row.company==cur_frm.doc.company){
+                   frm.set_value("set_warehouse",row.warehouse)
+                 }
+            })
+        });
         // if (frm.doc.docstatus==1) {
              frm.add_custom_button(__('Purchase Order'), function () {
                 get_items_from_MR(frm);
