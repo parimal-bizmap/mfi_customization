@@ -14,9 +14,9 @@ frappe.ui.form.on('Sales Order', {
                 const order_is_a_custom_sale = ["Sales", "Shopping Cart", "Maintenance"].indexOf(frm.doc.order_type) === -1;
  
                 // delivery note
-                if(flt(frm.doc.per_delivered, 6) < 100 && (order_is_a_sale || order_is_a_custom_sale) && allow_delivery) {
-                    frm.add_custom_button(__('Delivery-Note'), () => frm.trigger("make_delivery_note_on_delivery_date"), __('Create'));
-                }
+                // if(flt(frm.doc.per_delivered, 6) < 100 && (order_is_a_sale || order_is_a_custom_sale) && allow_delivery) {
+                //     frm.add_custom_button(__('Delivery-Note'), () => frm.trigger("make_delivery_note_on_delivery_date"), __('Create'));
+                // }
             }
         }
     },
