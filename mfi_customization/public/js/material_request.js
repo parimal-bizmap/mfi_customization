@@ -328,6 +328,7 @@ var make_list_row= function(columns, project_tasks, result={}) {
                                 item_row.description=((r.message).item_details)[resp.part_number]['description']
                                 item_row.conversion_factor=((r.message).item_details)[resp.part_number]['conversion_factor']
                                 item_row.rate=unit_price
+                                item_row.warehouse=frm.doc.set_warehouse
                             }
                             else{
                                 frm.set_value('items',[]);

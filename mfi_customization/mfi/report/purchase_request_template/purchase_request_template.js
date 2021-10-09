@@ -10,6 +10,17 @@ frappe.query_reports["Purchase Request Template"] = {
 			"fieldtype":"Link",
 			"options":"Item",
 			"reqd": 0,
+			get_query:function(){
+				if (frappe.query_report.get_filter_value('item_group_list')){
+					return {    
+						filters:
+							{
+								'item_group': ["in",frappe.query_report.get_filter_value('item_group_list')]
+							}
+						
+					}
+				}
+			},
 			on_change: () => {
 				var item = frappe.query_report.get_filter_value('item');
 				if (item){
@@ -121,7 +132,20 @@ frappe.query_reports["Purchase Request Template"] = {
 			"fieldname":"price_list",
 			"fieldtype":"Link",
 			"options":"Price List",
-			"reqd": 1
+			"reqd": 1,
+			get_query:function(){
+					return {    
+
+						filters:
+							{
+								'company': frappe.query_report.get_filter_value('company'),
+								"buying":1
+							}
+							
+						
+					}
+				
+			}
 		},
 	]
 };

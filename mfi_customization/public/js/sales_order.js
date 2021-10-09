@@ -149,3 +149,58 @@ frappe.ui.form.on('Sales Order Item','ship_to',function(frm,cdt,cdn){
 		});
 	}
 });
+
+frappe.ui.form.on('Sales Order Item','purchase_detail',function(frm,cdt,cdn){
+	var child = locals[cdt][cdn];
+	var dialog = new frappe.ui.Dialog({
+		title: __("Add Purchase Details"),
+		fields: [
+			{fieldtype: "Link", fieldname: "price_list", label:"Price List", options:"Price List", default: child.price_list, get_query:function(){
+				return {    
+					filters:
+						{
+							'company': frm.doc.company
+						}
+					
+				}}
+			},
+			{fieldtype: "Link", fieldname: "ship_to", label:"Ship To", options:"Customer", default: child.ship_to, get_query:function(){
+				return {    
+					query: 'mfi_customization.mfi.doctype.sales_order.get_customer_by_price_list',
+					filters:
+						{
+							'price_list': dialog.get_value("price_list")
+						}
+					
+				}}
+			},
+			// {fieldtype: "Link", fieldname: "address", label:"Address", options:"Address"},
+		],
+		primary_action: function() {
+			child.price_list=dialog.get_value("price_list")
+			child.ship_to=dialog.get_value("ship_to")
+			dialog.hide();
+
+			if (child.price_list && child.ship_to){
+				frappe.db.get_doc("Price List", child.price_list).then(( pr ) => {
+					(pr.countries).forEach((  pr_row ) => {
+						if (pr_row.customer==child.ship_to){
+							child.address=pr_row.address
+							refresh_field("address", child.name, child.parentfield);
+						 }
+					})
+				});
+			}
+
+			frappe.db.get_value('Item Price',{'item_code':child.item_code,"price_list":child.price_list},['price_list_rate'],(val) =>{
+				child.item_purchase_rate=val.price_list_rate||0
+				refresh_field("item_purchase_rate", child.name, child.parentfield);
+			})
+
+			refresh_field("price_list", child.name, child.parentfield);
+			refresh_field("ship_to", child.name, child.parentfield);
+		},
+		primary_action_label: __('Add')
+	});
+	dialog.show();
+});
