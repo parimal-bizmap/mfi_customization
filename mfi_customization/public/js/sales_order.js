@@ -1,7 +1,7 @@
 // cur_frm.remove_custom_button("Delivery Note",'Create');
-cur_frm.cscript.custom_refresh = function(doc) {
-    cur_frm.remove_custom_button("Delivery Note",'Create');
-};
+// cur_frm.cscript.custom_refresh = function(doc) {
+//     cur_frm.remove_custom_button("Delivery Note",'Create');
+// };
 frappe.ui.form.on('Sales Order', {
     refresh:function(frm){
         let allow_delivery = false;
