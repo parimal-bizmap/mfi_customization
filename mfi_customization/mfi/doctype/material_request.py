@@ -14,6 +14,14 @@ def validate(doc,method):
 					doc.approver=emp2.user_id
 					doc.approver_name=frappe.db.get_value("User",emp2.user_id,"full_name")
 
+
+def on_submit(doc,method):
+	validate_mr(doc)
+
+def validate_mr(doc):
+	if doc.report_name and doc.approval_status!="Second Approved":
+		frappe.throw("Cann't Submit Before Final Approval")
+		
 @frappe.whitelist()
 def get_approver(user):
 	id = ""

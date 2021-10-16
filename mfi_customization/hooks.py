@@ -112,7 +112,8 @@ doc_events = {
         "on_change":"mfi_customization.mfi.doctype.issue.on_change"
     },
     "Material Request":{
-        "on_change":"mfi_customization.mfi.doctype.material_request.set_item_from_material_req"
+        "on_change":"mfi_customization.mfi.doctype.material_request.set_item_from_material_req",
+        "on_submit":"mfi_customization.mfi.doctype.material_request.on_submit"
     },
     "Comment":{
 		"validate":"mfi_customization.mfi.doctype.comment.comment"

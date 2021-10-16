@@ -258,6 +258,8 @@ var make_list_row= function(columns, project_tasks, result={}) {
                 filters: cur_frm.doc.filters,
             },
             callback: function(r) {
+                var first_approval=false;
+                var second_approval=false;
                 if(r.message){
                     var qty_field_mapping={"Courier":"courier_qty","AIR":"air_qty","SEA":"sea_qty"};
                     var validation=false;
@@ -283,9 +285,19 @@ var make_list_row= function(columns, project_tasks, result={}) {
                         $(html_values).find(`[data-item_code="${resp.part_number}"].result-uom`).each(function(el, input){
                             uom=$(input).val();
                         })
+                        $(html_values).find(`[data-item_code="${resp.part_number}"].result-first_approval`).each(function(el, input){
+                            if($(input).val() =="Approve"){
+                                first_approval=true;
+                            }
+                        })
+                        $(html_values).find(`[data-item_code="${resp.part_number}"].result-second_approval`).each(function(el, input){
+                            if($(input).val() =="Approve"){
+                                second_approval=true;
+                            }
+                        })
                         Object.keys(qty_field_mapping).forEach(shipment_type=>{
                             $(html_values).find(`[data-item_code="${resp.part_number}"].result-${qty_field_mapping[shipment_type]}`).each(function(el, input){
-                                if ($(input).val()>0){
+                                if ($(input).val()>0 && (frm.doc.__islocal || (!frm.doc.__islocal && !frm.doc.approval_status && first_approval)|| (!frm.doc.__islocal && frm.doc.approval_status && first_approval && second_approval))){
                                     var qty=parseFloat($(input).val());
                                     if (is_puchase_uom){
                                         qty=(parseFloat($(input).val())/parseFloat(carton_qty));
@@ -339,13 +351,20 @@ var make_list_row= function(columns, project_tasks, result={}) {
                     }) 
                     frm.refresh_field("items");
                 }
+                if (!frm.doc.__islocal&&first_approval){
+                    frm.set_value("approval_status","First Approved")
+                }
+                if (!frm.doc.__islocal&&first_approval&&second_approval){
+                    frm.set_value("approval_status","Second Approved")
+                }
             } 
         });
     },
     validate:function(frm){
         if (!frm.doc.__islocal) {
-            frm.trigger("update_title")
             frm.trigger("create_requisition_doc")
+            // frm.trigger("update_title")
+
         }
     },
     after_save:function(frm){
@@ -435,7 +454,7 @@ var make_list_row= function(columns, project_tasks, result={}) {
                                 table_format:r.message
                             },
                             callback: function(r) {
-                                console.log("#############");
+                                console.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$1");
                             }
                         })
                         frm.refresh_field("items");

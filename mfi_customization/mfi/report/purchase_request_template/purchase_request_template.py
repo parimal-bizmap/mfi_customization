@@ -147,6 +147,7 @@ def get_data(filters, columns,months_list,warehouse_list,shipment_list_by_month,
 		#  purchase_qty_calculation
 		purchase_qty_calculation(itm.item_code,row)
 		row["price_list"]=filters.get('price_list')
+		row["currency"]=frappe.db.get_value("Price List",filters.get('price_list'),"currency")
 		for d in frappe.get_all("Item Price",{"item_code":itm.item_code,"price_list":filters.get('price_list')},["currency","price_list_rate"]):
 			d['price_list_rate']=fmt_money(d.price_list_rate, currency=d.currency)
 			row.update(d)

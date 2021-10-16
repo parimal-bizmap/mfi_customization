@@ -169,6 +169,7 @@
 		});
 	}
 	function calculateAmount(qty_id,amount_id,price_rate,currency){
+		price_rate = Number(price_rate.replace(/[^0-9.-]+/g,""));
 		if(document.getElementById(qty_id).value && currency){
 			var formatter= Intl.NumberFormat("en-US", {style: "currency",currency: currency || "KES"});
 			document.getElementById(amount_id).value=formatter.format(parseFloat(document.getElementById(qty_id).value) * parseFloat(price_rate));
