@@ -7,25 +7,48 @@
  "engine": "InnoDB",
  "field_order": [
   "component_name",
-  "account"
+  "type",
+  "calculation_based",
+  "section_break_4",
+  "landed_cost_component_account"
  ],
  "fields": [
   {
    "fieldname": "component_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Component Name",
+   "reqd": 1,
    "unique": 1
   },
   {
-   "fieldname": "account",
-   "fieldtype": "Link",
-   "label": "Account",
-   "options": "Account"
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "\nManual\nCalculated",
+   "reqd": 1
+  },
+  {
+   "fieldname": "calculation_based",
+   "fieldtype": "Select",
+   "label": "Calculation Based",
+   "options": "\nFOB\nWeight"
+  },
+  {
+   "fieldname": "landed_cost_component_account",
+   "fieldtype": "Table",
+   "label": "Landed Cost Component Account",
+   "options": "Landed Cost Component Account"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-10-14 15:24:01.127948",
+ "modified": "2021-10-22 13:44:42.270329",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Landed Cost Component",
