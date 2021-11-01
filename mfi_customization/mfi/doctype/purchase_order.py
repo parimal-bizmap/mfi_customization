@@ -24,6 +24,8 @@ def create_sales_order(doc):
         sales_doc.customer =customer if customer else ''
         company=frappe.db.get_value("Supplier", {'name': doc.supplier, 'is_internal_supplier':1},'represents_company')
         sales_doc.company =company if company else ''
+        sales_doc.po_no=doc.name
+        sales_doc.po_date=doc.creation
         for d in sales_doc.get("items"):
             d.warehouse="Stores - MFIINTL"
         sales_doc.save()

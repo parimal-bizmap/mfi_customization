@@ -74,6 +74,7 @@ frappe.ui.form.on('Landed Cost Voucher', {
                 callback: function(r) {
                     if(r.message) {
                         frm.clear_table("shipments_of_landed_cost");
+                        frm.clear_table("shipment_parcel");
                         $.each(r.message || [], function(i, d) {
                         var row=frm.add_child("shipments_of_landed_cost")
                         row.shipment=d
