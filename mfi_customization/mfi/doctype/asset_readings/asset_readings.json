@@ -10,15 +10,16 @@
   "task",
   "reading",
   "reading_2",
-  "total",
-  "machine_reading"
+  "total"
  ],
  "fields": [
   {
+   "default": "0",
    "fieldname": "reading",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Black & White Reading "
+   "label": "Black & White Reading ",
+   "reqd": 1
   },
   {
    "fieldname": "date",
@@ -31,20 +32,25 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Asset",
-   "options": "Asset"
+   "options": "Asset",
+   "read_only": 1
   },
   {
+   "default": "Black & White",
    "fieldname": "type",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Type",
-   "options": "\nBlack & White\nColour"
+   "options": "\nBlack & White\nColour",
+   "reqd": 1
   },
   {
+   "default": "0",
    "fieldname": "reading_2",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Color Reading "
+   "label": "Color Reading ",
+   "reqd": 1
   },
   {
    "fieldname": "total",
@@ -57,17 +63,10 @@
    "fieldtype": "Link",
    "label": "Task",
    "options": "Task"
-  },
-  {
-   "fieldname": "machine_reading",
-   "fieldtype": "Link",
-   "label": "Machine Reading",
-   "options": "Machine Reading",
-   "read_only": 1
   }
  ],
  "istable": 1,
- "modified": "2021-05-31 14:08:18.010949",
+ "modified": "2021-08-19 16:41:18.403943",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Readings",

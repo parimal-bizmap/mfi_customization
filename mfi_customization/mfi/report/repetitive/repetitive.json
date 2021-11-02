@@ -7,7 +7,7 @@
  "doctype": "Report",
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-04-08 17:55:54.893843",
+ "modified": "2021-07-23 13:17:01.122142",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Repetitive",
@@ -21,10 +21,10 @@
    "role": "Support Team"
   },
   {
-   "role": "Morocco Support"
+   "role": "Kenya Support Team"
   },
   {
-   "role": "Kenya Support Team"
+   "role": "Morocco Technical head"
   }
  ]
 }

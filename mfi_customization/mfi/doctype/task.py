@@ -6,23 +6,21 @@ from __future__ import unicode_literals
 import frappe
 from frappe.utils.data import getdate,today
 from frappe.model.mapper import get_mapped_doc
+from frappe.permissions import add_user_permission
 
 def validate(doc,method):
-	machine_reading=""
+	# machine_reading=""
 	for d in doc.get("current_reading"):
-		machine_reading=d.machine_reading
+		# machine_reading=d.machine_reading
 		if d.idx>1:
 			frappe.throw("More than one row not allowed")
-	if doc.get('__islocal'):
-		for d in frappe.get_all("Task",{"issue":doc.issue}):
-			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
 
 	last_reading=today()
-	if doc.asset:
+	if doc.asset and  len(doc.get("last_readings"))==0:
 		doc.set("last_readings", [])
 		fltr={"project":doc.project,"asset":doc.asset,"reading_date":("<=",last_reading)}
-		if machine_reading:
-			fltr.update({"name":("!=",machine_reading)})
+		# if machine_reading:
+			# fltr.update({"name":("!=",machine_reading)})
 		for d in frappe.get_all("Machine Reading",filters=fltr,fields=["name","reading_date","asset","black_and_white_reading","colour_reading","total","machine_type"],limit=1,order_by="reading_date desc,name desc"):
 			doc.append("last_readings", {
 				"date" : d.get('reading_date'),
@@ -32,49 +30,87 @@ def validate(doc,method):
 				"reading_2":d.get('colour_reading'),
 				"total":( int(d.get('black_and_white_reading') or 0)  + int(d.get('colour_reading') or 0))
 				})
-		# if doc.status=='Completed' :
-		# 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
-		# 		ar=frappe.get_doc('Asset Repair',t.name)
-		# 		ar.repair_status='Completed'
-		# 		ar.completion_date=today()
-		# 		ar.save()
-		# 		ar.submit()
-		
 
+	set_field_values(doc)
+
+	if doc.get('__islocal'):
+		for d in frappe.get_all("Task",{"issue":doc.issue}):
+			frappe.throw("Task <b>{0}</b> Already Exist Against This Issue".format(doc.name))
+	else:
+		create_user_permission(doc)
+		
 def after_insert(doc,method):
 	if doc.get('issue'):
 		frappe.db.set_value('Issue',doc.get('issue'),'status','Assigned')
-
-	doc.save()
 	if doc.failure_date_and_time and doc.issue:
 		doc.failure_date_and_time=frappe.db.get_value("Issue",doc.issue,"failure_date_and_time")
 	if doc.issue:
 		doc.description=frappe.db.get_value("Issue",doc.issue,"description")
 
 	
-	docperm = frappe.new_doc("User Permission")
-	docperm.update({
-		"user": doc.completed_by,
-		"allow": 'Task',
-		"for_value": doc.name
-	})
+	create_user_permission(doc)
 
-	docperm.save(ignore_permissions=True)
+	# docperm = frappe.new_doc("DocShare")
+	# docperm.update({
+	# 		"user": doc.completed_by,
+	# 		"share_doctype": 'Task',
+	# 		"share_name": doc.name ,
+	# 		"read": 1,
+	# 		"write": 1
+	# 	})
+	# docperm.save(ignore_permissions=True)
 	
-			
-	
+def on_change(doc,method):
+	if doc.get("issue"):
+		set_reading_from_task_to_issue(doc)
+	validate_reading(doc)
+	existed_mr=[]
+	for d in doc.get('current_reading'):
+		existed_mr = frappe.get_all("Machine Reading",{"task":doc.name,"project":doc.project, 'row_id':d.get('name')}, 'name')
+	if existed_mr :
+		update_machine_reading(doc, existed_mr)
+	else:
+		create_machine_reading(doc)
+	if doc.issue and doc.status != 'Open':
+		frappe.db.set_value("Issue",doc.issue,'status',doc.status)	
+		if doc.status == 'Completed':
+			validate_if_material_request_is_not_submitted(doc)
+			attachment_validation(doc)
+			issue=frappe.get_doc("Issue",doc.issue)
+			issue.status="Task Completed"
+			issue.closing_date_time=doc.completion_date_time
+			issue.set("task_attachments",[])
+			for d in doc.get("attachments"):
+				issue.append("task_attachments",{
+					"attach":d.attach
+				})
+			issue.save()
+		elif doc.status=="Working" and doc.attended_date_time:	
+			frappe.db.set_value("Issue",doc.issue,'first_responded_on',doc.attended_date_time)		
 
 def after_delete(doc,method):
 	for t in frappe.get_all('Asset Repair',filters={'task':doc.name}):
 		frappe.delete_doc('Asset Repair',t.name)
 
+def set_field_values(doc):
+	if doc.get("issue"):
+		issue = frappe.get_doc("Issue",{"name":doc.get("issue")})		
+		if doc.get("completed_by"):
+			issue.assign_to = doc.get("completed_by")
+		if doc.get("assign_date"):
+			issue.assign_date = doc.get("assign_date")
+		issue.save()
+	
 @frappe.whitelist()
 def make_material_req(source_name, target_doc=None):
+	def set_missing_values(source, target):
+		target.company=frappe.db.get_value("Employee",{"user_id":frappe.session.user},"company")
 	doclist = get_mapped_doc("Task", source_name, {
 		"Task": {
-			"doctype": "Material Request"
+			"doctype": "Material Request",
+			"name":"custom_task"
 		}
-	}, target_doc )
+	}, target_doc,set_missing_values )
 
 	return doclist
 
@@ -160,6 +196,7 @@ def check_material_request_status(task):
 		if i.get('status') not in ['Stopped','Cancelled','Issued']:
 			flag = True
 	return flag
+
 @frappe.whitelist()
 def get_location(doctype, txt, searchfield, start, page_len, filters):
 	lst = []
@@ -196,15 +233,14 @@ def get_asset_in_task(doctype, txt, searchfield, start, page_len, filters):
 
 @frappe.whitelist()
 def get_serial_no_list(doctype, txt, searchfield, start, page_len, filters):
- 	if txt:
- 		filters.update({"name": ("like", "{0}%".format(txt))})
+	if txt:
+		filters.update({"name": ("like", "{0}%".format(txt))})
 		
- 	return frappe.get_all("Asset Serial No",filters=filters,fields = ["name"], as_list=1)
+	return frappe.get_all("Asset Serial No",filters=filters,fields = ["name"], as_list=1)
 
 
 @frappe.whitelist()
 def get_serial_on_cust_loc(doctype, txt, searchfield, start, page_len, filters):
-	# data = frappe.db.sql("""select name from `tabProject` """)
 	fltr1 = {}
 	fltr2 = {}
 	lst = []
@@ -262,14 +298,6 @@ def get_asset_on_cust(doctype, txt, searchfield, start, page_len, filters):
 					lst.append(ass.name)
 		return [(d,) for d in lst]	
 
-def on_change(doc,method):
-	create_machine_reading(doc)
-	set_reading_from_task_to_issue(doc)
-	validate_reading(doc)
-	if doc.issue and doc.status != 'Open':
-		frappe.db.set_value("Issue",doc.issue,'status',doc.status)
-		if doc.status == 'Completed':
-			frappe.db.set_value("Issue",doc.issue,'status',"Task Completed")
 
 def create_machine_reading(doc):
 	for d in doc.get('current_reading'):
@@ -283,37 +311,72 @@ def create_machine_reading(doc):
 			mr.total=d.get("total")
 			mr.project=doc.project
 			mr.task=doc.name
+			mr.row_id = d.name
 			mr.save()
-			d.machine_reading=mr.name
-	
+			# d.machine_reading=mr.name
+def update_machine_reading(doc, existed_mr):
+	for d in doc.get('current_reading'):
+		for mr in existed_mr:
+			mr_doc=frappe.get_doc("Machine Reading", mr)
+			mr_doc.reading_date=d.get('date')
+			mr_doc.asset=d.get('asset')
+			mr_doc.black_and_white_reading=d.get("reading")
+			mr_doc.colour_reading=d.get("reading_2")
+			mr_doc.machine_type=d.get('type')
+			mr_doc.total=d.get("total")
+			mr_doc.save()
+
 def set_reading_from_task_to_issue(doc):
 	issue_doc=frappe.get_doc('Issue',{'name':doc.get("issue")})
-	duplicate=[]
 	for d in doc.get('current_reading'):
-		for pr in issue_doc.get('current_reading'):
-			if d.type== pr.type and d.asset == pr.asset and d.reading == pr.reading:
-				duplicate.append(d.idx)
-	for d in doc.get('current_reading'):
-		for isu in doc.get("current_reading"):
-			isu.date=d.get('date')
-			isu.type=d.get('type')
-			isu.asset=d.get('asset')
-			isu.reading=d.get('reading')
-			isu.reading_2=d.get('reading_2')
-			issue_doc.save()
+		if issue_doc.get("current_reading") and len(issue_doc.get("current_reading"))>0:
+			for isu in doc.get("current_reading"):
+				isu.date=d.get('date')
+				isu.type=d.get('type')
+				isu.asset=d.get('asset')
+				isu.reading=d.get('reading')
+				isu.reading_2=d.get('reading_2')
+				issue_doc.save()
+		else:
+			issue_doc.append("current_reading",{
+				"date":d.get('date'),
+				"type":d.get('type'),
+				"asset":d.get('asset'),
+				"reading":d.get('reading'),
+				"reading_2":d.get('reading_2')
+			})
+	if doc.get("asset"):
+		issue_doc.asset = doc.get("asset")
+	if doc.get("serial_no"):
+		issue_doc.serial_no = doc.get("serial_no")
+	issue_doc.save()
 
 def validate_reading(doc):
-	for d in doc.get('current_reading'):
-		d.total=( int(d.get('reading') or 0)  + int(d.get('reading_2') or 0))
-	if len(doc.get('current_reading'))>0:
-		reading=(doc.get('current_reading')[-1]).get('total')
-		if not str(reading).isdigit():
-			frappe.throw("only numbers allowed in reading")
-		for lst in doc.get("last_readings"):
-			last_reading=lst.get("total")
-			current_reading=(doc.get('current_reading')[-1]).get('reading') if (doc.get('current_reading')[-1]).get('reading') else (doc.get('current_reading')[-1]).get('reading_2')
-			if last_reading>current_reading:
+	for cur in doc.get('current_reading'):
+		cur.total=( int(cur.get('reading') or 0)  + int(cur.get('reading_2') or 0))
+		for lst in doc.get('last_readings'):
+			lst.total=( int(lst.get('reading') or 0)  + int(lst.get('reading_2') or 0))
+			if int(lst.total)>int(cur.total):
 				frappe.throw("Current Reading Must be Greater than Last Reading")
+			if getdate(lst.date)>getdate(cur.date):
+				frappe.throw("Current Reading <b>Date</b> Must be Greater than Last Reading")
 
+def validate_if_material_request_is_not_submitted(doc):
+	for mr in frappe.get_all("Material Request",{"task":doc.name,"docstatus":0}):
+		frappe.throw("Material Request is not completed yet. Name <b>{0}</b>".format(mr.name))
 
+def attachment_validation(doc):
+	if not doc.attachments or  len(doc.attachments)==0:
+		frappe.throw("Cann't Completed Task Without Attachment")
+	
+def create_user_permission(doc):
+	if len(frappe.get_all("User Permission",{"allow":"Task","for_value":doc.name,"user":doc.completed_by}))==0:
+		for d in frappe.get_all("User Permission",{"allow":"Task","for_value":doc.name}):
+			frappe.delete_doc("User Permission",d.name)
+		add_user_permission("Task",doc.name,doc.completed_by)
 
+	for emp in frappe.get_all("Employee",{"user_id":doc.completed_by},['material_request_approver']):
+		if emp.material_request_approver:
+			for emp2 in frappe.get_all("Employee",{"name":emp.material_request_approver},['user_id']):
+				if emp2.user_id:
+					add_user_permission("Task",doc.name,emp2.user_id)

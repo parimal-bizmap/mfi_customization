@@ -33,9 +33,11 @@ doctype_js = {
                 "Task":"public/js/task.js",
                 "Asset Maintenance":"public/js/asset_maintenance.js",
                 "Location":"public/js/location.js",
-                "Asset Movement":"public/js/asset_movement.js"
+                "Asset Movement":"public/js/asset_movement.js",
+                "Sales Invoice":"public/js/sales_invoice.js",
+                "Material Request":"public/js/material_request.js"
 }	
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Material Request":"public/js/material_request_list.js",}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -104,7 +106,7 @@ doc_events = {
     },
     "Issue":{
         "validate":"mfi_customization.mfi.doctype.issue.validate",
-        #  "on_change":"mfi_customization.mfi.doctype.issue.set_reading_from_issue_to_task"
+        "on_change":"mfi_customization.mfi.doctype.issue.on_change"
     },
     "Material Request":{
         "on_change":"mfi_customization.mfi.doctype.task.set_item_from_material_req"
@@ -117,7 +119,14 @@ doc_events = {
     },
     "File":{
         "after_insert":"mfi_customization.mfi.doctype.communication.after_insert_file"
-    }
+    },
+#     "Item":{
+#         "after_insert":"mfi_customization.mfi.doctype.item.validate"
+#     }
+    # "Material Request":{
+    #     "validate":"mfi_customization.mfi.doctype.material_request.validate",
+    #     "after_insert":"mfi_customization.mfi.doctype.material_request.after_insert"
+    # }
 }
 
 # Scheduled Tasks

@@ -1,4 +1,27 @@
 frappe.ui.form.on('Task', {
+    status:function(frm){
+        if(frm.doc.status == 'Working'){
+            let today = new Date()
+            frappe.model.set_value("Issue", frm.doc.issue, 'first_responded_on',today);
+        }
+        if (frm.doc.status == "Completed"){
+            frm.set_df_property('status','read_only',1);
+            frm.set_df_property('current_reading','read_only',1);
+        }
+        
+    },
+    type_of_call: function (frm) {
+        if(frm.doc.type_of_call){
+            frappe.db.get_value('Type of Call',{'name':frm.doc.type_of_call},'ignore_reading', (r) => {
+                if(r.ignore_reading == 1){
+                    frm.set_df_property('current_reading','hidden',1);
+                }
+                else{
+                    frm.set_df_property('current_reading','hidden',0);
+                }
+            });
+        }
+    },
 asset:function(frm){
     if(frm.doc.asset){
     frappe.db.get_value('Asset',{'name':frm.doc.asset,'docstatus':1},['asset_name','location','serial_no','project'])
@@ -71,63 +94,42 @@ clear:function(frm){
 ,
 
 refresh:function(frm){
+    // $.each(frm.doc.current_reading, function(i,d){
+    //     d.asset = frm.doc.asset
+    //     frm.set_df_property("read_only", 1)
+
+    // });
+    // frm.refresh_field("current_reading")
+
     if (!frm.doc.__islocal ){
 		frm.add_custom_button(__('Material Request'), function() {
 			frappe.set_route('List', 'Material Request', {task: frm.doc.name});
 		},__("View"));
     }
     frm.trigger('customer');
-    if (!frm.doc.__islocal){
-        frm.add_custom_button(__("Asset Movement"), function() {
-            frappe.model.open_mapped_doc({
-                method: "mfi_customization.mfi.doctype.task.make_asset_movement",
-               frm : me.frm
-            })
-            }, __('Make'))}
-    
-    
+
     frm.add_custom_button('Material Request', () => {
         frappe.model.open_mapped_doc({
             method: "mfi_customization.mfi.doctype.task.make_material_req",
             frm: me.frm
         })
 
-        },
-        __('Make')
-        )
-        frm.set_query("completed_by", function() {
-               return {
-                    query: 'mfi_customization.mfi.doctype.task.get_tech',
-                    filters: {
-                        "user":frappe.session.user
-                    }
-                };
-            
-        });
+        }, __('Make'))
+    frm.set_query("completed_by", function() {
+            return {
+                query: 'mfi_customization.mfi.doctype.task.get_tech',
+                filters: {
+                    "user":frappe.session.user
+                }
+            };
+        
+    });
+    if (frm.doc.status == "Completed"){
+        frm.set_df_property('status','read_only',1);
+        frm.set_df_property('current_reading','read_only',1);
+    }
        
 },
-status:function(frm){
-    if(frm.doc.status == 'Completed'){
-        frm.set_df_property('asset',"reqd",1);
-        frappe.call({
-        method: "mfi_customization.mfi.doctype.task.check_material_request_status",
-        args: {
-            "task":frm.doc.name
-        },
-        callback: function(r) {
-          if (r.message){
-              frm.set_value('status','Working');
-              frappe.throw("Material Request is not completed yet.");
-              
-          }  
-               				
-        }
-
-        
-});
-}
-        
-},	
 
 setup:function(frm){
     frm.set_query("location", function() {
@@ -192,11 +194,20 @@ setup:function(frm){
 				}
 		});
     frm.set_query("asset", "current_reading", function() {
-        return {
+        // if(frm.doc.asset){
+            return {
             filters: {
-                "name": frm.doc.asset
+                "name": frm.doc.asset || ""
             }
         }
+    // }
+    // else{
+    //     return {
+    //         filters: {
+    //             "name": ""
+    //         }
+    //     }
+    // }
     });
     
   
@@ -273,45 +284,6 @@ validate:function(frm){
         frappe.throw("Status Cannot be complete before working")
     }
     
-    
-//     if(frm.doc.project && frm.doc.asset){
-//         frappe.call({
-//         method:
-//         "mfi_customization.mfi.doctype.task.set_readings",
-//         args: {
-//             project: frm.doc.project,
-//             asset : frm.doc.asset
-//         },
-//         callback: (r) => {
-//             if(r.message) {
-   
-//                 cur_frm.clear_table("last_readings");
-//                 r.message.forEach(function(element) {
-//                 var c = cur_frm.add_child("last_readings");
-//                 c.date = element.date;
-//                 c.type = element.type;
-//                 c.asset = element.asset;
-//                 c.reading = element.black_white;
-//                 c.reading_2 = element.colour;
-//             });
-//             refresh_field("last_readings"); 
-//         }}
-//     })
-// }
-        if (frm.doc.current_reading){
-            (frm.doc.current_reading).forEach(e => {
-                (frm.doc.last_readings).forEach(i =>
-                    {
-                        if(e.date <  i.date){
-                            frappe.throw("Please select next date than last reading");
-
-                        }
-
-                    });
-                
-            });
-        }
-
 
 
 }
@@ -334,6 +306,8 @@ frappe.ui.form.on("Asset Readings", "type", function(frm, cdt, cdn) {
         $("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading_2']").css('pointer-events','all')
 		$("div[data-idx='"+d.idx+"']").find("input[data-fieldname='reading']").css('pointer-events','all')
 	}
+    d.asset = frm.doc.asset
+    frm.set_df_property('asset','read_only',1);
 	refresh_field("asset", d.name, d.parentfield);
 });
     
@@ -342,6 +316,9 @@ frappe.ui.form.on("Asset Readings", "date", function(frm, cdt, cdn) {
 	if (d.idx>1){
         frappe.throw("More than one row not allowed")
     }
+    d.asset = frm.doc.asset
+    frm.set_df_property('asset','read_only',1);
+    refresh_field("asset", d.name, d.parentfield);
 });
 
 frappe.ui.form.on("Asset Details", "location", function(frm, cdt, cdn) {
@@ -384,4 +361,7 @@ frappe.ui.form.on("Asset Details", "serial_no", function(frm, cdt, cdn) {
         refresh_field("asset_name", d.name, d.parentfield);
        })
       }
+    d.asset = frm.doc.asset
+    frm.set_df_property('asset','read_only',1);
+    refresh_field("asset", d.name, d.parentfield);
 });

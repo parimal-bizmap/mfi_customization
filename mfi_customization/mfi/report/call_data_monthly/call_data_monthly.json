@@ -7,7 +7,7 @@
  "doctype": "Report",
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2021-04-08 17:50:43.497460",
+ "modified": "2021-07-23 12:49:29.752539",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Call Data Monthly",
@@ -21,10 +21,10 @@
    "role": "Support Team"
   },
   {
-   "role": "Morocco Support"
+   "role": "Kenya Support Team"
   },
   {
-   "role": "Kenya Support Team"
+   "role": "Morocco Technical head"
   }
  ]
 }
