@@ -5,7 +5,7 @@ def get_receipt_shipments(doc):
 	doc=json.loads(doc)
 	shipments=[]
 	for receipt in doc.get('purchase_receipts'):
-		for receipt_item in frappe.get_all("Purchase Receipt Item",{"parent":receipt.get("receipt_document")},["purchase_order"]):
+		for receipt_item in frappe.get_all("Purchase Receipt Item",filters={"parent":receipt.get("receipt_document")},fields=["purchase_order"],group_by="purchase_order"):
 			for so in frappe.get_all("Sales Order",{"po_no":receipt_item.purchase_order},["name"]):
 				for dn in frappe.get_all("Delivery Note Item",{"against_sales_order":so.name},['parent'],group_by="parent"):
 					for sp in frappe.get_all("Shipment Delivery Note",{"delivery_note":dn.parent},['parent'],group_by="parent"):
