@@ -8,6 +8,7 @@
  "field_order": [
   "serial_no",
   "asset",
+  "company",
   "location"
  ],
  "fields": [
@@ -31,9 +32,15 @@
    "fieldtype": "Link",
    "label": "Location",
    "options": "Location"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
   }
  ],
- "modified": "2020-10-14 17:37:42.552714",
+ "modified": "2021-06-02 15:51:16.424294",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Serial No",

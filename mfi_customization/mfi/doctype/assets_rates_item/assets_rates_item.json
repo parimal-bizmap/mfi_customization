@@ -1,0 +1,142 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2021-07-24 20:54:35.244165",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "asset",
+  "asset_name",
+  "serial_no",
+  "rates_calculation_section",
+  "mono_last_reading",
+  "mono_current_reading",
+  "total_mono_reading",
+  "mono_click_rate",
+  "total_mono_billing",
+  "machine_reading_current",
+  "column_break_10",
+  "colour_last_reading",
+  "colour_current_reading",
+  "total_colour_reading",
+  "colour_click_rate",
+  "total_colour_billing",
+  "machine_reading_last",
+  "total_rate"
+ ],
+ "fields": [
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Asset",
+   "options": "Asset"
+  },
+  {
+   "fieldname": "serial_no",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Serial No",
+   "options": "Asset Serial No"
+  },
+  {
+   "fetch_from": "asset.asset_name",
+   "fieldname": "asset_name",
+   "fieldtype": "Data",
+   "label": "Asset Name"
+  },
+  {
+   "fieldname": "rates_calculation_section",
+   "fieldtype": "Section Break",
+   "label": "Rates Calculation"
+  },
+  {
+   "fieldname": "mono_last_reading",
+   "fieldtype": "Float",
+   "label": "Mono Last Reading"
+  },
+  {
+   "fieldname": "mono_current_reading",
+   "fieldtype": "Float",
+   "label": "Mono Current Reading"
+  },
+  {
+   "fieldname": "total_mono_reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Mono Reading"
+  },
+  {
+   "fieldname": "mono_click_rate",
+   "fieldtype": "Currency",
+   "label": "Mono click Rate"
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "colour_last_reading",
+   "fieldtype": "Float",
+   "label": "Colour Last Reading"
+  },
+  {
+   "fieldname": "colour_current_reading",
+   "fieldtype": "Float",
+   "label": "Colour Current Reading"
+  },
+  {
+   "fieldname": "total_colour_reading",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Colour Reading"
+  },
+  {
+   "fieldname": "colour_click_rate",
+   "fieldtype": "Currency",
+   "label": "Colour click Rate"
+  },
+  {
+   "fieldname": "total_rate",
+   "fieldtype": "Currency",
+   "label": "Total Rate"
+  },
+  {
+   "fieldname": "total_mono_billing",
+   "fieldtype": "Currency",
+   "label": "Total Mono Billing"
+  },
+  {
+   "fieldname": "total_colour_billing",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Total Colour Billing"
+  },
+  {
+   "fieldname": "machine_reading_current",
+   "fieldtype": "Link",
+   "label": "Machine Reading Current",
+   "options": "Machine Reading",
+   "read_only": 1
+  },
+  {
+   "fieldname": "machine_reading_last",
+   "fieldtype": "Link",
+   "label": "Machine Reading Last",
+   "options": "Machine Reading",
+   "read_only": 1
+  }
+ ],
+ "istable": 1,
+ "links": [],
+ "modified": "2021-08-30 09:17:23.536811",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Assets Rates Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

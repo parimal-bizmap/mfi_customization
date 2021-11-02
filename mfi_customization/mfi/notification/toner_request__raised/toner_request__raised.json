@@ -1,0 +1,29 @@
+{
+ "attach_print": 0,
+ "channel": "Email",
+ "condition": "doc.issue_type==\"Toner Request\" and doc.company==\"MFI MAROC SARL\"",
+ "creation": "2021-05-19 13:34:15.486057",
+ "days_in_advance": 0,
+ "docstatus": 0,
+ "doctype": "Notification",
+ "document_type": "Issue",
+ "enabled": 1,
+ "event": "New",
+ "idx": 0,
+ "is_standard": 1,
+ "message": "hello,<br>\nNew Toner Request has been recorded, details given below,<br>\nissue:{{doc.name}}<br>\nSubject:{{doc.subject}}<br>\nLocation:{{doc.location}}<br>\nAsset:{{doc.asset}}<br>\nSerial No:{{doc.serial_no}}<br>\nError Code:{{doc.error_code}}<br>\nFailure Date:{{doc.failure_date_and_time}}<br>\nDescription:{{doc.description}}<br>\nclick below to check<br>\n{{ frappe.utils.get_url_to_form(doc.doctype, doc.name) }}",
+ "modified": "2021-06-11 08:31:11.704087",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Toner Request  raised",
+ "owner": "Administrator",
+ "recipients": [
+  {
+   "cc": "tonersupport@groupmfi.com",
+   "email_by_document_field": ""
+  }
+ ],
+ "sender": "Notifications",
+ "sender_email": "notifications@groupmfi.com",
+ "subject": "Toner Request  raised"
+}

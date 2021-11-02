@@ -1,0 +1,278 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2021-07-07 12:33:27.509999",
+ "doctype": "DocType",
+ "document_type": "Document",
+ "engine": "InnoDB",
+ "field_order": [
+  "installation_note",
+  "column_break0",
+  "naming_series",
+  "customer",
+  "customer_address",
+  "contact_person",
+  "customer_name",
+  "address_display",
+  "contact_display",
+  "contact_mobile",
+  "contact_email",
+  "location",
+  "project",
+  "asset",
+  "asset_name",
+  "asset_serial_no",
+  "column_break1",
+  "inst_date",
+  "company",
+  "remarks",
+  "machine_reading_section",
+  "machine_type",
+  "black_and_white_reading",
+  "color_reading",
+  "asset_delivery_note",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "installation_note",
+   "fieldtype": "Section Break",
+   "label": "Installation Note",
+   "oldfieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break0",
+   "fieldtype": "Column Break",
+   "oldfieldtype": "Column Break",
+   "width": "50%"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "no_copy": 1,
+   "oldfieldname": "naming_series",
+   "oldfieldtype": "Select",
+   "options": "AST-INS-.YYYY.-",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_global_search": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "oldfieldname": "customer",
+   "oldfieldtype": "Link",
+   "options": "Customer",
+   "print_hide": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "depends_on": "customer",
+   "fieldname": "customer_address",
+   "fieldtype": "Link",
+   "label": "Customer Address",
+   "options": "Address",
+   "print_hide": 1
+  },
+  {
+   "depends_on": "customer",
+   "fieldname": "contact_person",
+   "fieldtype": "Link",
+   "label": "Contact Person",
+   "options": "Contact",
+   "print_hide": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Name",
+   "oldfieldname": "customer_name",
+   "oldfieldtype": "Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "address_display",
+   "fieldtype": "Small Text",
+   "hidden": 1,
+   "label": "Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "contact_display",
+   "fieldtype": "Small Text",
+   "hidden": 1,
+   "in_global_search": 1,
+   "label": "Contact",
+   "read_only": 1
+  },
+  {
+   "depends_on": "customer",
+   "fieldname": "contact_mobile",
+   "fieldtype": "Small Text",
+   "in_global_search": 1,
+   "label": "Mobile No",
+   "read_only": 1
+  },
+  {
+   "depends_on": "customer",
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email",
+   "options": "Email",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break1",
+   "fieldtype": "Column Break",
+   "oldfieldtype": "Column Break",
+   "width": "50%"
+  },
+  {
+   "fieldname": "inst_date",
+   "fieldtype": "Datetime",
+   "label": "Installation Date &Time",
+   "oldfieldname": "inst_date",
+   "oldfieldtype": "Date",
+   "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Company",
+   "oldfieldname": "company",
+   "oldfieldtype": "Select",
+   "options": "Company",
+   "print_hide": 1,
+   "remember_last_selected_value": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Asset Installation Note",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Remarks",
+   "oldfieldname": "remarks",
+   "oldfieldtype": "Small Text",
+   "print_hide": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Asset Installation Note",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Link",
+   "label": "Location",
+   "options": "Location"
+  },
+  {
+   "fieldname": "asset",
+   "fieldtype": "Link",
+   "label": "Asset",
+   "options": "Asset"
+  },
+  {
+   "fetch_from": "asset.asset_name",
+   "fieldname": "asset_name",
+   "fieldtype": "Data",
+   "label": "Asset Name"
+  },
+  {
+   "fetch_from": "asset.serial_no",
+   "fieldname": "asset_serial_no",
+   "fieldtype": "Link",
+   "label": "Asset Serial No",
+   "options": "Asset Serial No"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "asset_delivery_note",
+   "fieldtype": "Link",
+   "label": "Asset Delivery Note",
+   "options": "Asset Delivery Note",
+   "read_only": 1
+  },
+  {
+   "fieldname": "machine_reading_section",
+   "fieldtype": "Section Break",
+   "label": "Machine Reading"
+  },
+  {
+   "fieldname": "black_and_white_reading",
+   "fieldtype": "Data",
+   "label": "Black & white reading"
+  },
+  {
+   "fieldname": "color_reading",
+   "fieldtype": "Data",
+   "label": "Color Reading"
+  },
+  {
+   "fieldname": "machine_type",
+   "fieldtype": "Select",
+   "label": "Machine Type",
+   "options": "\nBlack & White\nColour"
+  }
+ ],
+ "icon": "fa fa-wrench",
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2021-09-28 11:12:06.856598",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Asset Installation Note",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "timeline_field": "customer",
+ "title_field": "customer_name"
+}

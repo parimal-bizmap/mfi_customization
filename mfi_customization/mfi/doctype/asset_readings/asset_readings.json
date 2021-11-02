@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "creation": "2020-09-18 23:30:42.091711",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -7,6 +8,8 @@
   "date",
   "type",
   "asset",
+  "task",
+  "reading_type",
   "reading",
   "reading_2",
   "total"
@@ -49,10 +52,24 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Total"
+  },
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Task",
+   "options": "Task"
+  },
+  {
+   "fieldname": "reading_type",
+   "fieldtype": "Select",
+   "label": "Reading Type",
+   "options": "\nMaintenance\nBilling"
   }
  ],
+ "index_web_pages_for_search": 1,
  "istable": 1,
- "modified": "2020-10-06 20:05:28.255645",
+ "links": [],
+ "modified": "2021-07-19 14:52:54.769866",
  "modified_by": "Administrator",
  "module": "mfi",
  "name": "Asset Readings",

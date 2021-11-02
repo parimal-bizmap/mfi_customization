@@ -17,6 +17,33 @@ def get_data():
                             "type": "report",
                             "name": "Customer Issue Status",
                             "is_query_report": True,
+                        },
+                         {
+                            "type": "report",
+                            "name": "Response Time Technician",
+                            "is_query_report": True,
+                        },
+                         {
+                            "type": "report",
+                            "name": "Call Data Monthly",
+                            "is_query_report": True,
+                        },
+                         {
+                            "type": "report",
+                            "name": "Repetitive",
+                            "is_query_report": True,
+                        },
+                        {
+                            "type": "report",
+                            "name": "Pending Spares",
+                            "is_query_report": True,
+                        },
+                         {
+                            "type": "report",
+                            "name": "Response Time Client",
+                            "doctype":"Issue",
+                            "is_query_report": True,
+                            
                         }
                         ]
             }

@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "creation": "2021-06-25 10:47:37.695957",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "accessory",
+  "accessory_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "accessory",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Accessory",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "accessory.item_name",
+   "fieldname": "accessory_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Accessory Name"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-06-25 10:47:50.055897",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Compatible Accessories Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

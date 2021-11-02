@@ -1,0 +1,150 @@
+{
+ "actions": [],
+ "creation": "2021-07-06 22:55:11.443625",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "customer_name",
+  "column_break_3",
+  "company",
+  "sales_order",
+  "project",
+  "assets_section",
+  "asset_models",
+  "location_wise_technician",
+  "section_break_7",
+  "select_item",
+  "insert_records",
+  "model_serial_nos",
+  "accounting_dimension_section",
+  "stock_adjustment_account",
+  "fixed_asset_account",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Asset Delivery Note",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "asset_models",
+   "fieldtype": "Table",
+   "label": "Asset Models",
+   "options": "Asset Models Item"
+  },
+  {
+   "fieldname": "location_wise_technician",
+   "fieldtype": "Table",
+   "label": "Location wise Technician",
+   "options": "Location wise Technician"
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "label": "Sales order",
+   "options": "Sales Order"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
+  },
+  {
+   "fieldname": "accounting_dimension_section",
+   "fieldtype": "Section Break",
+   "label": "Accounting Dimension"
+  },
+  {
+   "fieldname": "stock_adjustment_account",
+   "fieldtype": "Link",
+   "label": "Stock Adjustment Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "fixed_asset_account",
+   "fieldtype": "Link",
+   "label": "Fixed Asset Account",
+   "options": "Account"
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "select_item",
+   "fieldtype": "Select",
+   "label": "Select Item"
+  },
+  {
+   "fieldname": "model_serial_nos",
+   "fieldtype": "Table",
+   "label": "Model Serial Nos",
+   "options": "Serial Nos Model wise"
+  },
+  {
+   "fieldname": "insert_records",
+   "fieldtype": "Button",
+   "label": "Insert Records"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "assets_section",
+   "fieldtype": "Section Break",
+   "label": "Assets"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2021-08-27 21:40:04.241261",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Asset Delivery Note",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

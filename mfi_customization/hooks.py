@@ -16,8 +16,9 @@ app_license = "MIT"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/mfi_customization/css/mfi_customization.css"
-# app_include_js = "/assets/mfi_customization/js/mfi_customization.js"
-
+app_include_js = [
+	"/assets/js/mfi_customization.min.js",
+]
 # include js, css files in header of web template
 # web_include_css = "/assets/mfi_customization/css/mfi_customization.css"
 # web_include_js = "/assets/mfi_customization/js/mfi_customization.js"
@@ -31,9 +32,19 @@ doctype_js = {
 				"Project":"public/js/project.js",
                 "Issue":"public/js/issue.js",
                 "Task":"public/js/task.js",
-                "Asset Maintenance":"public/js/asset_maintenance.js"
+                "Asset Maintenance":"public/js/asset_maintenance.js",
+                "Location":"public/js/location.js",
+                "Asset Movement":"public/js/asset_movement.js",
+                "Sales Order":"public/js/sales_order.js",
+                "Sales Invoice":"public/js/sales_invoice.js",
+                "Material Request":"public/js/material_request.js",
+                "Item":"public/js/item.js",
+                "Quotation":"public/js/quotation.js",
+                "Price List":"public/js/price_list.js",
+                "Purchase Order":"public/js/purchase_order.js",
+                "Landed Cost Voucher":"public/js/landed_cost_voucher.js"
 }	
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Material Request":"public/js/material_request_list.js",}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -89,16 +100,21 @@ doc_events = {
     "Task":{
         "validate":"mfi_customization.mfi.doctype.task.validate",
         "after_insert":"mfi_customization.mfi.doctype.task.after_insert",
-        "on_trash":"mfi_customization.mfi.doctype.task.after_delete"
+        "on_trash":"mfi_customization.mfi.doctype.task.after_delete",
+        "on_change":"mfi_customization.mfi.doctype.task.on_change"
     },
-    "Project":{
-        "validate":"mfi_customization.mfi.doctype.project.validate"
+    "Asset":{
+        "after_insert":"mfi_customization.mfi.doctype.Asset.after_insert",
+        "on_cancel":"mfi_customization.mfi.doctype.Asset.on_cancel",
+        "on_update":"mfi_customization.mfi.doctype.Asset.on_update"
     },
     "Issue":{
-        "validate":"mfi_customization.mfi.doctype.issue.validate"
+        "validate":"mfi_customization.mfi.doctype.issue.validate",
+        "on_change":"mfi_customization.mfi.doctype.issue.on_change"
     },
     "Material Request":{
-        "on_change":"mfi_customization.mfi.doctype.task.set_item_from_material_req"
+        "on_change":"mfi_customization.mfi.doctype.material_request.set_item_from_material_req",
+        "on_submit":"mfi_customization.mfi.doctype.material_request.on_submit"
     },
     "Comment":{
 		"validate":"mfi_customization.mfi.doctype.comment.comment"
@@ -108,7 +124,30 @@ doc_events = {
     },
     "File":{
         "after_insert":"mfi_customization.mfi.doctype.communication.after_insert_file"
+    },
+    # "Item":{
+    #     "after_insert":"mfi_customization.mfi.doctype.item.validate"
+    # },
+    "Quotation":{
+        "validate":"mfi_customization.mfi.doctype.quotation.validate"
+    },
+    "Project":{
+        "validate":"mfi_customization.mfi.doctype.project.validate"
+    },
+    "Purchase Order":{
+        "after_insert":"mfi_customization.mfi.doctype.purchase_order.on_submit"
+    },
+    "Sales Invoice":{
+        "on_submit":"mfi_customization.mfi.doctype.sales_invoice.on_submit",
+        "on_cancel":"mfi_customization.mfi.doctype.sales_invoice.on_cancel"
+    },
+    "Sales Order":{
+        "on_submit":"mfi_customization.mfi.doctype.sales_order.on_submit"
     }
+    # "Material Request":{
+    #     "validate":"mfi_customization.mfi.doctype.material_request.validate",
+    #     "after_insert":"mfi_customization.mfi.doctype.material_request.after_insert"
+    # }
 }
 
 # Scheduled Tasks
@@ -134,7 +173,17 @@ doc_events = {
 
 # Testing
 # -------
-
+before_migrate=['mfi_customization.mfi.patch.migrate_patch.get_custom_role_permission']
+after_migrate = ['mfi_customization.mfi.patch.migrate_patch.set_custom_role_permission']
+fixtures = [
+    {"dt": "Custom DocPerm", "filters": [
+        [
+            "parent", "not in", [
+                "DocType"
+            ]
+        ]
+    ]}
+]
 # before_tests = "mfi_customization.install.before_tests"
 
 # Overriding Methods

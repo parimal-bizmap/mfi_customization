@@ -1,0 +1,61 @@
+{
+ "actions": [],
+ "autoname": "{template_name}-{company}",
+ "creation": "2021-10-27 21:02:32.593344",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "template_name",
+  "company",
+  "section_break_3",
+  "landed_cost_component"
+ ],
+ "fields": [
+  {
+   "fieldname": "template_name",
+   "fieldtype": "Data",
+   "label": "Template Name"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "landed_cost_component",
+   "fieldtype": "Table",
+   "label": "Landed Cost Component",
+   "options": "Landed Cost Component List"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2021-10-27 21:06:54.618594",
+ "modified_by": "Administrator",
+ "module": "mfi",
+ "name": "Landed Cost Component Template",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
